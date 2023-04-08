@@ -1,28 +1,91 @@
-# Grupo 3 - TACS!
+# Meetings
 
-[Enunciado del TP 👈](https://docs.google.com/document/d/e/2PACX-1vSOjnpw4O-XEjpcK3Yei_FUmBoAQNMwre7mpq81ub2Xqbzy_TRupGIqjIURd4RijgiE7s0fAOlR1DR2/pub)
+Meetings is an application developed by `Group-3` during the course 
+Advanced Technologies in Software Construction, as was taught during first semester of 2023.
 
-### Integrantes:
+## Table of Contents
 
-|         Nombre       |Legajo                         | Mail
-|----------------|-------------------------------|-----------------------------|
-|Sánchez, Tomas		                  |166043-3     |Tosanchez@frba.utn.edu.ar|
-|Alvarez, Leandro                     |146887-0		|lean.alvarez@live.com.ar|
-|Torregrossa, Florencia               |163.519-0	|ftorregrossa@frba.utn.edu.ar|
-|Olmedo Paco, Jhon Daniel             |152.222-0	|jhonpaco@frba.utn.edu.ar|
-|Yogui Arakaki, Matias Ezequiel       |167.264-2	|myogui@frba.utn.edu.ar|
-|Grosclaude, Julian                   |171.656-6	|jgrosclaude@frba.utn.edu.ar|
-  
-## Stack Técnologico
+<!-- TOC -->
+* [Meetings](#meetings)
+  * [Table of Contents](#table-of-contents)
+  * [Requirements](#requirements)
+  * [Team](#team)
+  * [Tech Stack](#tech-stack)
+    * [Backend](#backend)
+    * [Frontend](#frontend)
+  * [Development Environment](#development-environment)
+    * [Back-End](#back-end)
+    * [Front-End](#front-end)
+  * [License](#license)
+<!-- TOC -->
 
-### Backend:
+## Requirements
 
-- Java 18
+Available on [docs](https://docs.google.com/document/d/e/2PACX-1vSOjnpw4O-XEjpcK3Yei_FUmBoAQNMwre7mpq81ub2Xqbzy_TRupGIqjIURd4RijgiE7s0fAOlR1DR2/pub)
+
+## Team
+
+| Name                           | File      | e-Mail                       |
+|--------------------------------|-----------|------------------------------|
+| Alvarez, Leandro               | 146.887-0 | lean.alvarez@live.com.ar     |
+| Sanchez, Tomas                 | 166.043-3 | tosacnehz@frba.utn.edu.ar    |
+| Torregrosa, Florencia          | 163.519-0 | ftorregrossa@frba.utn.edu.ar |      
+| Olmedo Paco, Jhon Daniel       | 152.222-0 | jhonpaco@frba.utn.edu.ar     |
+| Yogui Arakaki, Matias Ezequiel | 167.264-2 | myogui@frba.utn.edu.ar       |
+| Grosclaude, Julian             | 171.656-6 | jgrosclaude@frba.utn.edu.ar  |
+
+
+## Tech Stack
+
+### Backend
+
+- Java 17
 - Maven
 - SpringBoot
 - MongoDB
 - Docker
 
-### Frontend: 
+### Frontend
+
 - React
-- Bootstrap
+
+## Continuous Integration
+
+This project uses `GitHub Actions`.
+
+Read more about in the [documentation site](https://docs.github.com/en/actions)
+
+## Development Environment
+
+It is recommended to use [IntelliJ](https://www.jetbrains.com/idea/download/).
+
+1. Clone the repository
+
+Via HTTPS
+
+```bash
+git clone https://github.com/tomasanchez/grupo-3-tacs.git
+```
+
+or SSH
+```bash
+git clone git@github.com:tomasanchez/grupo-3-tacs.git
+```
+
+2. Load the project
+
+Open IntelliJ and right click over the file `pom.xml`, select _"Add as a Maven Project"_.
+
+### Back-End
+
+Read the [`README`](./rest/README.md) file on `rest` package.
+
+### Front-End
+
+See [`README`](./web/README.md) file on `web` package.
+
+## License
+
+All material is provided under an MIT License unless otherwise specified.
+MIT License: https://mit-license.org/ or see the [`LICENSE`](./LICENSE) file.
+
