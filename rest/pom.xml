@@ -37,6 +37,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc-openapi.version}</version>
+		</dependency>
+		<!-- Swagger JavaDocs -->
+		<dependency>
+			<groupId>com.github.therapi</groupId>
+			<artifactId>therapi-runtime-javadoc</artifactId>
+			<version>0.15.0</version>
+		</dependency>
 
 		<!-- Lombok -->
 		<dependency>
@@ -61,6 +72,10 @@
 			<artifactId>kotlin-test-junit</artifactId>
 			<version>${kotlin.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-kotlin</artifactId>
 		</dependency>
 
 
@@ -150,6 +165,21 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<!-- Swagger UI JavaDocs -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>com.github.therapi</groupId>
+							<artifactId>therapi-runtime-javadoc-scribe</artifactId>
+							<version>0.15.0</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
