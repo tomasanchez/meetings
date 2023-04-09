@@ -37,4 +37,4 @@ jobs:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
           DOCKER_REPOSITORY: "atsc-meetings"
         run: | 
-          docker push $DOCKER_USER/$DOCKER_REPOSITORY
+          docker push $DOCKER_USER/$DOCKER_REPOSITORY:rest-latest
