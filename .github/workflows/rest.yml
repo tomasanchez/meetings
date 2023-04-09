@@ -6,12 +6,14 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: REST API Build
 
 on:
   push:
     branches:
       - '*'
+    paths:
+        - 'rest/src/**'
   pull_request:
     branches: [ "main", "dev" ]
 
