@@ -1,0 +1,35 @@
+name: REST Image Build
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rest
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        DOCKER_REPOSITORY: "atsc-meetings"
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker login
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+      - name: Build the Docker image
+        run: |
+          docker build . --file Dockerfile --tag $DOCKER_USER/$DOCKER_REPOSITORY:rest-latest
+
+      - name: Docker Push
+        run: | 
+          docker push $DOCKER_USER/$DOCKER_REPOSITORY
