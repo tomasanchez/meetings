@@ -1,12 +1,7 @@
 package com.grupo3.meetings.api
 
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.media.ArraySchema
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
-import org.springframework.http.ResponseEntity
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,33 +12,26 @@ data class Foo(val id: Long, val name: String)
 
 @RestController
 @RequestMapping("/api/v1/foo")
+@Tag(name = "Foo", description = "The Foo API")
 class FooController {
 
-
-    @Operation(summary = "Get all foo")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200",
-                description = "Found Foos",
-                content = [(Content(mediaType = "application/json",
-                        array = (ArraySchema(schema = Schema(implementation = Foo::class)))))])])
-    @GetMapping
-    fun getAllFoo(): ResponseEntity<List<Foo>> {
-        return ResponseEntity
-                .ok()
-                .body(listOf(Foo(1, "foo"), Foo(2, "bar"), Foo(3, "baz")))
+    companion object {
+        private val log = org.slf4j.LoggerFactory.getLogger(FooController::class.java)
     }
 
-    @Operation(summary = "Get a foo by id")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Found Foo", content = [
-            (Content(
-                    mediaType = "application/json",
-                    schema = (Schema(implementation = Foo::class))
-            ))]),
-        ApiResponse(responseCode = "404", description = "Did not find any Foo", content = [Content()])]
-    )
-    @GetMapping("/{id}", "")
+    @Operation(summary = "Find All Foo",
+                description = "Gets all foo resources in the system",)
+    @GetMapping
+    fun getAllFoo(): List<Foo>{
+        log.debug("Requested Foo list")
+        return listOf(Foo(1, "foo"), Foo(2, "foo"))
+    }
+
+    @Operation(summary = "Foo by ID",
+        description = "Gets a single Foo resource by its unique ID")
+    @GetMapping("/{id}")
     fun getFoo(@PathVariable id: Long): Foo {
+        log.debug("Requested Foo with id: $id")
         return Foo(id, "foo")
     }
 }
