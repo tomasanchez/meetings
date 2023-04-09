@@ -1,6 +1,7 @@
 # Meetings
 
-![Rest Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest.yml/badge.svg)
+[![REST API Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest.yml)
+[![REST Image Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest-image.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest-image.yml)
 
 Meetings is an application developed by `Group-3` during the course 
 Advanced Technologies in Software Construction, as was taught during first semester of 2023.
