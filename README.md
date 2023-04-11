@@ -3,27 +3,31 @@
 [![REST API Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest.yml)
 [![REST Image Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest-image.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest-image.yml)
 
-Meetings is an application developed by `Group-3` during the course 
+Meetings is an application developed by `Group-3` during the course
 Advanced Technologies in Software Construction, as was taught during first semester of 2023.
 
 ## Table of Contents
 
 <!-- TOC -->
+
 * [Meetings](#meetings)
-  * [Table of Contents](#table-of-contents)
-  * [Requirements](#requirements)
-  * [Team](#team)
-  * [Continuous Integration](#continuous-integration)
-  * [Development Environment](#development-environment)
-    * [Back-End](#back-end)
-    * [Front-End](#front-end)
-  * [Running Local](#running-local)
-  * [License](#license)
+    * [Table of Contents](#table-of-contents)
+    * [Requirements](#requirements)
+    * [Team](#team)
+    * [Continuous Integration](#continuous-integration)
+    * [Development Environment](#development-environment)
+        * [Back-End](#back-end)
+        * [Front-End](#front-end)
+    * [Running Local](#running-local)
+    * [Context](#context)
+    * [License](#license)
+
 <!-- TOC -->
 
 ## Requirements
 
-Available on [docs](https://docs.google.com/document/d/e/2PACX-1vSOjnpw4O-XEjpcK3Yei_FUmBoAQNMwre7mpq81ub2Xqbzy_TRupGIqjIURd4RijgiE7s0fAOlR1DR2/pub)
+Available
+on [docs](https://docs.google.com/document/d/e/2PACX-1vSOjnpw4O-XEjpcK3Yei_FUmBoAQNMwre7mpq81ub2Xqbzy_TRupGIqjIURd4RijgiE7s0fAOlR1DR2/pub)
 
 ## Team
 
@@ -35,8 +39,6 @@ Available on [docs](https://docs.google.com/document/d/e/2PACX-1vSOjnpw4O-XEjpcK
 | Olmedo Paco, Jhon Daniel       | 152.222-0 | jhonpaco@frba.utn.edu.ar     |
 | Yogui Arakaki, Matias Ezequiel | 167.264-2 | myogui@frba.utn.edu.ar       |
 | Grosclaude, Julian             | 171.656-6 | jgrosclaude@frba.utn.edu.ar  |
-
-
 
 ## Continuous Integration
 
@@ -57,6 +59,7 @@ git clone https://github.com/tomasanchez/grupo-3-tacs.git
 ```
 
 or SSH
+
 ```bash
 git clone git@github.com:tomasanchez/grupo-3-tacs.git
 ```
@@ -64,7 +67,6 @@ git clone git@github.com:tomasanchez/grupo-3-tacs.git
 2. Install Docker
 
 Read the official website about [Docker](https://docs.docker.com/get-docker/)
-
 
 ### Back-End
 
@@ -82,6 +84,21 @@ See [`README`](./web/README.md) file on `web` package.
 ```bash
 docker-compose up
 ```
+
+## Context
+
+A customer should be able to schedule events, creating, or joining them.
+Administrators should be able to see different statistics about the events.
+
+At a high level, we should have different systems, with single responsibilities.
+One system should be responsible for managing the workflows of the events, another schedules events,
+and the last one for validating users' credentials.
+
+![Context Diagram](./docs/assets/context-diagram.png)
+
+For simplicity, we will use only two systems, one for our web application, and the other for the REST API.
+
+![Context Diagram - Simplified](./docs/assets/context-diagram-simplified.png)
 
 ## License
 
