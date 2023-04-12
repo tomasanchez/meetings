@@ -1,0 +1,22 @@
+.event {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    font-size: 12px
+
+  }
+  
+  .event h3 {
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .description {
+    font-style: italic;
+    align-self: flex-start;
+  }
+
+  a{
+    font-size: 16px
+  }
