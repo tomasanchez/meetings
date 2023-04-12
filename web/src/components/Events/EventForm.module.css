@@ -1,0 +1,19 @@
+.control {
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.control label {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  max-width: 20rem;
+}
+
+.control input {
+  font: inherit;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-width: 20rem;
+}
