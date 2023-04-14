@@ -1,34 +1,23 @@
 package com.grupo3.meetings.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.HashSet;
+import java.util.Set;
 
+@Getter @Setter
 public class Option {
     private DayOfWeek day;
     private LocalTime time;
-    private HashSet<String> votes;
+    private Set<String> votes;
 
     public Option(DayOfWeek day, LocalTime time) {
         this.day = day;
         this.time = time;
-        this.votes = new HashSet<String>();
-    }
-
-    public DayOfWeek getDay() {
-        return day;
-    }
-
-    public void setDay(DayOfWeek day) {
-        this.day = day;
-    }
-
-    public LocalTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalTime time) {
-        this.time = time;
+        this.votes = new HashSet<>();
     }
 
     public Integer getVotes() {

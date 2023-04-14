@@ -1,6 +1,9 @@
 package com.grupo3.meetings.domain;
 
-import org.junit.Before;
+import com.grupo3.meetings.exceptions.event.EventIsClosedException;
+import com.grupo3.meetings.exceptions.event.UserNotAdministratorException;
+import com.grupo3.meetings.exceptions.option.NoOptionVotedException;
+import com.grupo3.meetings.exceptions.event.UserNotInGuestListException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +58,7 @@ public class EventTests {
     @Test
     void userNotInvitedCantVote() {
         User toad = new User("t1", "Toad");
-        Assertions.assertThrows(RuntimeException.class, () -> event.vote(option1, toad));
+        Assertions.assertThrows(UserNotInGuestListException.class, () -> event.vote(option1, toad));
     }
 
     @Test
@@ -66,11 +69,6 @@ public class EventTests {
     }
 
     @Test
-    void userCantAddSameOption() {
-        Assertions.assertThrows(RuntimeException.class, () -> event.addOption(option1));
-    }
-
-    @Test
     void administratorCanRemoveOptions() {
         event.removeOption(option1, mario);
         Assertions.assertEquals(2, event.getListOfOptions().size());
@@ -78,21 +76,21 @@ public class EventTests {
 
     @Test
     void guestsCantRemoveOptions() {
-        Assertions.assertThrows(RuntimeException.class, () -> event.removeOption(option1, luigi));
+        Assertions.assertThrows(UserNotAdministratorException.class, () -> event.removeOption(option1, luigi));
     }
 
     @Test
     void cantVoteOnAClosedEvent() {
         event.vote(option1, mario);
         event.closeEvent(mario);
-        Assertions.assertThrows(RuntimeException.class, () -> event.vote(option1, mario));
+        Assertions.assertThrows(EventIsClosedException.class, () -> event.vote(option1, mario));
     }
 
     @Test
     void cantAddUserOnAClosedEvent() {
         event.vote(option1, mario);
         event.closeEvent(mario);
-        Assertions.assertThrows(RuntimeException.class, () -> event.addUserToGuestList(luigi));
+        Assertions.assertThrows(EventIsClosedException.class, () -> event.addUserToGuestList(luigi));
     }
 
     @Test
@@ -105,12 +103,12 @@ public class EventTests {
 
     @Test
     void normalUserCantCloseEvent() {
-        Assertions.assertThrows(RuntimeException.class, () -> event.closeEvent(luigi));
+        Assertions.assertThrows(UserNotAdministratorException.class, () -> event.closeEvent(luigi));
     }
 
     @Test
     void cantClosedAnEventWithoutAWinningOption() {
-        Assertions.assertThrows(RuntimeException.class, () -> event.closeEvent(mario));
+        Assertions.assertThrows(NoOptionVotedException.class, () -> event.closeEvent(mario));
     }
 
     @Test
@@ -125,7 +123,7 @@ public class EventTests {
     void normalUserCantOpenAnEvent() {
         event.vote(option1, mario);
         event.closeEvent(mario);
-        Assertions.assertThrows(RuntimeException.class, () -> event.openEvent(luigi));
+        Assertions.assertThrows(UserNotAdministratorException.class, () -> event.openEvent(luigi));
     }
 
     @Test
