@@ -14,16 +14,29 @@ public class Option {
     private LocalTime time;
     private Set<String> votes;
 
+    /**
+     * Default Option constructor.
+     * @param day Day of the week
+     * @param time Time of the day
+     */
     public Option(DayOfWeek day, LocalTime time) {
         this.day = day;
         this.time = time;
         this.votes = new HashSet<>();
     }
 
+    /**
+     * Returns the number of votes for this option.
+     * @return Number of votes
+     */
     public Integer getVotes() {
         return votes.size();
     }
 
+    /**
+     * Toggles the vote of a user for this option.
+     * @param userId Id of the user that wants to vote or unvote
+     */
     public void toggleVote(String userId) {
         if(this.votes.contains(userId))
             this.votes.remove(userId);
