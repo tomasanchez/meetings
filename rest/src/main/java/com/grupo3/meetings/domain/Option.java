@@ -43,4 +43,5 @@ public class Option {
         else
             this.votes.add(userId);
     }
+
 }

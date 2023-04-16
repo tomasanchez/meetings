@@ -1,5 +1,6 @@
 package com.grupo3.meetings.domain;
 
+import com.grupo3.meetings.api.DTO.EventDTO;
 import com.grupo3.meetings.exceptions.event.EventIsClosedException;
 import com.grupo3.meetings.exceptions.event.UserNotAdministratorException;
 import com.grupo3.meetings.exceptions.option.NoOptionVotedException;
@@ -41,6 +42,12 @@ public class Event {
         this.isClosed = false;
         this.listOfGuests = new HashSet<>();
         this.addUserToGuestList(administrator);
+    }
+
+    public Event(EventDTO eventDTO) {
+        this.title = eventDTO.getNombreDeEvento();
+        this.description = eventDTO.getDescripcion();
+        this.location = eventDTO.getUbicacion();
     }
 
     public Set<String> getListOfGuests() {
@@ -164,5 +171,65 @@ public class Event {
     public void openEvent(User user) {
         validateIfUserIsAdministrator(user);
         this.isClosed = false;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public User getAdministrator() {
+        return administrator;
+    }
+
+    public void setAdministrator(User administrator) {
+        this.administrator = administrator;
+    }
+
+    public void setListOfGuests(Set<String> listOfGuests) {
+        this.listOfGuests = listOfGuests;
+    }
+
+    public void setVotedOption(Option votedOption) {
+        this.votedOption = votedOption;
+    }
+
+    public void setListOfOptions(Set<Option> listOfOptions) {
+        this.listOfOptions = listOfOptions;
+    }
+
+    public Boolean getClosed() {
+        return isClosed;
+    }
+
+    public void setClosed(Boolean closed) {
+        isClosed = closed;
     }
 }
