@@ -30,11 +30,14 @@ public class EventRepository {
     }
 
     public Event getEvent(Long eventId) {
-        Optional<Event> evento= this.db.stream().filter(e -> e.getId().equals(eventId)).findFirst();
-        if(evento.isPresent()){
-            return evento.get();
-        }
-        return (Event) null;
+//        Optional<Event> evento= this.db.stream().filter(e -> e.getId().equals(new String(eventId))).findFirst();
+//        if(evento.isPresent()){
+//            return evento.get();
+//        }
+//        return (Event) null;
+
+        String id= String.valueOf(eventId);
+        return this.db.stream().filter(e -> e.getId().equals(id)).findFirst().get();
     }
 
     public Event closeEventVoting(Long eventId) {

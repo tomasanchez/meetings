@@ -81,14 +81,18 @@ public class EventController {
 
     @Operation(summary = "Get Event", description = "Returns the specified event with its associated availability options and votes")
     @GetMapping("/{eventId}")
-    public ResponseEntity<Event> getEvent(@PathVariable Long eventId) {
+    public ResponseEntity<?> getEvent(@PathVariable Long eventId) {
         try {
             Event event = eventService.getEvent(eventId);
             return ResponseEntity.ok(event);
         } catch (EventNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el evento con ID: " + eventId);
+        } catch (Exception e) { // event is null, no existe el evento
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("no existe el evento con ID: " + eventId);
         }
     }
+
+
 
     @Operation(summary = "Close Event Voting", description = "Closes the voting period for the specified event (if the event was created by the authenticated user)")
     @PutMapping("/{eventId}")
