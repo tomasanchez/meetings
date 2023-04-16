@@ -16,6 +16,7 @@ Advanced Technologies in Software Construction, as was taught during first semes
   * [Continuous Integration](#continuous-integration)
   * [Development Environment](#development-environment)
     * [Back-End](#back-end)
+    * [API Documentation](#api-documentation)
     * [Front-End](#front-end)
   * [Running Local](#running-local)
   * [Context](#context)
@@ -71,6 +72,15 @@ Read the official website about [Docker](https://docs.docker.com/get-docker/)
 
 For more information about technologies used, how to set up development environment, running local,
 read the [`README`](./rest/README.md) file on `rest` package.
+
+### API Documentation
+
+We are using `OpenAPI` to document our API. You will find all available endpoints, request and
+response bodies, along with the status codes that they produce in there.
+
+This bodies as the current version `0.1.0` is not using any specification for building our APIs
+in JSON. However, it is our plan to add [JSON:API](https://jsonapi.org/) in the future.
+
 
 ### Front-End
 
