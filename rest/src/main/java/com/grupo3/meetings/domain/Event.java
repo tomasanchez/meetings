@@ -48,6 +48,9 @@ public class Event {
         this.title = eventDTO.getNombreDeEvento();
         this.description = eventDTO.getDescripcion();
         this.location = eventDTO.getUbicacion();
+        this.listOfOptions= new HashSet<>();
+        this.listOfGuests= new HashSet<>();
+        this.isClosed=false;
     }
 
     public Set<String> getListOfGuests() {
@@ -95,8 +98,6 @@ public class Event {
      * @throws UserNotAdministratorException if the user is not the administrator
      * */
     public void addOption(Option option) {
-        validateIfEventIsOpen();
-        validateIfUserIsAdministrator(administrator);
         this.listOfOptions.add(option);
     }
 
@@ -225,11 +226,8 @@ public class Event {
         this.listOfOptions = listOfOptions;
     }
 
-    public Boolean getClosed() {
-        return isClosed;
+    public void setIsClosed(Boolean isClosed) {
+        this.isClosed = isClosed;
     }
 
-    public void setClosed(Boolean closed) {
-        isClosed = closed;
-    }
 }

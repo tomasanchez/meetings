@@ -3,6 +3,7 @@ package com.grupo3.meetings.repository;
 import com.grupo3.meetings.api.DTO.AttendeeDTO;
 import com.grupo3.meetings.api.DTO.EventDTO;
 import com.grupo3.meetings.domain.Event;
+import com.grupo3.meetings.domain.Option;
 import com.grupo3.meetings.domain.Statistics;
 import org.springframework.stereotype.Repository;
 
@@ -30,14 +31,8 @@ public class EventRepository {
     }
 
     public Event getEvent(Long eventId) {
-//        Optional<Event> evento= this.db.stream().filter(e -> e.getId().equals(new String(eventId))).findFirst();
-//        if(evento.isPresent()){
-//            return evento.get();
-//        }
-//        return (Event) null;
-
         String id= String.valueOf(eventId);
-        return this.db.stream().filter(e -> e.getId().equals(id)).findFirst().get();
+        return this.db.stream().filter(e -> e.getId().equals(id)).findFirst().orElse(null);
     }
 
     public Event closeEventVoting(Long eventId) {
@@ -63,5 +58,10 @@ public class EventRepository {
     public boolean existsById(String eventId) {
 //        return this.db.stream().filter(e -> e.getId().equals(eventId)).findFirst().isEmpty();
         return this.db.stream().anyMatch(e -> e.getId().equals(eventId));
+    }
+
+    public void addOption(String eventId, Option option) {
+        Event event = this.db.stream().filter(e -> e.getId().equals(eventId)).findFirst().get();
+        event.addOption(option);
     }
 }

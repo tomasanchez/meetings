@@ -58,4 +58,14 @@ public class EventService {
     public boolean existsById(String eventId) {
         return repoEventos.existsById(eventId);
     }
+
+    public void addOption(String eventId, Option option) {
+        this.repoEventos.addOption(eventId, option);
+    }
+
+    public Event findEventById(Long eventId) {
+        return repoEventos.findEventById(String.valueOf(eventId)).orElseThrow(() -> new EventNotFoundException(String.valueOf(eventId)));
+//        String id= String.valueOf(eventId);
+//        return repoEventos.findEventById(id).get();
+    }
 }
