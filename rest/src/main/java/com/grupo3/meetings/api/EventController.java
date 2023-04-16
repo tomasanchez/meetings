@@ -102,19 +102,7 @@ public class EventController {
         if (validateEventExists(eventId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event " + eventId + " not found");
         }
-//        catch (EventNotFoundException e) {
-//            Map<String, String> error = new HashMap<>();
-//            error.put("message", "Event not found");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-//        } catch (UserNotFoundException e) {
-//            Map<String, String> error = new HashMap<>();
-//            error.put("message", "User not found");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-//        } catch (OptionNotFoundException e) {
-//            Map<String, String> error = new HashMap<>();
-//            error.put("message", "Option not found");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-//        }
+
         Event event = eventService.addAttendeeAndVote(eventId, attendeeAndVoteDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(event);
     }

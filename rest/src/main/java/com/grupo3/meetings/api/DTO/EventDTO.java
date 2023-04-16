@@ -1,18 +1,20 @@
 package com.grupo3.meetings.api.DTO;
 
 
+import java.time.LocalDate;
+
 public class EventDTO {
 
     private String nombreDeEvento;
     private String descripcion;
     private String ubicacion;
 
-    private String fecha;
+    private LocalDate fecha;
 
     private String hora;
     private String username;
 
-    public EventDTO(String nombreDeEvento, String descripcion, String ubicacion, String fecha, String hora, String userAdmin) {
+    public EventDTO(String nombreDeEvento, String descripcion, String ubicacion, LocalDate fecha, String hora, String userAdmin) {
         this.nombreDeEvento = nombreDeEvento;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
@@ -45,13 +47,6 @@ public class EventDTO {
         this.ubicacion = ubicacion;
     }
 
-    public String getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
-    }
 
     public String getHora() {
         return hora;
@@ -67,5 +62,14 @@ public class EventDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 }
