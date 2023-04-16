@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,10 +19,10 @@ public class Option {
 
     private LocalDate date;
 
-    public Option(LocalDate date, LocalTime time, Set<String> votes) {
+    public Option(LocalDate date, LocalTime time) {
         this.date = date;
         this.time = time;
-        this.votes = votes;
+        this.votes = new HashSet<>();
     }
 //    /**
 //     * Default Option constructor.

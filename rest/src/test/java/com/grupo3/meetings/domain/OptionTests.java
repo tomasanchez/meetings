@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,9 +25,9 @@ public class OptionTests {
         luigi = new User("l1", "Luigi");
         peach = new User("p1", "Peach");
 
-        option1 = new Option(DayOfWeek.MONDAY, LocalTime.of(10, 0));
-        option2 = new Option(DayOfWeek.MONDAY, LocalTime.of(11, 0));
-        option3 = new Option(DayOfWeek.MONDAY, LocalTime.of(12, 0));
+        option1 = new Option(LocalDate.of(2023, 4, 5), LocalTime.of(10, 0));
+        option2 = new Option(LocalDate.of(2023, 4, 5), LocalTime.of(11, 0));
+        option3 = new Option(LocalDate.of(2023, 4, 5), LocalTime.of(12, 0));
 
         event = new Event("Pelicula Mario",
                 "Juntada pelicula Mario",
