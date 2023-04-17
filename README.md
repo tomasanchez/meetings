@@ -76,7 +76,9 @@ read the [`README`](./rest/README.md) file on `rest` package.
 ### API Documentation
 
 We are using `OpenAPI` to document our API. You will find all available endpoints, request and
-response bodies, along with the status codes that they produce in there.
+response bodies, along with the status codes that they produce in there. But also you will find.
+
+Also, you can read it [here](rest/API.md).
 
 This bodies as the current version `0.1.0` is not using any specification for building our APIs
 in JSON. However, it is our plan to add [JSON:API](https://jsonapi.org/) in the future.
