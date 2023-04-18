@@ -240,4 +240,8 @@ public class Event {
     public void closeEvent2() {
         this.isClosed = true;
     }
+
+    public void vote(String username) {
+        this.listOfGuests.add(username);
+    }
 }

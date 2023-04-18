@@ -1,15 +1,13 @@
 package com.grupo3.meetings.service;
 
-import com.grupo3.meetings.api.DTO.AttendeeAndVoteDTO;
 import com.grupo3.meetings.api.DTO.AttendeeDTO;
 import com.grupo3.meetings.api.DTO.EventDTO;
+import com.grupo3.meetings.api.DTO.NewGuestInEventDTO;
+import com.grupo3.meetings.api.DTO.VoteOptionDTO;
 import com.grupo3.meetings.domain.Event;
 import com.grupo3.meetings.domain.Option;
 import com.grupo3.meetings.domain.Statistics;
-import com.grupo3.meetings.domain.User;
 import com.grupo3.meetings.exceptions.event.EventNotFoundException;
-import com.grupo3.meetings.exceptions.event.OptionNotFoundException;
-import com.grupo3.meetings.exceptions.event.UserNotFoundException;
 import com.grupo3.meetings.repository.EventRepository;
 import com.grupo3.meetings.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,7 @@ public class EventService {
     EventRepository repoEventos;
     @Autowired
     UserRepository userRepository;
+
     public Event createEvent(EventDTO eventDTO) {
         return this.repoEventos.createEvent(eventDTO);
     }
@@ -48,8 +47,7 @@ public class EventService {
         return this.repoEventos.getAllEvents();
     }
 
-    public Event addAttendeeAndVote(String eventId, AttendeeAndVoteDTO attendeeAndVoteDTO)
-             {
+    public Event addAttendeeAndVote(String eventId, VoteOptionDTO attendeeAndVoteDTO) {
         Event event = repoEventos.findEventById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         // Save changes and return updated event
         repoEventos.save(event);
@@ -61,25 +59,25 @@ public class EventService {
     }
 
     public Event addOption(String eventId, Option option) {
-       return  this.repoEventos.addOption(eventId, option);
+        return this.repoEventos.addOption(eventId, option);
     }
 
     public Event findEventById(Long eventId) {
         return repoEventos.findEventById(String.valueOf(eventId)).orElseThrow(() -> new EventNotFoundException(String.valueOf(eventId)));
     }
-    public Event save(Event evento){
+
+    public Event save(Event evento) {
         this.repoEventos.save(evento);
         return evento;
     }
 
     public Event addOptionForUser(String eventId, Option option, String userId) {
         Event event = repoEventos.findEventById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
-        Option opcionAVotar= event.getListOfOptions().stream().filter(o -> o.equals(option)).findFirst().orElse(null);
-        if(opcionAVotar==null){
-            this.addOption(eventId,option);
-        }
-        else{
-           opcionAVotar.toggleVote(userId);
+        Option opcionAVotar = event.getListOfOptions().stream().filter(o -> o.equals(option)).findFirst().orElse(null);
+        if (opcionAVotar == null) {
+            this.addOption(eventId, option);
+        } else {
+            opcionAVotar.toggleVote(userId);
         }
         return event;
     }
@@ -89,6 +87,12 @@ public class EventService {
         event.setTitle(eventDTO.getNombreDeEvento());
         event.setDescription(eventDTO.getDescripcion());
         event.setLocation(eventDTO.getUbicacion());
+        return event;
+    }
+
+    public Event voteOnEvent(Long eventId, NewGuestInEventDTO voteOptionDTO) {
+        Event event = repoEventos.findEventById(String.valueOf(eventId)).orElseThrow(() -> new EventNotFoundException(String.valueOf(eventId)));
+        event.vote(voteOptionDTO.getGuest());
         return event;
     }
 }

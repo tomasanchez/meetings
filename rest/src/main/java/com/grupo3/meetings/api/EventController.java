@@ -1,8 +1,7 @@
 package com.grupo3.meetings.api;
 
-import com.grupo3.meetings.api.DTO.AttendeeAndVoteDTO;
 import com.grupo3.meetings.api.DTO.EventDTO;
-import com.grupo3.meetings.api.DTO.OptionDTO;
+import com.grupo3.meetings.api.DTO.NewGuestInEventDTO;
 import com.grupo3.meetings.api.DTO.VoteOptionDTO;
 import com.grupo3.meetings.domain.Event;
 import com.grupo3.meetings.domain.Option;
@@ -16,9 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -109,23 +106,42 @@ public class EventController {
         return ResponseEntity.ok(statistics);
     }
 
-    @Operation(summary = "Add Attendee and Vote", description = "Adds an attendee to the specified event with the specified availability options and votes for them")
-    @PostMapping("/{eventId}/attendees")
-    public ResponseEntity<?> addAttendeeAndVote(@PathVariable String eventId, @RequestBody AttendeeAndVoteDTO attendeeAndVoteDTO) {
-        if (validateEventExists(eventId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event " + eventId + " not found");
-        }
-
-        Event event = eventService.addAttendeeAndVote(eventId, attendeeAndVoteDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(event);
-    }
-
-
-    private boolean validateEventExists(String eventId) {
-//        if (!eventService.existsById(eventId)) {
-//            throw new EventNotFoundException(eventId);
+//    @Operation(summary = "Add Attendee and Vote", description = "Adds an attendee to the specified event with the specified availability options and votes for them")
+//    @PostMapping("/{eventId}/attendees")
+//    public ResponseEntity<?> addAttendeeAndVote(@PathVariable String eventId, @RequestBody VoteOptionDTO attendeeAndVoteDTO) {
+//        if (validateEventExists(eventId)) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event " + eventId + " not found");
 //        }
-        return eventService.existsById(eventId);
+//
+//        Event event = eventService.addAttendeeAndVote(eventId, attendeeAndVoteDTO);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(event);
+//    }
+//
+//
+//    private boolean validateEventExists(String eventId) {
+//        return eventService.existsById(eventId);
+//    }
+
+    @Operation(summary = "Vote on an Event", description = "Allows a user to vote on a specified event")
+    @PostMapping("/{eventId}/attendees")
+    public ResponseEntity<?> voteOnEvent(@PathVariable Long eventId, @RequestBody NewGuestInEventDTO voteOptionDTO) {
+        try {
+            Event event = eventService.voteOnEvent(eventId, voteOptionDTO);
+            return ResponseEntity.ok(event);
+        } catch (EventNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event with id " + eventId + " does not exist");
+        }
+//        catch (UserNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with id " + userId + " does not exist");
+//        }
+        catch (OptionNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid option selected");
+        }
+//        catch (DuplicateVoteException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User has already voted on this event");
+//        } catch (VotingClosedException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Voting period for this event has ended");
+//        }
     }
 
 
