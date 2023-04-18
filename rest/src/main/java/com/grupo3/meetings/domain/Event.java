@@ -53,6 +53,10 @@ public class Event {
         this.isClosed=false;
     }
 
+    public Event(String reunionDeDiscord) {
+        this.title = reunionDeDiscord;
+    }
+
     public Set<String> getListOfGuests() {
         return listOfGuests;
     }
