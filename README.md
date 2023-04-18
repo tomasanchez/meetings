@@ -9,19 +9,19 @@ Advanced Technologies in Software Construction, as was taught during first semes
 ## Table of Contents
 
 <!-- TOC -->
-
 * [Meetings](#meetings)
-    * [Table of Contents](#table-of-contents)
-    * [Requirements](#requirements)
-    * [Team](#team)
-    * [Continuous Integration](#continuous-integration)
-    * [Development Environment](#development-environment)
-        * [Back-End](#back-end)
-        * [Front-End](#front-end)
-    * [Running Local](#running-local)
-    * [Context](#context)
-    * [License](#license)
-
+  * [Table of Contents](#table-of-contents)
+  * [Requirements](#requirements)
+  * [Team](#team)
+  * [Continuous Integration](#continuous-integration)
+  * [Development Environment](#development-environment)
+    * [Back-End](#back-end)
+    * [API Documentation](#api-documentation)
+    * [Front-End](#front-end)
+  * [Running Local](#running-local)
+  * [Context](#context)
+  * [Planned Architecture](#planned-architecture)
+  * [License](#license)
 <!-- TOC -->
 
 ## Requirements
@@ -73,6 +73,17 @@ Read the official website about [Docker](https://docs.docker.com/get-docker/)
 For more information about technologies used, how to set up development environment, running local,
 read the [`README`](./rest/README.md) file on `rest` package.
 
+### API Documentation
+
+We are using `OpenAPI` to document our API. You will find all available endpoints, request and
+response bodies, along with the status codes that they produce in there. But also you will find.
+
+Also, you can read it [here](rest/API.md).
+
+This bodies as the current version `0.1.0` is not using any specification for building our APIs
+in JSON. However, it is our plan to add [JSON:API](https://jsonapi.org/) in the future.
+
+
 ### Front-End
 
 See [`README`](./web/README.md) file on `web` package.
@@ -94,11 +105,30 @@ At a high level, we should have different systems, with single responsibilities.
 One system should be responsible for managing the workflows of the events, another schedules events,
 and the last one for validating users' credentials.
 
-![Context Diagram](./docs/assets/context-diagram.png)
+![Context Diagram](./docs/assets/context-diagram.svg)
 
-For simplicity, we will use only two systems, one for our web application, and the other for the REST API.
+As for our current version, `v0.1.0`, for simplicity, we are working with this simplified context.
 
-![Context Diagram - Simplified](./docs/assets/context-diagram-simplified.png)
+![Context Diagram - Simplified](./docs/assets/context-diagram-simplified.svg)
+
+## Planned Architecture
+
+We are planning to have a microservices' architecture. We take into account:
+
+1. Scalability
+   - Each service can be scaled independently, allowing for better resource utilization and more efficient scaling.
+2. Resilience:
+   - If a single component fails, the rest of the application can still function.
+3. Technology diversity:
+   - Each service can be developed using a different technology stack, allowing for better specialization and more efficient development.
+4. Deployment:
+   - Each service can be deployed independently, allowing for more efficient deployment and better resource utilization, as well as faster rollback in case of failure, easier to deploy new features.
+
+Overall, a microservices architecture provides more flexibility, scalability,
+and resilience than a monolithic architecture. While it may require more initial setup and
+development, it can ultimately make the application easier to maintain and more efficient.
+
+![Planned Architecture](./docs/assets/planned-architecture.svg)
 
 ## License
 
