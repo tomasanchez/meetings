@@ -1,6 +1,6 @@
 package com.grupo3.meetings.users.core.actions
 
-import com.grupo3.meetings.api.UserDTO
+import com.grupo3.meetings.users.core.domain.UserDTO
 import com.grupo3.meetings.users.core.domain.User
 import com.grupo3.meetings.users.core.domain.UserService
 import com.grupo3.meetings.users.core.domain.userService

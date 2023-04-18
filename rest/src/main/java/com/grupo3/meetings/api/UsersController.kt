@@ -1,8 +1,6 @@
 package com.grupo3.meetings.api
 
-import com.grupo3.meetings.users.core.domain.User
-import com.grupo3.meetings.users.core.domain.UserId
-import com.grupo3.meetings.users.core.domain.UserService
+import com.grupo3.meetings.users.core.domain.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,13 +38,6 @@ class UsersController (
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: UserId): User?{
         return service.getById(id)
-    }
-
-    @Operation(summary = "Delete User",
-            description = "Delete a user by Id",)
-    @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: UserId): User? {
-        return service.delete(id)
     }
 
     @Operation (summary = "Updates a User",

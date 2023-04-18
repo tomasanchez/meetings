@@ -1,6 +1,6 @@
 package com.grupo3.meetings.users.infrastructure
 
-import com.grupo3.meetings.api.UserDTO
+import com.grupo3.meetings.users.core.domain.UserDTO
 import com.grupo3.meetings.users.core.domain.User
 import com.grupo3.meetings.users.core.domain.UserId
 import com.grupo3.meetings.users.core.domain.UserRepository
@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service
 @Service
 @Qualifier("userRepository")
 class InMemoryUserRepository : UserRepository {
-    private val users = mutableListOf<User>(
-            User(0, "email@email.com", "hola")
-    )
-    private var id = users.size
+    private val users = mutableListOf<User>()
+    private var id = 1
 
     override fun createUser(user: UserDTO): User {
         val newUser = User(id++, user.email, user.password)
@@ -22,7 +20,7 @@ class InMemoryUserRepository : UserRepository {
         return newUser
     }
 
-    override fun updateUser(user: User): User? {
+    override fun updateUser(user: User): User {
         val index = users.indexOfFirst { it.id == user.id }
         if (index != -1) {
             users[index] = user
@@ -40,11 +38,5 @@ class InMemoryUserRepository : UserRepository {
 
     override fun getAll(): List<User> {
         return users.toList()
-    }
-
-    override fun deleteUser(id: UserId): User? {
-        val userToRemove = getById(id)
-        users.remove(userToRemove)
-        return userToRemove
     }
 }

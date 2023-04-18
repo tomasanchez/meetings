@@ -1,6 +1,5 @@
 package com.grupo3.meetings.users.core.domain
 
-import com.grupo3.meetings.api.UserDTO
 import com.grupo3.meetings.users.infrastructure.InMemoryUserRepository
 
 interface UserRepository {
@@ -9,7 +8,6 @@ interface UserRepository {
     fun getByEmail(email: String): User?
     fun getById(id: UserId): User?
     fun getAll(): List<User>
-    fun deleteUser(id: UserId): User?
 }
 
 var userRepository = InMemoryUserRepository()

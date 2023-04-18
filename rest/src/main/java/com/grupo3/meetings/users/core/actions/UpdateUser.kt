@@ -1,7 +1,6 @@
 package com.grupo3.meetings.users.core.actions
 
-import com.grupo3.meetings.api.UpdateUserParams
-import com.grupo3.meetings.api.UserDTO
+import com.grupo3.meetings.users.core.domain.UpdateUserParams
 import com.grupo3.meetings.users.core.domain.*
 
 class UpdateUser (userService: UserService, userRepository: UserRepository){

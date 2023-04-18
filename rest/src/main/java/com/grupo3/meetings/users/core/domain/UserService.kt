@@ -1,7 +1,7 @@
 package com.grupo3.meetings.users.core.domain
 
-import com.grupo3.meetings.api.UpdateUserParams
-import com.grupo3.meetings.api.UserDTO
+import com.grupo3.meetings.exceptions.user.UserAlreadyExists
+import com.grupo3.meetings.exceptions.user.UserNotFound
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ class UserService (
     fun create (user: UserDTO): User {
         val existingUser: User? = userRepository.getByEmail(user.email)
         if(existingUser != null){
-            throw Exception("Ya existe un usuario con este mail")
+            throw UserAlreadyExists()
         }
         val hashedPassword = hashService.hash(user.password)
         var hashedUser = user.copy(password = hashedPassword)
@@ -22,7 +22,7 @@ class UserService (
     }
 
     fun update(userId: UserId, userParams: UpdateUserParams): User? {
-        val existingUser: User = userRepository.getById(userId) ?: throw Exception("Usuario no encontrado")
+        val existingUser: User = userRepository.getById(userId) ?: throw UserNotFound()
         val hashedPassword : String
         if(userParams.password != null){
             hashedPassword = hashService.hash(userParams.password)
@@ -34,18 +34,12 @@ class UserService (
         return userRepository.updateUser(updatedUser)
     }
 
-    fun delete(userId: UserId): User? {
-        val existingUser: User = userRepository.getById(userId) ?: throw Exception("Usuario no encontrado")
-        return userRepository.deleteUser(userId)
-    }
-
     fun getAll(): List<User> {
         return userRepository.getAll()
     }
 
     fun getById(userId: UserId): User? {
-        val user = userRepository.getById(userId) ?: throw Exception("Usuario no encontrado")
-        return user
+        return userRepository.getById(userId) ?: throw UserNotFound()
     }
 
 }
