@@ -23,6 +23,10 @@ public class EventDTO {
         this.username = userAdmin;
     }
 
+    public EventDTO(String reunionDeDiscord) {
+        this.nombreDeEvento = reunionDeDiscord;
+    }
+
     public String getNombreDeEvento() {
         return nombreDeEvento;
     }

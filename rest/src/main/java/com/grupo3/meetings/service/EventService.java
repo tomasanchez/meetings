@@ -27,6 +27,7 @@ public class EventService {
         return this.repoEventos.createEvent(eventDTO);
     }
 
+
     public Event addAttendee(Long eventId, AttendeeDTO attendeeDTO) {
         return this.repoEventos.addAttendee(eventId, attendeeDTO);
     }
@@ -68,4 +69,10 @@ public class EventService {
 //        String id= String.valueOf(eventId);
 //        return repoEventos.findEventById(id).get();
     }
+    public Event save(Event evento){
+        this.repoEventos.save(evento);
+        return evento;
+    }
+
+
 }

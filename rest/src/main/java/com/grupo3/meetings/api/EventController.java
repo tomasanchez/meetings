@@ -36,6 +36,12 @@ public class EventController {
         Event event = eventService.createEvent(eventDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(event);
     }
+//        @Operation(summary = "Create Event 2", description = "Creates a new event with the specified options")
+//    @PostMapping("")
+//    public ResponseEntity<EventDTO> createEvent2(@RequestBody EventDTO eventDTO) {
+//        Event event = eventService.createEvent(eventDTO);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(eventDTO);
+//    }
 
     @Operation(summary = "Get Event", description = "Returns the specified event with its associated availability options and votes")
     @GetMapping("/{eventId}")

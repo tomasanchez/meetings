@@ -20,7 +20,9 @@ public class EventRepository {
     }
     public Event createEvent(EventDTO eventDTO) {
         Event nuevo= new  Event(eventDTO);
+        // se guarda en arrayList de eventos
         this.db.add(nuevo);
+        //asigno id
         int id= this.db.indexOf(nuevo);
         nuevo.setId(String.valueOf(id));
         return nuevo;
@@ -53,6 +55,7 @@ public class EventRepository {
     }
 
     public void save(Event event) {
+
     }
 
     public boolean existsById(String eventId) {

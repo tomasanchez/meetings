@@ -3,12 +3,14 @@ package com.grupo3.meetings.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo3.meetings.api.DTO.EventDTO;
 import com.grupo3.meetings.api.EventController;
 import com.grupo3.meetings.domain.Event;
 import com.grupo3.meetings.service.EventService;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,7 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,14 +50,7 @@ public class EventControllerTest {
     ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp() {
-//    contactDTO = new ContactDTO();
-//    contactDTO.setName("name test contact");
-//    contactDTO.setEmail("email test contact");
-//    contactDTO.setPhone(Long.valueOf(1133448899));
-//    contactDTO.setMessage("message test contact");
-//
-//    baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+    public void setUp() {
 //        objectMapper = new ObjectMapper();
     }
 
@@ -75,12 +72,33 @@ public class EventControllerTest {
     }
 
 
-    // --------------------------------------------------------------------------------------------
-    // Internal Methods
-    // --------------------------------------------------------------------------------------------
+//    @Test
+////    @Transactional
+////    @WithUserDetails(USER_CREDENTIALS)
+//    public void  whenPost_User_aValidDTO_then_isCreated() throws Exception {
+//        EventDTO evento = new EventDTO("Reunion de discord");
+//
+//        Mockito.when(service.createEvent(evento)).thenReturn(new Event(evento));
+//
+//        mvc
+//                .perform(MockMvcRequestBuilders.post("/api/events").content(getJSON(evento))
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.status().isCreated())
+//                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.content().string(getJSON(evento)));
+//    }
 
     private String getJSON(List<Event> contactDTO) throws JsonProcessingException {
-          objectMapper = new ObjectMapper();
+        objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(contactDTO);
+    }
+
+    private String getJSON(Event contactDTO) throws JsonProcessingException {
+        objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(contactDTO);
+    }
+    private String getJSON(EventDTO contactDTO) throws JsonProcessingException {
+        objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(contactDTO);
     }
 
