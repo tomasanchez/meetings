@@ -1,22 +1,40 @@
-  :root{
-    --main-color: #8a2b06;
-    --secundary-color: #524242
+:root {
+  --main-color: #8a2b06;
+  --secundary-color: #524242;
+}
+a {
+  font-weight: 500;
+  color: white;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #cbcce3;
+}
 
-  }
-  a {
-    font-weight: 500;
-    color: white;
-    text-decoration: inherit;
-  }
-  a:hover {
-    color: #cbcce3;
-  }
-  
-  body {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 320px;
-    min-height: 100vh;
-  }
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

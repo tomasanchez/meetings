@@ -9,12 +9,15 @@ const Backdrop = (props) => {
 const ModalOverlay = (props) => {
   return (
     <div className={classes.modal}>
+      <div className={classes.scrollbox} >
       <p className=" text-end ">
         <button onClick={props.onClose} className={classes.close}>
           X
         </button>
       </p>
       <div className={classes.content}>{props.children}</div>
+      </div>
+
     </div>
   );
 };

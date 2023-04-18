@@ -8,25 +8,37 @@
   background-color: rgba(0, 0, 0, 0.75);
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 14px;
+  border-top-right-radius:0;
+}
+
+.scrollbox{
+  overflow: auto;
+  max-height: 65vh;
+}
+
 .modal {
   position: fixed;
   top: 20vh;
   left: 5%;
   width: 90%;
   background-color: white;
-  padding: 1.5rem;
+  padding: 1.5rem 0rem 1.5rem 1.5rem;
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   z-index: 30;
   animation: slide-down 300ms ease-out forwards;
-  overflow-y: scroll;
   max-height: 70vh;
+
 }
 
 .close {
   background-color: transparent;
   border: none;
   font-weight: 500;
+  margin-right: 10px;
 }
 
 .close:hover {
