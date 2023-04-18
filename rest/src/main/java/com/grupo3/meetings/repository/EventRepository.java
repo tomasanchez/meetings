@@ -5,6 +5,7 @@ import com.grupo3.meetings.api.DTO.EventDTO;
 import com.grupo3.meetings.domain.Event;
 import com.grupo3.meetings.domain.Option;
 import com.grupo3.meetings.domain.Statistics;
+import com.grupo3.meetings.exceptions.event.EventNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -38,7 +39,9 @@ public class EventRepository {
     }
 
     public Event closeEventVoting(Long eventId) {
-        return (Event) null;
+        Event event= this.db.stream().filter(e -> e.getId().equals(eventId)).findFirst().orElseThrow(() -> new EventNotFoundException(eventId));
+        event.closeEvent2();
+        return event;
     }
 
     public Statistics getStatistics() {
@@ -63,8 +66,10 @@ public class EventRepository {
         return this.db.stream().anyMatch(e -> e.getId().equals(eventId));
     }
 
-    public void addOption(String eventId, Option option) {
-        Event event = this.db.stream().filter(e -> e.getId().equals(eventId)).findFirst().get();
+    public Event addOption(String eventId, Option option) {
+//        Event event = this.db.stream().filter(e -> e.getId().equals(eventId)).findFirst().get();
+        Event event= this.db.stream().filter(e -> e.getId().equals(eventId)).findFirst().orElse(null);
         event.addOption(option);
+        return event;
     }
 }

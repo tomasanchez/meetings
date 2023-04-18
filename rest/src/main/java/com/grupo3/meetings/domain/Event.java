@@ -1,6 +1,7 @@
 package com.grupo3.meetings.domain;
 
 import com.grupo3.meetings.api.DTO.EventDTO;
+import com.grupo3.meetings.api.DTO.OptionDTO;
 import com.grupo3.meetings.exceptions.event.EventIsClosedException;
 import com.grupo3.meetings.exceptions.event.UserNotAdministratorException;
 import com.grupo3.meetings.exceptions.option.NoOptionVotedException;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter @Setter @NoArgsConstructor
 public class Event {
@@ -48,7 +50,7 @@ public class Event {
         this.title = eventDTO.getNombreDeEvento();
         this.description = eventDTO.getDescripcion();
         this.location = eventDTO.getUbicacion();
-        this.listOfOptions= new HashSet<>();
+        this.listOfOptions=eventDTO.getOptions().stream().map(dto->dto.toOptionForEvent()).collect(Collectors.toSet());
         this.listOfGuests= new HashSet<>();
         this.isClosed=false;
     }
@@ -102,6 +104,7 @@ public class Event {
      * @throws UserNotAdministratorException if the user is not the administrator
      * */
     public void addOption(Option option) {
+
         this.listOfOptions.add(option);
     }
 
@@ -234,4 +237,7 @@ public class Event {
         this.isClosed = isClosed;
     }
 
+    public void closeEvent2() {
+        this.isClosed = true;
+    }
 }

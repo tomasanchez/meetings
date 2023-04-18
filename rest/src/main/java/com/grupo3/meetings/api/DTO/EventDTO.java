@@ -1,26 +1,25 @@
 package com.grupo3.meetings.api.DTO;
 
 
-import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class EventDTO {
 
     private String nombreDeEvento;
     private String descripcion;
     private String ubicacion;
-
-    private LocalDate fecha;
-
-    private String hora;
     private String username;
+    List<OptionDTO> options;
 
-    public EventDTO(String nombreDeEvento, String descripcion, String ubicacion, LocalDate fecha, String hora, String userAdmin) {
+    public EventDTO(String nombreDeEvento, String descripcion, String ubicacion, String userAdmin, List<OptionDTO> options) {
         this.nombreDeEvento = nombreDeEvento;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
-        this.fecha = fecha;
-        this.hora = hora;
         this.username = userAdmin;
+        this.options= options;
+//        this.guests= new HashSet<>();
     }
 
     public EventDTO(String reunionDeDiscord) {
@@ -51,15 +50,6 @@ public class EventDTO {
         this.ubicacion = ubicacion;
     }
 
-
-    public String getHora() {
-        return hora;
-    }
-
-    public void setHora(String hora) {
-        this.hora = hora;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -69,11 +59,19 @@ public class EventDTO {
     }
 
 
-    public LocalDate getFecha() {
-        return fecha;
+    public List<OptionDTO> getOptions() {
+        return options;
     }
 
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
+    public void setOptions(List<OptionDTO> options) {
+        this.options = options;
     }
+
+//    public Set<String> getGuests() {
+//        return guests;
+//    }
+//
+//    public void setGuests(Set<String> guests) {
+//        this.guests = guests;
+//    }
 }

@@ -60,19 +60,35 @@ public class EventService {
         return repoEventos.existsById(eventId);
     }
 
-    public void addOption(String eventId, Option option) {
-        this.repoEventos.addOption(eventId, option);
+    public Event addOption(String eventId, Option option) {
+       return  this.repoEventos.addOption(eventId, option);
     }
 
     public Event findEventById(Long eventId) {
         return repoEventos.findEventById(String.valueOf(eventId)).orElseThrow(() -> new EventNotFoundException(String.valueOf(eventId)));
-//        String id= String.valueOf(eventId);
-//        return repoEventos.findEventById(id).get();
     }
     public Event save(Event evento){
         this.repoEventos.save(evento);
         return evento;
     }
 
+    public Event addOptionForUser(String eventId, Option option, String userId) {
+        Event event = repoEventos.findEventById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        Option opcionAVotar= event.getListOfOptions().stream().filter(o -> o.equals(option)).findFirst().orElse(null);
+        if(opcionAVotar==null){
+            this.addOption(eventId,option);
+        }
+        else{
+           opcionAVotar.toggleVote(userId);
+        }
+        return event;
+    }
 
+    public Event updateEvent(Long eventId, EventDTO eventDTO) {
+        Event event = repoEventos.findEventById(String.valueOf(eventId)).orElseThrow(() -> new EventNotFoundException(String.valueOf(eventId)));
+        event.setTitle(eventDTO.getNombreDeEvento());
+        event.setDescription(eventDTO.getDescripcion());
+        event.setLocation(eventDTO.getUbicacion());
+        return event;
+    }
 }

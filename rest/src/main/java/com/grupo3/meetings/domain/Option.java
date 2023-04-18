@@ -1,6 +1,7 @@
 package com.grupo3.meetings.domain;
 
 import com.grupo3.meetings.api.DTO.OptionDTO;
+import com.grupo3.meetings.api.DTO.VoteOptionDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,27 +25,20 @@ public class Option {
         this.time = time;
         this.votes = new HashSet<>();
     }
-//    /**
-//     * Default Option constructor.
-//     * @param day Day of the week
-//     * @param time Time of the day
-//     */
-//    public Option(DayOfWeek day, LocalTime time) {
-//        this.day = day;
-//        this.time = time;
-//        this.votes = new HashSet<>();
-//    }
 
-//    public Option(OptionDTO optionRequest) {
-//        this.day = optionRequest.getDay();
-//        this.time = optionRequest.getTime();
-//        this.votes = new HashSet<>();
-//    }
     public Option(OptionDTO optionRequest) {
-        this.date = optionRequest.getDate();
         this.time = optionRequest.getTime();
-        this.votes = new HashSet<>();
+        this.date = optionRequest.getDate();
+        this.votes= new HashSet<>();
     }
+
+    public Option(VoteOptionDTO optionRequest) {
+        this.time = optionRequest.getOption().getTime();
+        this.votes= new HashSet<>();
+        this.votes.add(optionRequest.getUsername());
+        this.date = optionRequest.getOption().getDate();
+    }
+
 
     /**
      * Returns the number of votes for this option.
@@ -66,30 +60,6 @@ public class Option {
     }
 
 
-//    public String getDay() {
-//        switch (day) {
-//            case MONDAY:
-//                return "lunes";
-//            case TUESDAY:
-//                return "martes";
-//            case WEDNESDAY:
-//                return "miércoles";
-//            case THURSDAY:
-//                return "jueves";
-//            case FRIDAY:
-//                return "viernes";
-//            case SATURDAY:
-//                return "sábado";
-//            case SUNDAY:
-//                return "domingo";
-//            default:
-//                return "error";
-//        }
-//    }
-
-//    public void setDay(DayOfWeek day) {
-//        this.day = day;
-//    }
 
     public LocalTime getTime() {
         return time;
@@ -109,5 +79,9 @@ public class Option {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public boolean equals(Option obj) {
+        return this.date.equals(obj.getDate()) && this.time.equals(obj.getTime());
     }
 }

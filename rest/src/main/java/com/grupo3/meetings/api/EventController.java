@@ -3,6 +3,7 @@ package com.grupo3.meetings.api;
 import com.grupo3.meetings.api.DTO.AttendeeAndVoteDTO;
 import com.grupo3.meetings.api.DTO.EventDTO;
 import com.grupo3.meetings.api.DTO.OptionDTO;
+import com.grupo3.meetings.api.DTO.VoteOptionDTO;
 import com.grupo3.meetings.domain.Event;
 import com.grupo3.meetings.domain.Option;
 import com.grupo3.meetings.domain.Statistics;
@@ -36,12 +37,6 @@ public class EventController {
         Event event = eventService.createEvent(eventDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(event);
     }
-//        @Operation(summary = "Create Event 2", description = "Creates a new event with the specified options")
-//    @PostMapping("")
-//    public ResponseEntity<EventDTO> createEvent2(@RequestBody EventDTO eventDTO) {
-//        Event event = eventService.createEvent(eventDTO);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(eventDTO);
-//    }
 
     @Operation(summary = "Get Event", description = "Returns the specified event with its associated availability options and votes")
     @GetMapping("/{eventId}")
@@ -53,6 +48,18 @@ public class EventController {
         return ResponseEntity.ok(event);
     }
 
+    @Operation(summary = "Update Event", description = "Updates the specified event with new information")
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<?> updateEvent(@PathVariable Long eventId, @RequestBody EventDTO eventDTO) {
+        try {
+            Event event = eventService.updateEvent(eventId, eventDTO);
+            return ResponseEntity.ok(event);
+        } catch (EventNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event with id " + eventId + " does not exist");
+        } catch (UnauthorizedUserException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
     @Operation(summary = "Get All Events", description = "Returns a list of all events created")
     @GetMapping("")
@@ -65,12 +72,12 @@ public class EventController {
     @PostMapping("/{eventId}/options")
     public ResponseEntity<?> addOption(
             @PathVariable String eventId,
-            @RequestBody OptionDTO optionRequest
+            @RequestBody VoteOptionDTO optionRequest
     ) {
         try {
             Option option = new Option(optionRequest);
-            Event evento = eventService.getEvent(Long.parseLong(eventId));
-            eventService.addOption(eventId, option);
+            Event evento = eventService.addOptionForUser(eventId, option, optionRequest.getUserId());
+
             return ResponseEntity.ok(evento);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event with id " + eventId + " does not exist");
