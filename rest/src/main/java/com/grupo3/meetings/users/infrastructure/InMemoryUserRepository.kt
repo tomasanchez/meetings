@@ -1,20 +1,28 @@
 package com.grupo3.meetings.users.infrastructure
 
+import com.grupo3.meetings.api.UserDTO
 import com.grupo3.meetings.users.core.domain.User
 import com.grupo3.meetings.users.core.domain.UserId
 import com.grupo3.meetings.users.core.domain.UserRepository
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Service
 
+@Service
+@Qualifier("userRepository")
 class InMemoryUserRepository : UserRepository {
-    private val users = mutableListOf<User>()
-    private var id = 0
+    private val users = mutableListOf<User>(
+            User(0, "email@email.com", "hola")
+    )
+    private var id = users.size
 
-    override suspend fun createUser(user: User): User {
-        val newUser = user.copy(id = id++)
+    override fun createUser(user: UserDTO): User {
+        val newUser = User(id++, user.email, user.password)
         users.add(newUser)
         return newUser
     }
 
-    override suspend fun updateUser(user: User): User {
+    override fun updateUser(user: User): User? {
         val index = users.indexOfFirst { it.id == user.id }
         if (index != -1) {
             users[index] = user
@@ -22,19 +30,19 @@ class InMemoryUserRepository : UserRepository {
         return user
     }
 
-    override suspend fun getByEmail(email: String): User? {
+    override fun getByEmail(email: String): User? {
         return users.find { it.email == email }
     }
 
-    override suspend fun getById(id: UserId): User? {
+    override fun getById(id: UserId): User? {
         return users.find { it.id == id }
     }
 
-    override suspend fun getAll(): List<User> {
+    override fun getAll(): List<User> {
         return users.toList()
     }
 
-    override suspend fun deleteUser(id: UserId): User? {
+    override fun deleteUser(id: UserId): User? {
         val userToRemove = getById(id)
         users.remove(userToRemove)
         return userToRemove

@@ -1,14 +1,16 @@
 package com.grupo3.meetings.users.core.actions
 
+import com.grupo3.meetings.api.UpdateUserParams
+import com.grupo3.meetings.api.UserDTO
 import com.grupo3.meetings.users.core.domain.*
 
 class UpdateUser (userService: UserService, userRepository: UserRepository){
-    suspend fun invoke ( userId: UserId, updatedUser: User) : User? {
+    suspend fun invoke ( userId: UserId, userParams: UpdateUserParams) : User? {
         val user = userRepository.getById(userId)
         if (user == null){
             //error no hay user
         }
-        return userService.update(updatedUser)
+        return userService.update(userId, userParams)
     }
 }
 
