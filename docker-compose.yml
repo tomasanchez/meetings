@@ -1,0 +1,15 @@
+version: '3'
+services:
+  rest:
+    build:
+      context: rest
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+  web:
+    build: ./web
+    ports:
+      - "5173:5173"
+    depends_on:
+      - rest
+  
