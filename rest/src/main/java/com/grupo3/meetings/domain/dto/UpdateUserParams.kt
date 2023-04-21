@@ -1,3 +1,3 @@
-package com.grupo3.meetings.users.core.domain
+package com.grupo3.meetings.domain.dto
 
 data class UpdateUserParams(val password: String?);
