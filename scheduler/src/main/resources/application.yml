@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Scheduler
+
+springdoc:
+  swagger-ui:
+    path: /scheduler-docs
+  show-actuator: true
+  enable-kotlin: true
