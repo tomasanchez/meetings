@@ -1,0 +1,44 @@
+name: Scheduler Image Build
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+
+  pull_request:
+    branches: [ "dev" ]
+    paths:
+      - 'scheduler/src/**'
+
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build & Push Docker with Jib
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_REPOSITORY: "atsc-meetings"
+        run: |
+          mvn compile com.google.cloud.tools:jib-maven-plugin:3.3.1:build -Dimage=${DOCKER_USER}/${DOCKER_REPOSITORY}:scheduler-pr
