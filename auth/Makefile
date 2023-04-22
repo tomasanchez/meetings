@@ -30,8 +30,7 @@ test: ## Executes tests cases
 	poetry run pytest
 
 cover: ## Executes tests cases with coverage reports
-	poetry run pytest --cov . --junitxml reports/xunit.xml \
-	--cov-report xml:reports/coverage.xml --cov-report term-missing
+	poetry run pytest
 
 lint: ## Applies static analysis, checks and code formatting
 	poetry run pre-commit run --all-files
