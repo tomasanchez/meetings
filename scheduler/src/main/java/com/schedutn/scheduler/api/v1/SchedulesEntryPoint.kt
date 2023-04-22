@@ -5,6 +5,7 @@ import com.schedutn.scheduler.api.DataWrapper
 import com.schedutn.scheduler.api.v1.SchedulesEntryPoint.Companion.SCHEDULES_ENTRY_POINT_URL
 import com.schedutn.scheduler.domain.commands.ScheduleMeeting
 import com.schedutn.scheduler.domain.commands.ToggleVoting
+import com.schedutn.scheduler.domain.commands.VoteForOption
 import com.schedutn.scheduler.domain.events.MeetingScheduled
 import com.schedutn.scheduler.domain.events.OptionVoted
 import com.schedutn.scheduler.domain.models.Meeting
@@ -62,18 +63,7 @@ class SchedulesEntryPoint {
   fun querySchedules(): DataWrapper<Collection<MeetingScheduled>> {
     log.info("Querying schedules")
 
-    val schedules = repository.values.map { schedule ->
-      MeetingScheduled(
-        id = schedule.id!!,
-        voting = schedule.voting,
-        options = schedule.options.map { OptionVoted(date = it.dateTime()) }.toSet(),
-        guests = schedule.guests,
-        organizer = schedule.organizer,
-        title = schedule.event.title,
-        description = schedule.event.description,
-        location = schedule.event.location,
-      )
-    }.toSet()
+    val schedules = repository.values.map(::scheduleToMeetingScheduled).toSet()
 
     return DataWrapper(data = schedules)
   }
@@ -170,6 +160,31 @@ class SchedulesEntryPoint {
       enabledVotes = command.voting)
 
     return DataWrapper(data = scheduleToMeetingScheduled(toggled))
+  }
+
+  @PutMapping("/{id}/options")
+  @ResponseStatus(org.springframework.http.HttpStatus.OK)
+  @Operation(
+    summary = "Commands to Vote for an Option",
+    description = "Adds or Revokes a vote for an option"
+  )
+  fun voteForOption(@PathVariable id: String,
+    @Valid @RequestBody command: VoteForOption
+  ): DataWrapper<MeetingScheduled> {
+    log.info("Voting for option for schedule with id: $id")
+
+    val schedule = repository[id] ?: throw IllegalArgumentException(
+      "Schedule with id: $id not found")
+
+    val option = MeetingOption(
+      date = command.option.date,
+      hour = command.option.hour,
+      minute = command.option.minute,
+    )
+
+    val voted = schedule.vote(option = option, username = command.username)
+
+    return DataWrapper(data = scheduleToMeetingScheduled(voted))
   }
 
   /**
