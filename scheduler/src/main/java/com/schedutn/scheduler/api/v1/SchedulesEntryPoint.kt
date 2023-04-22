@@ -58,7 +58,8 @@ class SchedulesEntryPoint {
   @ResponseStatus(org.springframework.http.HttpStatus.OK)
   @Operation(
     summary = "Query Schedules",
-    description = "Retrieves available schedules"
+    description = "Retrieves available schedules",
+    tags = ["Queries"]
   )
   fun querySchedules(): DataWrapper<Collection<MeetingScheduled>> {
     log.info("Querying schedules")
@@ -72,7 +73,8 @@ class SchedulesEntryPoint {
   @ResponseStatus(org.springframework.http.HttpStatus.OK)
   @Operation(
     summary = "Query Schedule",
-    description = "Retrieves a schedule by id"
+    description = "Retrieves a schedule by id",
+    tags = ["Queries"]
   )
   fun querySchedule(@PathVariable id: String): DataWrapper<MeetingScheduled> {
     log.info("Querying schedule with id: $id")
@@ -105,7 +107,8 @@ class SchedulesEntryPoint {
   @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
   @Operation(
     summary = "Commands to Schedule a Meeting",
-    description = "Creates a new meeting proposal"
+    description = "Creates a new meeting proposal",
+    tags = ["Commands"]
   )
   fun scheduleMeeting(
     @Valid @RequestBody command: ScheduleMeeting): ResponseEntity<DataWrapper<MeetingScheduled>> {
@@ -141,11 +144,12 @@ class SchedulesEntryPoint {
       .body(DataWrapper(data = scheduleToMeetingScheduled(schedule)))
   }
 
-  @PutMapping("/{id}/voting")
+  @PatchMapping("/{id}/voting")
   @ResponseStatus(org.springframework.http.HttpStatus.OK)
   @Operation(
     summary = "Commands to Toggle Voting",
-    description = "Enables or disables voting for a schedule"
+    description = "Enables or disables voting for a schedule",
+    tags = ["Commands"]
   )
   fun toggleVoting(@PathVariable id: String,
     @Valid @RequestBody command: ToggleVoting
@@ -162,11 +166,12 @@ class SchedulesEntryPoint {
     return DataWrapper(data = scheduleToMeetingScheduled(toggled))
   }
 
-  @PutMapping("/{id}/options")
+  @PatchMapping("/{id}/options")
   @ResponseStatus(org.springframework.http.HttpStatus.OK)
   @Operation(
     summary = "Commands to Vote for an Option",
-    description = "Adds or Revokes a vote for an option"
+    description = "Adds or Revokes a vote for an option",
+    tags = ["Commands"]
   )
   fun voteForOption(@PathVariable id: String,
     @Valid @RequestBody command: VoteForOption
