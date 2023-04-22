@@ -1,7 +1,7 @@
 name: Auth DEV Image
 
 on:
-  pull_request:
+  push:
     branches: [ "dev" ]
     paths:
       - 'auth/src/**'
