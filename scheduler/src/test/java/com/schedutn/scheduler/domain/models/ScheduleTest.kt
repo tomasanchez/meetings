@@ -226,4 +226,52 @@ internal class ScheduleTest {
       schedule.schedule(username)
     }
   }
+
+  @Test
+  fun `a schedule can be joined by another user`() {
+    // Given
+    val organizer = "organizer"
+    val username = "guest"
+    val schedule = Schedule(
+      organizer = organizer,
+      event = Meeting(
+        title = "title",
+        location = "location",
+        description = "description",
+      ),
+      options = options,
+      voting = true,
+      date = null,
+    )
+
+    // When
+    val joined = schedule.join(username)
+
+    // Then
+    assertTrue { joined.guests.contains(username) }
+  }
+
+  @Test
+  fun `a schedule cannot be joined by the organizer`() {
+    // Given
+    val organizer = "organizer"
+    val schedule = Schedule(
+      organizer = organizer,
+      event = Meeting(
+        title = "title",
+        location = "location",
+        description = "description",
+      ),
+      options = options,
+      voting = true,
+      date = null,
+    )
+
+    //  When
+    val joined = schedule.join(organizer)
+
+    // Then
+    assertFalse { joined.guests.contains(organizer) }
+  }
+
 }
