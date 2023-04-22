@@ -7,16 +7,17 @@ import jakarta.validation.constraints.NotEmpty
 import java.time.LocalDateTime
 
 /**
- * Meeting scheduled Event
+ * Event for when a Meeting is Scheduled
  *
- * @property id
- * @property organizer
- * @property title
- * @property description
- * @property location
- * @property date
- * @property guests
- * @property options
+ * @property id Event Id
+ * @property organizer The username of responsible for the event
+ * @property voting Whether mode voting is enabled
+ * @property title Event name
+ * @property description More details about the event
+ * @property location Where the event takes place
+ * @property date When the event takes place
+ * @property guests Invited users' usernames
+ * @property options Options to schedule the event
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Meeting Scheduled")
@@ -29,6 +30,10 @@ data class MeetingScheduled(
   @JsonProperty("organizer")
   @Schema(description = "Owner's username of the event", example = "johndoe", required = true)
   val organizer: String,
+
+  @JsonProperty("voting")
+  @Schema(description = "Whether mode voting is enabled", example = "true")
+  val voting: Boolean = false,
 
   @JsonProperty("title")
   @Schema(description = "Event Name", example = "Event Name", required = true)

@@ -4,6 +4,7 @@ package com.schedutn.scheduler.api.v1
 import com.schedutn.scheduler.api.DataWrapper
 import com.schedutn.scheduler.api.v1.SchedulesEntryPoint.Companion.SCHEDULES_ENTRY_POINT_URL
 import com.schedutn.scheduler.domain.commands.ScheduleMeeting
+import com.schedutn.scheduler.domain.commands.ToggleVoting
 import com.schedutn.scheduler.domain.events.MeetingScheduled
 import com.schedutn.scheduler.domain.events.OptionVoted
 import com.schedutn.scheduler.domain.models.Meeting
@@ -148,6 +149,27 @@ class SchedulesEntryPoint {
 
     return ResponseEntity.created(uri)
       .body(DataWrapper(data = scheduleToMeetingScheduled(schedule)))
+  }
+
+  @PutMapping("/{id}/voting")
+  @ResponseStatus(org.springframework.http.HttpStatus.OK)
+  @Operation(
+    summary = "Commands to Toggle Voting",
+    description = "Enables or disables voting for a schedule"
+  )
+  fun toggleVoting(@PathVariable id: String,
+    @Valid @RequestBody command: ToggleVoting
+  ): DataWrapper<MeetingScheduled> {
+    log.info("Toggling voting for schedule with id: $id")
+
+    val schedule = repository[id] ?: throw IllegalArgumentException(
+      "Schedule with id: $id not found")
+
+    val toggled = schedule.toggleVoting(
+      username = command.username,
+      enabledVotes = command.voting)
+
+    return DataWrapper(data = scheduleToMeetingScheduled(toggled))
   }
 
   /**
