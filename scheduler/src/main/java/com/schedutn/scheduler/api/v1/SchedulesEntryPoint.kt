@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
@@ -190,6 +191,25 @@ class SchedulesEntryPoint {
     val voted = schedule.vote(option = option, username = command.username)
 
     return DataWrapper(data = scheduleToMeetingScheduled(voted))
+  }
+
+  @PostMapping("/{id}/relationships/guests")
+  @ResponseStatus(org.springframework.http.HttpStatus.OK)
+  @Operation(
+    summary = "Commands to Join a Meeting",
+    description = "Adds a guest to a meeting",
+    tags = ["Commands"]
+  )
+  fun joinMeeting(@PathVariable id: String): DataWrapper<MeetingScheduled> {
+    log.info("Joining meeting for schedule with id: $id")
+    val schedule = repository[id] ?: throw IllegalArgumentException(
+      "Schedule with id: $id not found")
+
+    val auth = SecurityContextHolder.getContext().authentication.principal.toString()
+
+    val joined = schedule.copy(guests = schedule.guests.plus(auth))
+
+    return DataWrapper(data = scheduleToMeetingScheduled(joined))
   }
 
   /**
