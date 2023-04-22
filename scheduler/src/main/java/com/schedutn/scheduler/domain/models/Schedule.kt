@@ -83,6 +83,7 @@ data class Schedule(
    *
    * @param username user who wants to set the date
    * @return new schedule with the date set
+   * @throws IllegalScheduleException if user is not the organizer
    */
   fun schedule(username: String): Schedule {
 
@@ -102,6 +103,7 @@ data class Schedule(
    * @param username user who wants to enable or disable voting
    * @param enabledVotes whether voting is enabled or not
    * @return new schedule with the new voting policy
+   * @throws IllegalScheduleException if user is not the organizer
    */
   fun toggleVoting(username: String, enabledVotes: Boolean): Schedule {
 
@@ -110,6 +112,26 @@ data class Schedule(
 
     return copy(
       voting = enabledVotes,
+      version = version + 1
+    )
+  }
+
+  /**
+   * Adds a guest to the schedule.
+   *
+   * @param username username of the guest
+   * @return new schedule with the guest added
+   */
+  fun join(username: String): Schedule {
+
+    if (guests.contains(username))
+      return this
+
+    if (username == organizer)
+      return this
+
+    return copy(
+      guests = guests.plus(username),
       version = version + 1
     )
   }
