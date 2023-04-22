@@ -1,0 +1,40 @@
+name: Auth DEV Image
+
+on:
+  push:
+    branches: [ "dev" ]
+    paths:
+      - 'auth/src/**'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./auth
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+      - name: Build the Docker image
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_REPOSITORY: "atsc-meetings"
+        run: |
+          docker build . --file Dockerfile --tag $DOCKER_USER/$DOCKER_REPOSITORY:auth-dev
+
+      - name: Docker Push
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_REPOSITORY: "atsc-meetings"
+        run: |
+          docker push $DOCKER_USER/$DOCKER_REPOSITORY:auth-dev

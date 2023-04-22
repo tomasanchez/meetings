@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "auth"
+version = "0.1.0"
+description = ""
+authors = ["Tomas Sanchez <tosanchez@frba.utn.edu.ar>"]
+readme = "README.md"
+packages = [{ include = "auth", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = { version = "~0.95.0", extras = ["all"] }
+uvicorn = { version = "^0.21.0", extras = ["standard"] }
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = "tests"
+python_files = "test_*.py"
+junit_family = "xunit1"
+log_cli = false
+log_level = "DEBUG"
