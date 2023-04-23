@@ -65,12 +65,15 @@ class TestRepository:
         # then
         assert user not in user_repository.find_all()
 
-    def test_repository_does_not_find_user_by_username(self, user_repository: UserRepository):
+    def test_none_when_not_found(self,
+                                 user_repository: UserRepository):
         """
-        Test that the repository does not find a user by its username if it does not exist.
+        Test that the repository does not find a user by its username if it does
+         not exist.
         """
         # when
-        found_user = user_repository.find_by_username("a user that does not exists")
+        found_user = user_repository.find_by_username("a user that does "
+                                                      "not exists")
 
         # then
         assert found_user is None
