@@ -74,6 +74,13 @@ class BcryptPasswordEncoder(PasswordEncoder):
         """
 
         try:
-            self.pwd_context.verify(password, encoded_password)
-        except ValueError | TypeError as e:
+            result = self.pwd_context.verify(password, encoded_password)
+
+            if result is None:
+                return
+
+            if isinstance(result, bool) and not result:
+                raise ValueError("Password does not match.")
+
+        except (ValueError, TypeError) as e:
             raise InvalidCredentialsError("Password does not match.") from e
