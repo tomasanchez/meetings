@@ -2,8 +2,28 @@
  This module contains the models used by the Auth service.
 """
 from enum import Enum
+import uuid
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, validator
+
+
+def object_id() -> str:
+    """
+    Id generator ObjectID
+    """
+    return str(uuid.uuid4())
+
+
+class BaseEntity(BaseModel):
+    """
+    Base Model
+    """
+    id: str = Field(default_factory=object_id, alias="_id")
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        anystr_strip_whitespace = True
 
 
 class Role(str, Enum):
@@ -14,11 +34,10 @@ class Role(str, Enum):
     USER = "user"
 
 
-class User(BaseModel):
+class User(BaseEntity):
     """User model.
     This class represents a user.
     """
-    id: str
     username: str
     email: EmailStr
     password: str
@@ -28,5 +47,6 @@ class User(BaseModel):
     is_active: bool = True
     role: Role = Role.USER
 
-    class Config:
-        orm_mode = True
+    @validator("username")
+    def lowercase_username(cls, v, **kwargs):
+        return v.lower()

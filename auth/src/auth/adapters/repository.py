@@ -4,11 +4,9 @@ This module abstracts the Database layer with a Repository pattern.
 import abc
 from typing import Generic, TypeVar
 
-from pydantic import BaseModel
+from auth.domain.models import BaseEntity, User
 
-from auth.domain.models import User
-
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T", bound=BaseEntity)
 
 
 class ReadOnlyRepository(abc.ABC):
