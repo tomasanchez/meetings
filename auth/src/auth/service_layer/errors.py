@@ -9,7 +9,7 @@ class InvalidCredentialsError(Exception):
     pass
 
 
-class UserAlreadyExistsError(Exception):
+class IllegalUserError(Exception):
     """
     Raised when a user wants to use a taken username or taken email.
     """

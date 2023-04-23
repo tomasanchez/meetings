@@ -7,6 +7,7 @@ from starlette.testclient import TestClient
 from auth.adapters.repository import InMemoryUserRepository, UserRepository
 from auth.app.asgi import get_application
 from auth.service_layer.password_encoder import BcryptPasswordEncoder, PasswordEncoder
+from auth.service_layer.register import RegisterService
 
 
 @pytest.fixture(name="test_client")
@@ -40,3 +41,20 @@ def fixture_password_encoder() -> PasswordEncoder:
         PasswordEncoder: A password encoder.
     """
     return BcryptPasswordEncoder()
+
+
+@pytest.fixture(name="register_service")
+def fixture_register_service(
+        user_repository: UserRepository, password_encoder: PasswordEncoder
+) -> RegisterService:
+    """
+    Create a register service.
+
+    Args:
+        user_repository (UserRepository): A user repository.
+        password_encoder (PasswordEncoder): A password encoder.
+
+    Returns:
+        RegisterService: A register service.
+    """
+    return RegisterService(user_repository=user_repository, password_encoder=password_encoder)
