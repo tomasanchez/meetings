@@ -7,6 +7,7 @@ Resources:
 from fastapi import APIRouter
 
 from auth.entrypoints import actuator
+from auth.entrypoints.v1 import users
 
 root_router = APIRouter()
 api_router_v1 = APIRouter(prefix="/api/v1", tags=["v1"])
@@ -15,3 +16,4 @@ api_router_v1 = APIRouter(prefix="/api/v1", tags=["v1"])
 root_router.include_router(actuator.router)
 
 # API Routers
+api_router_v1.include_router(users.router)
