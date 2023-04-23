@@ -27,7 +27,7 @@ pip install poetry
 1. Clone the repository
 
 ```bash
-git clone "git@github.com:tomasanchez/pymeet.git"
+git clone "git@github.com:tomasanchez/grupo-3-tacs.git"
 ```
 
 2. Install the dependencies.
@@ -35,7 +35,7 @@ git clone "git@github.com:tomasanchez/pymeet.git"
 If you don't start in a virtual environment poetry will create one for you.
 
 ```bash
-cd pymeet/pymeet-rest && poetry install
+cd grupo-3-tacs/auth && poetry install
 ```
 
 Note that poetry doesn't activate the virtual environment for you. You have to do it manually.
@@ -54,10 +54,10 @@ poetry shell
 1. Run:
 
 ```bash
-poetry run python -m pymeet.main
+poetry run python -m auth.main
 ```
 
-2. Go to http://localhost:8000/docs to see the API documentation.
+2. Go to http://127.0.0.0:8000/docs to see the API documentation.
 
 ## Running Tests
 
