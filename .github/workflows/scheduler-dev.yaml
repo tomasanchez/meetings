@@ -1,14 +1,8 @@
-name: Scheduler Image Build
+name: Scheduler DEV Image
 
 on:
   push:
-    branches: [ "main", "dev" ]
-
-  pull_request:
     branches: [ "dev" ]
-    paths:
-      - 'scheduler/src/**'
-
 
 jobs:
 
@@ -41,4 +35,4 @@ jobs:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
           DOCKER_REPOSITORY: "atsc-meetings"
         run: |
-          mvn compile com.google.cloud.tools:jib-maven-plugin:3.3.1:build -Dimage=${DOCKER_USER}/${DOCKER_REPOSITORY}:scheduler-pr
+          mvn compile com.google.cloud.tools:jib-maven-plugin:3.3.1:build -Dimage=${DOCKER_USER}/${DOCKER_REPOSITORY}:scheduler-dev

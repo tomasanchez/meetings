@@ -1,7 +1,9 @@
 # Meetings
 
-[![REST API Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest.yml)
-[![REST Image Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest-image.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/rest-image.yml)
+[![Auth Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth.yml)
+[![Auth DEV Image](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth-dev.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth-dev.yml)
+[![Scheduler Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler.yml)
+[![Scheduler Image Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler-image.yaml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler-image.yaml)
 [![WEB Image Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/web-image.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/web-image.yml)
 
 Meetings is an application developed by `Group-3` during the course
@@ -10,19 +12,21 @@ Advanced Technologies in Software Construction, as was taught during first semes
 ## Table of Contents
 
 <!-- TOC -->
+
 * [Meetings](#meetings)
-  * [Table of Contents](#table-of-contents)
-  * [Requirements](#requirements)
-  * [Team](#team)
-  * [Continuous Integration](#continuous-integration)
-  * [Development Environment](#development-environment)
-    * [Back-End](#back-end)
-    * [API Documentation](#api-documentation)
-    * [Front-End](#front-end)
-  * [Running Local](#running-local)
-  * [Context](#context)
-  * [Planned Architecture](#planned-architecture)
-  * [License](#license)
+    * [Table of Contents](#table-of-contents)
+    * [Requirements](#requirements)
+    * [Team](#team)
+    * [Continuous Integration](#continuous-integration)
+    * [Development Environment](#development-environment)
+        * [Back-End](#back-end)
+        * [API Documentation](#api-documentation)
+        * [Front-End](#front-end)
+    * [Running Local](#running-local)
+    * [Context](#context)
+    * [Planned Architecture](#planned-architecture)
+    * [License](#license)
+
 <!-- TOC -->
 
 ## Requirements
@@ -84,7 +88,6 @@ Also, you can read it [here](rest/API.md).
 This bodies as the current version `0.1.0` is not using any specification for building our APIs
 in JSON. However, it is our plan to add [JSON:API](https://jsonapi.org/) in the future.
 
-
 ### Front-End
 
 See [`README`](./web/README.md) file on `web` package.
@@ -117,13 +120,15 @@ As for our current version, `v0.1.0`, for simplicity, we are working with this s
 We are planning to have a microservices' architecture. We take into account:
 
 1. Scalability
-   - Each service can be scaled independently, allowing for better resource utilization and more efficient scaling.
+    - Each service can be scaled independently, allowing for better resource utilization and more efficient scaling.
 2. Resilience:
-   - If a single component fails, the rest of the application can still function.
+    - If a single component fails, the rest of the application can still function.
 3. Technology diversity:
-   - Each service can be developed using a different technology stack, allowing for better specialization and more efficient development.
+    - Each service can be developed using a different technology stack, allowing for better specialization and more
+      efficient development.
 4. Deployment:
-   - Each service can be deployed independently, allowing for more efficient deployment and better resource utilization, as well as faster rollback in case of failure, easier to deploy new features.
+    - Each service can be deployed independently, allowing for more efficient deployment and better resource
+      utilization, as well as faster rollback in case of failure, easier to deploy new features.
 
 Overall, a microservices architecture provides more flexibility, scalability,
 and resilience than a monolithic architecture. While it may require more initial setup and

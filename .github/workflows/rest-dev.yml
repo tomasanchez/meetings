@@ -1,10 +1,7 @@
-name: REST Image Build
+name: REST DEV Image
 
 on:
   push:
-    branches: [ "main", "dev" ]
-
-  pull_request:
     branches: [ "dev" ]
     paths:
       - 'rest/src/**'
@@ -32,11 +29,11 @@ jobs:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
           DOCKER_REPOSITORY: "atsc-meetings"
         run: |
-          docker build . --file Dockerfile --tag $DOCKER_USER/$DOCKER_REPOSITORY:rest-latest
+          docker build . --file Dockerfile --tag $DOCKER_USER/$DOCKER_REPOSITORY:rest-dev
 
       - name: Docker Push
         env:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
           DOCKER_REPOSITORY: "atsc-meetings"
-        run: | 
-          docker push $DOCKER_USER/$DOCKER_REPOSITORY:rest-latest
+        run: |
+          docker push $DOCKER_USER/$DOCKER_REPOSITORY:rest-dev

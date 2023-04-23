@@ -12,6 +12,9 @@ on:
 
   pull_request:
     branches: [ "main", "dev" ]
+    paths:
+      - 'auth/src/**'
+      - 'auth/tests/**'
 
 permissions:
   contents: read
