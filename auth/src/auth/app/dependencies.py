@@ -6,6 +6,8 @@ from typing import Annotated
 from fastapi import Depends
 
 from auth.adapters.repository import InMemoryUserRepository, UserRepository
+from auth.service_layer.auth import AuthService
+from auth.service_layer.jwt import JwtService
 from auth.service_layer.password_encoder import BcryptPasswordEncoder, PasswordEncoder
 from auth.service_layer.register import RegisterService
 
@@ -44,3 +46,29 @@ def get_register_service(user_repository: UserRepositoryDependency,
 
 
 RegisterDependency = Annotated[RegisterService, Depends(get_register_service)]
+
+
+def get_jwt_service() -> JwtService:
+    """
+    Dependency that returns a JwtService instance.
+    """
+    return JwtService()
+
+
+JwtServiceDependency = Annotated[JwtService, Depends(get_jwt_service)]
+
+
+def get_auth_service(user_repository: UserRepositoryDependency,
+                     jwt_service: JwtServiceDependency,
+                     encoder: PasswordEncoderDependency) -> AuthService:
+    """
+    Dependency that returns a RegisterService instance.
+    """
+    return AuthService(
+        user_repository=user_repository,
+        encoder=encoder,
+        jwt_service=jwt_service,
+    )
+
+
+AuthDependency = Annotated[AuthService, Depends(get_auth_service)]
