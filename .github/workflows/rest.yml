@@ -36,3 +36,9 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+      - name: Build the Docker image
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_REPOSITORY: "atsc-meetings"
+        run: |
+          docker build . --file Dockerfile --tag $DOCKER_USER/$DOCKER_REPOSITORY:rest-dev
