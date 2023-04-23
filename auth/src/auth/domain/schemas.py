@@ -30,6 +30,13 @@ T = TypeVar("T", bound=CamelCaseModel)
 
 class ResponseModel(GenericModel, Generic[T], CamelCaseModel):
     """
-    A base response model.
+    A response wrapper for a single resource.
     """
-    data: T = Field(..., description="The response data.")
+    data: T = Field(description="The response data.")
+
+
+class ResponseModels(GenericModel, Generic[T], CamelCaseModel):
+    """
+    A response wrapper for a collection of resources.
+    """
+    data: list[T] = Field(description="The response data.")
