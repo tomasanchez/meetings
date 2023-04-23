@@ -1,4 +1,4 @@
-name: Scheduler Image Build
+name: Scheduler DEV Image
 
 on:
   push:

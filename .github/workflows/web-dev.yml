@@ -1,4 +1,4 @@
-name: WEB Image Build
+name: WEB DEV Image
 
 on:
   push:

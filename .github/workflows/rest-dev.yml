@@ -1,4 +1,4 @@
-name: REST Image Build
+name: REST DEV Image
 
 on:
   push:
