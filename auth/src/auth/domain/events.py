@@ -1,6 +1,8 @@
 """
 Events that may occur in the application.
 """
+import datetime
+
 from pydantic import EmailStr, Field
 
 from auth.domain.models import Role
@@ -28,3 +30,15 @@ class UserRegistered(CamelCaseModel):
     profile_picture: str | None = Field(title="Profile Picture URL", description="The user profile picture.",
                                         example="https://example.com/profile.jpg")
     is_active: bool | None = Field(title="Is Active", description="The user is active.", example=True)
+
+
+class UserAuthenticated(CamelCaseModel):
+    """
+    Event that occurs when a user is authenticated.
+    """
+    id: str = Field(description="The user id.", example="1")
+    username: str = Field(description="The user username.", example="johndoe")
+    email: EmailStr = Field(description="The user email.", example="john@doe.mail")
+    role: Role = Field(description="The user role.", example=Role.USER)
+    exp: datetime.datetime | None = Field(description="The expiration date of the token.",
+                                          example="2021-01-01T00:00:00Z")
