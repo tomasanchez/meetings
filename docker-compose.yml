@@ -1,11 +1,20 @@
 version: '3'
 services:
-  rest:
+  auth:
     build:
-      context: rest
+      context: auth
       dockerfile: Dockerfile
     ports:
+      - "8000:8000"
+  scheduler:
+    image: tosanchez/atsc-meetings:scheduler-dev
+    environment:
+      - SPRING_APPLICATION_NAME=Scheduler
+      - SPRINGDOC_SWAGGER_UI_PATH=/scheduler-docs
+    ports:
       - "8080:8080"
+    depends_on:
+      - auth
   web:
     build:
       context: web
@@ -13,4 +22,5 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - rest
+      - auth
+      - scheduler
