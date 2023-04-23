@@ -42,3 +42,14 @@ class UserAuthenticated(CamelCaseModel):
     role: Role = Field(description="The user role.", example=Role.USER)
     exp: datetime.datetime | None = Field(description="The expiration date of the token.",
                                           example="2021-01-01T00:00:00Z")
+
+
+class TokenGenerated(CamelCaseModel):
+    """
+    Event that occurs when a token is generated.
+    """
+    token: str = Field(description="A JSON Web Token",
+                       example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJlbWFpbCI6ImpvaG5kb"
+                               "2VAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJleHAiOjE2MjUwMzg4MjB9.5Y2QJ7kx1yD6Bh0jzH2QX9Y8cZJ"
+                               "6vZl6YpKj1Z8JUWU")
+    type: str = Field(description="Token Type", example="Bearer", default="Bearer")
