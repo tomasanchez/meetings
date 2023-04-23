@@ -3,8 +3,8 @@
 [![Auth Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth.yml)
 [![Auth DEV Image](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth-dev.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/auth-dev.yml)
 [![Scheduler Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler.yml)
-[![Scheduler Image Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler-image.yaml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler-image.yaml)
-[![WEB Image Build](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/web-image.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/web-image.yml)
+[![Scheduler DEV Image](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler-dev.yaml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/scheduler-dev.yaml)
+[![WEB DEV Image](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/web-dev.yml/badge.svg)](https://github.com/tomasanchez/grupo-3-tacs/actions/workflows/web-dev.yml)
 
 Meetings is an application developed by `Group-3` during the course
 Advanced Technologies in Software Construction, as was taught during first semester of 2023.
