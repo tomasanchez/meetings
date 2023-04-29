@@ -1,8 +1,7 @@
 import React, { useRef, useState, useContext } from "react";
-import calendarIcon from "../assets/calendar.png";
 import classes from "./LoginPage.module.css";
-import { Button } from "../components/UI/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { Button, BrandIcon } from "../components/UI";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../store/auth-context";
 
 export const LoginPage = () => {
@@ -72,16 +71,7 @@ export const LoginPage = () => {
     <>
       <div className={`${classes.containerLogin} d-flex flex-column`}>
         <nav className={`${classes["nav-login"]} position-absolute nav-login`}>
-          <div className={classes.brand}>
-            <Link to={"/"}>
-              <h1>Meetings</h1>
-            </Link>
-            <img
-              src={calendarIcon}
-              className={classes.icon}
-              alt="A beautyfull calendar Icon "
-            />
-          </div>
+          <BrandIcon />
         </nav>
 
         <div className={`${classes["background-max"]} d-none d-md-block`}></div>
