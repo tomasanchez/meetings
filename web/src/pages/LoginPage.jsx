@@ -9,9 +9,13 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const loginInput = useRef();
   const passwordInput = useRef();
+  const repeatPassword = useRef();
+  const [isLogin, setisLogin] = useState(true);
   const [errorLogin, seterrorLogin] = useState(false);
+  const [errorRegister, seterrorRegister] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = (event) => {
+    event.preventDefault()
     if (passwordInput.current.value == "" || loginInput.current.value == "") {
       seterrorLogin(true);
       return;
@@ -23,10 +27,11 @@ export const LoginPage = () => {
 
   const resetErrors = () => {
     if (errorLogin) seterrorLogin(false);
+    if (errorRegister) seterrorLogin(false);
   };
 
   const loginForm = (
-    <form className="my-3">
+    <form className="my-3" onSubmit={handleLogin} >
       <div className="mb-4">
         <label htmlFor="username" className="form-label opacity-75 mb-0">
           Usuario
@@ -36,15 +41,13 @@ export const LoginPage = () => {
           className={`${classes["form-control-login"]} form-control`}
           id="username"
           name="username"
+          required
           onBlur={resetErrors}
           ref={loginInput}
         />
       </div>
       <div className="mb-4">
-        <label
-          htmlFor="exampleInputPassword1"
-          className="form-label opacity-75 mb-0"
-        >
+        <label htmlFor="password" className="form-label opacity-75 mb-0">
           Contraseña
         </label>
         <input
@@ -52,9 +55,21 @@ export const LoginPage = () => {
           className={`${classes["form-control-login"]} form-control`}
           id="password"
           name="password"
+          required
           onBlur={resetErrors}
           ref={passwordInput}
         />
+        <span>
+          ¿Eres nuevo?{" "}
+          <span
+            onClick={() => {
+              setisLogin(false);
+            }}
+            className={`${classes["link_register"]}`}
+          >
+            Registrate acá
+          </span>
+        </span>
       </div>
       {errorLogin && (
         <p className=" text-danger ">
@@ -62,7 +77,69 @@ export const LoginPage = () => {
         </p>
       )}
       <div className="d-flex justify-content-center ">
-        <Button onClick={handleLogin}>Ingresar</Button>
+        <Button type='submit'>Ingresar</Button>
+      </div>
+    </form>
+  );
+
+  const handleRegister = (event) => {
+    event.preventDefault();
+    if (passwordInput.current.value !== repeatPassword.current.value) {
+      seterrorRegister(true);
+      return;
+    }
+
+    authCtx.login(loginInput.current.value);
+    navigate("/");
+  };
+
+  const registerForm = (
+    <form className="my-3" onSubmit={handleRegister} >
+      <div className="mb-4">
+        <label htmlFor="username" className="form-label opacity-75 mb-0">
+          Usuario
+        </label>
+        <input
+          type="email"
+          required
+          placeholder="Ej: tacs@utn.edu.ar"
+          className={`${classes["form-control-login"]} form-control`}
+          id="username"
+          name="username"
+          ref={loginInput}
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="password" className="form-label opacity-75 mb-0">
+          Contraseña
+        </label>
+        <input
+          type="password"
+          required
+          className={`${classes["form-control-login"]} form-control`}
+          id="password"
+          name="password"
+          ref={passwordInput}
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="repeatpassword" className="form-label opacity-75 mb-0">
+          Repetí la contraseña
+        </label>
+        <input
+          type="password"
+          className={`${classes["form-control-login"]} form-control`}
+          id="repeatpassword"
+          required
+          name="repeatpassword"
+          ref={repeatPassword}
+        />
+        {errorRegister && (
+          <span className="text-danger"> Las contraseñas no coinciden </span>
+        )}
+      </div>
+      <div className="d-flex justify-content-center ">
+        <Button type='submit'>Registrarse</Button>
       </div>
     </form>
   );
@@ -82,8 +159,8 @@ export const LoginPage = () => {
           <h3 className="h3">
             ¡Hola! Para seguir, ingresá tu usuario y contraseña
           </h3>
-
-          {loginForm}
+          {isLogin && loginForm}
+          {!isLogin && registerForm}
         </div>
       </div>
     </>

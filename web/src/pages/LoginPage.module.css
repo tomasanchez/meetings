@@ -73,3 +73,15 @@
     padding: 1.5rem 4rem;
   }
 }
+
+span .link_register{
+  color: black !important;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+span .link_register:hover {
+  color: black !important;
+  opacity: 0.6;
+  cursor: pointer;
+}
