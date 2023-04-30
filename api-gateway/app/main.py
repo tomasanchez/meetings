@@ -1,6 +1,10 @@
-from fastapi import FastAPI
+"""
+Main module of the FastAPI application.
+"""
 
-app = FastAPI()
+from app.asgi import get_application
+
+app = get_application()
 
 
 @app.get("/")
