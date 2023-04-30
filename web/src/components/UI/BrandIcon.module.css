@@ -1,0 +1,13 @@
+.brand {
+  height: 100%;
+  color: white;
+  display: flex;
+  font-family: "Raleway", sans-serif;
+  font-size: 14px;
+  align-items: center;
+}
+
+.icon {
+  max-height: 40px;
+  margin-left: 10px;
+}
