@@ -12,10 +12,21 @@ from auth.domain.schemas import ResponseModel
 router = APIRouter(tags=["Actuator"])
 
 
+@router.get("/readiness",
+            status_code=HTTP_200_OK,
+            summary="Readiness Check",
+            )
+async def readiness() -> ResponseModel[HealthChecked]:
+    """
+    Verifies if the application is ready to receive requests.
+    """
+    return ResponseModel(data=HealthChecked())
+
+
 @router.get("/health", status_code=HTTP_200_OK, )
 async def health() -> ResponseModel[HealthChecked]:
     """
-    Health check endpoint.
+    Verifies if the application is running.
     """
     return ResponseModel(data=HealthChecked())
 
