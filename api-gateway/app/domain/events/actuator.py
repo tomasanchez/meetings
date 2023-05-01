@@ -12,14 +12,15 @@ class StatusChecked(CamelCaseModel):
     The event is raised when the status of the actuator is checked.
     """
 
-    name: str = Field(..., description="The name of the service.", example="redis")
-    status: ServiceStatus = Field(..., description="The status of the service.", example=ServiceStatus.ONLINE)
+    name: str = Field(description="The name of the service.", example="redis")
+    status: ServiceStatus = Field(description="The status of the service.", example=ServiceStatus.ONLINE)
 
 
 class ReadinessChecked(CamelCaseModel):
     """
     The event is raised when the readiness of the actuator is checked.
     """
-    status: ServiceStatus = Field(..., description="The status of the service.", example=ServiceStatus.ONLINE)
-    services: list[StatusChecked] = Field(..., description="The list of services.",
-                                          example=[StatusChecked(name="redis", status=ServiceStatus.ONLINE)])
+    status: ServiceStatus = Field(description="The status of the service.", example=ServiceStatus.ONLINE)
+    services: list[StatusChecked] = Field(description="The list of services.",
+                                          example=[StatusChecked(name="redis", status=ServiceStatus.ONLINE)],
+                                          default_factory=list)
