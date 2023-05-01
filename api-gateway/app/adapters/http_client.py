@@ -150,9 +150,9 @@ class AiohttpClient(AsyncHttpClient):
             object instance.
     """
 
-    def __init__(self):
+    def __init__(self, aiohttp_client: aiohttp.ClientSession | None = None):
         self.sem: Optional[asyncio.Semaphore] = None
-        self.aiohttp_client: Optional[aiohttp.ClientSession] = None
+        self.aiohttp_client: Optional[aiohttp.ClientSession] = aiohttp_client
         self.log: logging.Logger = logging.getLogger(__name__)
 
     def get_aiohttp_client(self) -> aiohttp.ClientSession:
