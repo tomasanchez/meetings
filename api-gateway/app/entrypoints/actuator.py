@@ -31,7 +31,7 @@ async def readiness(services: ServiceProvider, client: AsyncHttpClientDependency
     readiness_checked = ReadinessChecked(status=ServiceStatus.ONLINE, services=services_status)
 
     if any([service for service in services_status if service.status == ServiceStatus.OFFLINE]):
-        raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail=readiness_checked.json())
+        raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail=readiness_checked.dict())
 
     return ResponseModel(data=readiness_checked)
 
