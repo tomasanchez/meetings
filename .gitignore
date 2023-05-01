@@ -145,7 +145,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 ssap_bill_of_materials/
-requirements.txt
 MANIFEST
 
 # PyInstaller
