@@ -15,6 +15,14 @@ services:
       - "8080:8080"
     depends_on:
       - auth
+  gateway:
+    build:
+      context: api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - 'GATEWAY_SERVICES=[{"name": "Auth", "base_url": "http://auth:8000"}]'
   web:
     build:
       context: web
