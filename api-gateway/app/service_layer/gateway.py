@@ -6,9 +6,9 @@ from typing import Any
 from fastapi import HTTPException
 from starlette.status import HTTP_200_OK, HTTP_503_SERVICE_UNAVAILABLE
 
-from adapters.http_client import AsyncHttpClient
-from adapters.network import gateway
-from domain.models import Service
+from app.adapters.http_client import AsyncHttpClient
+from app.adapters.network import gateway
+from app.domain.models import Service
 
 api_v1_url = "/api/v1"
 

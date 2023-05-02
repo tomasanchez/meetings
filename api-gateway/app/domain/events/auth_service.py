@@ -17,7 +17,7 @@ class UserRegistered(CamelCaseModel):
     id: str = Field(description="The user id.", example="1")
     username: str = Field(description="The user username.", example="johndoe")
     email: EmailStr = Field(description="The user email.", example="johndoe@mail.com")
-    role: Role = Field(description="The user role.", example=Role.USER)
+    role: Role = Field(description="The user role.", example=Role.USER, default=Role.USER)
     first_name: str | None = Field(description="The user first name.", example="John")
     last_name: str | None = Field(description="The user last name.", example="Doe")
     profile_picture: str | None = Field(title="Profile Picture URL", description="The user profile picture.",
