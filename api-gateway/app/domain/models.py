@@ -6,6 +6,15 @@ from enum import Enum
 from pydantic import BaseModel
 
 
+class Role(str, Enum):
+    """Role enum.
+    
+    This class represents the role of a user.
+    """
+    ADMIN = "admin"
+    USER = "user"
+
+
 class ServiceStatus(str, Enum):
     """Service status enumeration.
 
