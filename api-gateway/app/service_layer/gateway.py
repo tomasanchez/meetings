@@ -13,7 +13,11 @@ from app.domain.models import Service
 api_v1_url = "/api/v1"
 
 
-def verify_ok(response: dict[str, Any], status_code: int, default_err_msg: str = "Unknown error."):
+def verify_status(response: dict[str, Any],
+                  status_code: int,
+                  default_err_msg: str = "Unknown error.",
+                  status_codes: list[int] | None = None
+                  ):
     """
     Verify response.
 
@@ -21,11 +25,16 @@ def verify_ok(response: dict[str, Any], status_code: int, default_err_msg: str =
         response (dict[str, Any]): The response.
         status_code (int): The status code.
         default_err_msg (str): The default error message.
+        status_codes (tuple[int, ...]): The status codes to verify.
 
     Raises:
         HTTPException: If the status code is not 200.
     """
-    if status_code != HTTP_200_OK:
+
+    if status_codes is None:
+        status_codes = [HTTP_200_OK, ]
+
+    if status_code not in status_codes:
         raise HTTPException(status_code=status_code, detail=response.get("detail", default_err_msg))
 
 
@@ -63,7 +72,7 @@ async def get_users(users: str, service: Service, client: AsyncHttpClient) -> tu
     Returns:
         tuple[dict[str, Any], int]: The response and the status code.
     """
-    params = {"users": users} if users else dict()
+    params = {"users": users.strip()} if users else None
 
     return await gateway(service_url=service.base_url, path=f"{api_v1_url}/users", query_params=params,
                          client=client, method="GET")
