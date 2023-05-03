@@ -1,8 +1,11 @@
-import React from "react";
 import classes from "./EventGenerator.module.css";
 import { Button } from "../UI/Button";
 
-export const EventGenerator = (props) => {
+interface EventGeneratorProp {
+  onCreate: () => any
+}
+
+export const EventGenerator = (props: EventGeneratorProp) => {
   return (
     <div className={` ${classes.summary} p-5 pb-3`}>
       <p className={`${classes.quote} mb-2 mb-lg-4`}>

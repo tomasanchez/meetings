@@ -12,15 +12,30 @@ The FRONTEND project its not finished yet
 <!-- TOC -->
 
  * [Development Environment](#development-environment)
-        * [Running Local](#running-local)
-        * [Running Dockerl](#running-local)
+ * [Running Local](#running-local)
+ * [Running Dockerl](#running-local)
 
 
 <!-- TOC -->
 
 ## Development Environment
 
-### Running Local
+## Tech Stack
+
+-   **React:** We chose React as our frontend framework for several reasons. Firstly, none of us had extensive experience with it, so we wanted to use this project as an opportunity to learn React. Secondly, React has a large and supportive community, which makes it easier to find resources and solve problems. Finally, React's component-based architecture allows us to build reusable UI elements and manage complex user interfaces with ease.
+    
+-   **Vite:** We opted for Vite as our build tool and development server due to its fast and efficient performance. Vite's instant hot module replacement and lightning-fast cold start speed make our development process more productive and enjoyable.
+    
+-   **TypeScript:** We decided to use TypeScript for its strong typing and code predictability. TypeScript allows us to catch errors at compile-time rather than runtime, which improves our code quality and helps us avoid common mistakes.
+    
+-   **Bootstrap CSS:** We decided to use Bootstrap CSS for its comprehensive CSS utilities and responsive design system. We only used the CSS part of Bootstrap, without relying on any pre-built UI components. This allowed us to create a unique and custom UI design without the need for extensive custom styling.
+
+## State Management
+
+For state management in our React application, we'll be using context instead of Redux. Since our application isn't large-scale, we believe that context will simplify our code and reduce the amount of boilerplate we need to write. By using context, we can avoid the setup and maintenance overhead of Redux and focus on building our application features.
+
+
+## Running Local
 
 #### instructions: Clone the project, install dependencies and run the APP
 
@@ -40,7 +55,7 @@ Example:
   ➜  Network: use --host to expose
   ➜  press h to show help
 ```
-### Running Docker
+## Running Docker
 
 #### instructions: Clone the project, open Docker and run it.
 

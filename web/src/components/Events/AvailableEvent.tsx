@@ -1,4 +1,3 @@
-import React from "react";
 import classes from "./AvailableEvent.module.css";
 import Card from "../UI/Card";
 import { EventItem } from "./EventItem/EventItem";
