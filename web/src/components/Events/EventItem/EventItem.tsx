@@ -1,8 +1,15 @@
-import React from 'react'
 import classes from './EventItem.module.css'
 import { CalendarEvent } from './CalendarEvent'
 
-export const EventItem = (props) => {
+interface EventItemProps {
+  name: string,
+  description: string,
+  mes: string,
+  dia: string,
+  id: string
+}
+
+export const EventItem = (props: EventItemProps) => {
   return (
     <li className={classes.event}>
       <div className='d-flex flex-column justify-content-center align-items-center ' >

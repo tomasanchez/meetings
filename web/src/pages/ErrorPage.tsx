@@ -1,4 +1,3 @@
-import React from "react";
 import {Card, BrandIcon} from "../components/UI";
 import { Link } from "react-router-dom";
 import classes from "./ErrorPage.module.css";

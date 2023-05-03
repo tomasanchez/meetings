@@ -1,38 +1,23 @@
-import React, { useRef, useState } from "react";
-import { Button, Modal } from "../UI/";
+import { useRef } from "react";
+import { Button, Modal } from "../UI";
 
 import classes from "./EventForm.module.css";
+import {FormEvent} from 'react';
+
+interface eventFormProps {
+  onClose: () => any
+}
 
 const today = new Date().toISOString().split("T")[0];
 
-export const EventForm = (props) => {
-  const [inputDates, setinputDates] = useState(1);
-  const nameInput = useRef();
-  const descInput = useRef();
-  const placeInput = useRef();
-  const dateInput = useRef([]);
-  const hourInput = useRef([]);
+export const EventForm = (props: eventFormProps) => {
+  const nameInput = useRef<HTMLInputElement>(null);
+  const descInput = useRef<HTMLTextAreaElement>(null);
+  const placeInput = useRef<HTMLInputElement>(null);
+  const dateInput = useRef<HTMLInputElement>(null);
+  const hourInput = useRef<HTMLInputElement>(null);
 
-  const addDatesHandler = () => {
-    if (inputDates > 3) {
-      alert("No seas complicado, solo 4 opciones podes darles a tus amigos");
-      return;
-    }
-    setinputDates((prevValue) => prevValue + 1);
-
-  };
-
-  const removeDatesHandler = () => {
-    if (inputDates == 1) {
-      alert("Pone un horario por lo menos!!");
-      return;
-    }
-
-    dateInput.current = dateInput.current.slice(0,-1);
-    setinputDates((prevValue) => prevValue - 1);
-  };
-
-  const confirmHandler = (event) => {
+  const confirmHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };
 
@@ -79,14 +64,13 @@ export const EventForm = (props) => {
           />
         </div>
 
-        {[...Array(inputDates)].map((_, index) => (
-          <div key={index} className="d-flex gap-4">
+        <div className="d-flex gap-4">
             <div className={classes.control}>
               <label htmlFor="dateEvent">
                 Fecha<span>(*)</span>
               </label>
               <input
-                ref={(el) => (dateInput.current[index] = el)}
+                ref={dateInput}
                 type="date"
                 id="dateEvent"
                 min={today}
@@ -101,32 +85,11 @@ export const EventForm = (props) => {
               <input
                 type="time"
                 id="hourEvent"
-                ref={(el) => (hourInput.current[index] = el)}
+                ref={hourInput}
                 required
               />
             </div>
-
-            {index == 0 && (
-              <div className=" align-self-end pb-2 " >
-                <button
-                  type="button"
-                  onClick={addDatesHandler}
-                  className={classes.button}
-                >
-                  +
-                </button>
-
-                <button
-                  type="button"
-                  onClick={removeDatesHandler}
-                  className={classes.button}
-                >
-                  -
-                </button>
-              </div>
-            )}
           </div>
-        ))}
 
         <Button type="submit"> Crear Evento </Button>
       </form>

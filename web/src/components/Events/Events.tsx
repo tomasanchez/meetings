@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { EventGenerator } from "./EventGenerator";
 import { EventForm } from "./EventForm";
 import { AvailableEvent } from "./AvailableEvent";

@@ -1,11 +1,15 @@
-import React, {useState} from 'react'
+import {ReactNode, useState} from 'react'
 import AuthContext from './auth-context'
 
-export const AuthProvider = (props) => {
+interface AuthProvProps {
+    children: ReactNode
+}
+
+export const AuthProvider = (props: AuthProvProps) => {
 
     const [user, setUser] = useState(null)
 
-    const login = (userData) => {
+    const login = (userData: any) => {
 
         localStorage.setItem('user',userData)
         setUser(userData)

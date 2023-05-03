@@ -1,7 +1,11 @@
-import React from "react";
 import classes from "./CalendarEvent.module.css";
 
-export const CalendarEvent = (props) => {
+interface CalendarEventProp {
+  mes: string,
+  dia: string
+}
+
+export const CalendarEvent = (props: CalendarEventProp) => {
   return (
     <div className={`d-flex flex-column ${classes.calendar}`}>
       <p className="m-0" > {props.mes} </p>
