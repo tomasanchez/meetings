@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from auth.app.router import api_router_v1, root_router
 from auth.app.settings.application_settings import ApplicationSettings
@@ -67,6 +68,14 @@ def get_application() -> FastAPI:
         version=settings.VERSION,
         docs_url=settings.DOCS_URL,
         lifespan=lifespan,
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     log.debug("Add application routes.")
