@@ -46,3 +46,11 @@ class JoinMeeting(CamelCaseModel):
     Command to join a meeting.
     """
     username: str = Field(description="Username of who wants to join a meeting", example="johndoe")
+
+
+class VoteOption(CamelCaseModel):
+    """
+    Command to vote on a meeting option.
+    """
+    username: str = Field(description="Username of who wants to vote on a meeting option", example="johndoe")
+    option: ProposeOption = Field(description="The option to vote on.")

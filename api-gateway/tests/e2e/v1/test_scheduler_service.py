@@ -1,16 +1,18 @@
 """
 Tests for the scheduler service gateway.
 """
+import datetime
 from typing import Any, Callable
 import uuid
 
 from aioresponses import aioresponses
 import pytest
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, \
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN, \
+    HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, \
     HTTP_503_SERVICE_UNAVAILABLE
 
 from app.dependencies import get_async_http_client, get_services
-from app.domain.commands.scheduler_service import JoinMeeting, ToggleVoting
+from app.domain.commands.scheduler_service import JoinMeeting, ProposeOption, ToggleVoting, VoteOption
 from app.domain.events.scheduler_service import MeetingScheduled
 from app.domain.models import Service
 from app.domain.schemas import ResponseModel
@@ -364,3 +366,46 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
                                          json=to_jsonable_dict(command))
             # then
             assert response.status_code == HTTP_404_NOT_FOUND
+
+    @pytest.mark.parametrize(
+        "auth_status, scheduler_status, expected_status",
+        [
+            (HTTP_404_NOT_FOUND, HTTP_404_NOT_FOUND, HTTP_404_NOT_FOUND),
+            (HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_404_NOT_FOUND),
+            (HTTP_200_OK, HTTP_200_OK, HTTP_200_OK),
+            (HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_403_FORBIDDEN),
+        ],
+    )
+    def test_user_votes_option(self, test_client, fake_web, aio_http_client,
+                               auth_status, scheduler_status, expected_status):
+        """
+        GIVEN a request to vote for an option
+        WHEN the request is made
+        THEN it should return the corresponding data.
+        """
+        username = "mark"
+        option = ProposeOption(
+            date=datetime.date.today(),
+            hour=12,
+            minute=30
+        )
+
+        command = VoteOption(username=username, option=option)
+
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users/{username}",
+                     payload={"data": to_jsonable_dict(user_registered_factory(username=username))},
+                     status=auth_status,
+                     )
+
+        fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/1/options",
+                       payload=fake_schedule_response(meeting_id="1"),
+                       status=scheduler_status)
+
+        self.overrides[get_async_http_client] = lambda: aio_http_client
+
+        with DependencyOverrider(self.overrides):
+            # when
+            response = test_client.patch(f"/api/v1/scheduler-service/schedules/1/options",
+                                         json=to_jsonable_dict(command))
+            # then
+            assert response.status_code == expected_status

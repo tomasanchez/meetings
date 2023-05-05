@@ -6,10 +6,12 @@ from typing import Annotated
 from fastapi import APIRouter, Path, Request, Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
+from app.adapters.http_client import AsyncHttpClient
 from app.adapters.network import gateway
 from app.dependencies import AsyncHttpClientDependency, ServiceProvider
-from app.domain.commands.scheduler_service import JoinMeeting, ScheduleMeeting, ToggleVoting
+from app.domain.commands.scheduler_service import JoinMeeting, ScheduleMeeting, ToggleVoting, VoteOption
 from app.domain.events.scheduler_service import MeetingScheduled
+from app.domain.models import Service
 from app.domain.schemas import ResponseModel, ResponseModels
 from app.service_layer.gateway import api_v1_url, get_service, verify_scheduling_meeting, verify_status, \
     verify_user_existence
@@ -143,6 +145,47 @@ async def join_meeting(
     """
     Allows a valid user to join a meeting.
     """
+    return await command_with_user_validation(
+        path=f"{schedule_id}/relationships/guests",
+        command=command,
+        services=services,
+        client=client,
+    )
+
+
+@router.patch("/schedules/{schedule_id}/options",
+              status_code=HTTP_200_OK,
+              summary="Votes for an option",
+              tags=["Commands"],
+              )
+async def vote_for_option(
+        schedule_id: Annotated[str, Path(description="The schedule's id.", example="b455f6t63t7")],
+        command: VoteOption,
+        services: ServiceProvider,
+        client: AsyncHttpClientDependency,
+) -> ResponseModel[MeetingScheduled]:
+    return await command_with_user_validation(
+        path=f"{schedule_id}/options",
+        command=command,
+        services=services,
+        client=client,
+    )
+
+
+########################################################################################################################
+# Helper functions
+########################################################################################################################
+
+async def command_with_user_validation(
+        path: str,
+        command: JoinMeeting | VoteOption,
+        services: list[Service],
+        client: AsyncHttpClient,
+        method: str = "PATCH",
+) -> ResponseModel[MeetingScheduled]:
+    """
+    Validates the user and then sends the command to the scheduler service.
+    """
     await verify_user_existence(username=command.username,
                                 client=client,
                                 service=await get_service(service_name="auth", services=services),
@@ -151,8 +194,8 @@ async def join_meeting(
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="scheduler", services=services)).base_url,
         client=client,
-        path=f"{api_v1_url}/schedules/{schedule_id}/relationships/guests",
-        method="PATCH",
+        path=f"{api_v1_url}/schedules/{path}",
+        method=method,
         request_body=command.json()
     )
 
