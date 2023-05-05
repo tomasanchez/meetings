@@ -1,4 +1,4 @@
-FROM python:3.10.8-alpine as development_build
+FROM python:3.10.8-slim as development_build
 
 ARG APP_DIR=/app
 

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./rest
+        working-directory: ./scheduler
 
     steps:
       - uses: actions/checkout@v2
