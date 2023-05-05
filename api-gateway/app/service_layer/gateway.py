@@ -4,11 +4,14 @@ Gateway Service functions.
 from typing import Any
 
 from fastapi import HTTPException
-from starlette.status import HTTP_200_OK, HTTP_503_SERVICE_UNAVAILABLE
+from starlette.status import HTTP_200_OK, HTTP_409_CONFLICT, HTTP_503_SERVICE_UNAVAILABLE
 
 from app.adapters.http_client import AsyncHttpClient
 from app.adapters.network import gateway
+from app.domain.commands.scheduler_service import ScheduleMeeting
+from app.domain.events.auth_service import UserRegistered
 from app.domain.models import Service
+from app.domain.schemas import ResponseModels
 
 api_v1_url = "/api/v1"
 
@@ -76,3 +79,43 @@ async def get_users(users: str, service: Service, client: AsyncHttpClient) -> tu
 
     return await gateway(service_url=service.base_url, path=f"{api_v1_url}/users", query_params=params,
                          client=client, method="GET")
+
+
+async def verify_scheduling_meeting(command: ScheduleMeeting,
+                                    service: Service,
+                                    client: AsyncHttpClient) -> ScheduleMeeting:
+    """
+    Verify scheduling meeting command by checking if the users exists.
+
+    Updates the command with the verified guests: all non-existing guests are removed.
+
+    Args:
+        command (ScheduleMeeting): The schedule command.
+        service (Service): The service.
+        client (AsyncHttpClient): The Async HTTP Client.
+
+    Returns:
+        ScheduleMeeting: The schedule command with guests verified.
+
+    Raises:
+        HTTPException: If the organizer does not exist.
+    """
+    user_set = command.guests.copy()
+    user_set.add(command.organizer)
+
+    comma_separated_usernames = ", ".join(user_set)
+
+    response, code = await get_users(users=comma_separated_usernames, service=service, client=client)
+
+    verify_status(response=response, status_code=code)
+
+    response_event = ResponseModels[UserRegistered](**response)
+
+    usernames = [user.username for user in response_event.data]
+
+    if command.organizer not in usernames:
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Organizer does not exists.")
+
+    usernames.remove(command.organizer)
+
+    return command.copy(update={"guests": set(usernames)})

@@ -35,6 +35,7 @@ class CamelCaseModel(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         allow_arbitrary_types = True
+        use_enum_values = True
         anystr_strip_whitespace = True
 
 
