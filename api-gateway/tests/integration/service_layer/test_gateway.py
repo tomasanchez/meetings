@@ -85,7 +85,7 @@ class TestGateway:
         command = schedule_command_factory(organizer=organizer)
         json_dict = json.loads(user_registered_factory(username=organizer).json(by_alias=True))
         payload = {"data": [json_dict]}
-        fake_web.get(f"{auth_service.base_url}/api/v1/users?users=johndoe", payload=payload, status=HTTP_200_OK)
+        fake_web.get(f"{auth_service.base_url}/api/v1/users?usernames=johndoe", payload=payload, status=HTTP_200_OK)
 
         # when
         updated_command = await verify_scheduling_meeting(command=command, service=auth_service, client=aio_http_client)
@@ -109,7 +109,7 @@ class TestGateway:
         command = schedule_command_factory(organizer=organizer, guests=guests)
         users = guests.copy()
         users.add(organizer)
-        query = f"users={', '.join(users)}"
+        query = f"usernames={', '.join(users)}"
 
         json_dict = json.loads(user_registered_factory(username=organizer).json(by_alias=True))
         json_dict_2 = json.loads(user_registered_factory(username=guest_1).json(by_alias=True))
@@ -140,7 +140,7 @@ class TestGateway:
         command = schedule_command_factory(organizer=organizer, guests=guests)
         users = guests.copy()
         users.add(organizer)
-        query = f"users={', '.join(users)}"
+        query = f"usernames={', '.join(users)}"
 
         json_dict = json.loads(user_registered_factory(username=organizer).json(by_alias=True))
         json_dict_2 = json.loads(user_registered_factory(username=guest_1).json(by_alias=True))
@@ -167,7 +167,7 @@ class TestGateway:
 
         command = schedule_command_factory(organizer=organizer)
 
-        fake_web.get(f"{auth_service.base_url}/api/v1/users?users={organizer}",
+        fake_web.get(f"{auth_service.base_url}/api/v1/users?usernames={organizer}",
                      payload={"data": []},
                      status=HTTP_200_OK)
 
