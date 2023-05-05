@@ -146,7 +146,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
                       payload=fake_schedule_response(meeting_id="1"),
                       status=HTTP_201_CREATED)
 
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?users=johndoe",
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames=johndoe",
                      payload={"data": [to_jsonable_dict(user_registered_factory(username="johndoe"))]},
                      status=HTTP_200_OK,
                      )
@@ -172,7 +172,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         guests = {guest_1, guest_2, organizer}
         query = ", ".join(guests)
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?users={query}",
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames={query}",
                      payload={"data": [to_jsonable_dict(user_registered_factory(username="johndoe")),
                                        to_jsonable_dict(user_registered_factory(username="carl")),
                                        to_jsonable_dict(user_registered_factory(username="jane"))
@@ -209,7 +209,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         guests = {guest_1, guest_2, organizer}
 
         query = ", ".join(guests)
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?users={query}",
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames={query}",
                      payload={"data": [to_jsonable_dict(user_registered_factory(username="johndoe")),
                                        ]
                               },
@@ -240,7 +240,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         """
         command = schedule_command_factory(organizer="johndoe")
 
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?users=johndoe",
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames=johndoe",
                      payload={"data": []},
                      status=HTTP_200_OK,
                      )
