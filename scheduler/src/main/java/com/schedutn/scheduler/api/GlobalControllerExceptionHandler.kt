@@ -1,5 +1,6 @@
 package com.schedutn.scheduler.api
 
+import com.schedutn.scheduler.api.errors.ErrorWrapper
 import com.schedutn.scheduler.api.errors.InvalidSchedule
 import com.schedutn.scheduler.api.errors.UnAuthorizedScheduleOperation
 import com.schedutn.scheduler.service.ScheduleAuthorizationException
@@ -29,28 +30,30 @@ class GlobalControllerExceptionHandler : ResponseEntityExceptionHandler() {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(ScheduleNotFoundException::class)
   fun handleScheduleNotFound(
-    ex: ScheduleNotFoundException): ResponseEntity<InvalidSchedule> {
+    ex: ScheduleNotFoundException): ResponseEntity<ErrorWrapper<InvalidSchedule>> {
 
     val details = InvalidSchedule(
-      code = "404",
+      code = "${HttpStatus.NOT_FOUND}",
       message = ex.message ?: "Not found"
     )
 
-    log.error("404: $details")
-    return ResponseEntity(details, HttpStatus.NOT_FOUND)
+    log.error("${HttpStatus.NOT_FOUND}: $details")
+    return ResponseEntity(ErrorWrapper(detail = details), HttpStatus.NOT_FOUND)
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)
   @ExceptionHandler(ScheduleAuthorizationException::class)
   fun handleScheduleAuthorization(
-    ex: ScheduleAuthorizationException): ResponseEntity<UnAuthorizedScheduleOperation> {
+    ex: ScheduleAuthorizationException): ResponseEntity<ErrorWrapper<UnAuthorizedScheduleOperation>> {
 
-    val bodyOfResponse = UnAuthorizedScheduleOperation(
-      code = "403",
+    val error = UnAuthorizedScheduleOperation(
+      code = "${HttpStatus.FORBIDDEN}",
       message = ex.message ?: "Forbidden"
     )
-    
-    return ResponseEntity(bodyOfResponse, HttpStatus.FORBIDDEN)
+
+    return ResponseEntity(ErrorWrapper(
+      detail = error,
+    ), HttpStatus.FORBIDDEN)
   }
 
   /**
@@ -60,9 +63,9 @@ class GlobalControllerExceptionHandler : ResponseEntityExceptionHandler() {
    * @return a response entity with the occurred errors and an unprocessable entity status
    */
   override fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException,
-    headers: HttpHeaders,
-    status: HttpStatusCode,
-    request: WebRequest): ResponseEntity<Any> {
+                                            headers: HttpHeaders,
+                                            status: HttpStatusCode,
+                                            request: WebRequest): ResponseEntity<Any> {
 
     val errors: MutableMap<String, String?> = HashMap()
 
