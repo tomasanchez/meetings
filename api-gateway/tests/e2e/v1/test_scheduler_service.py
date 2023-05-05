@@ -6,10 +6,11 @@ import uuid
 
 from aioresponses import aioresponses
 import pytest
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, \
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, \
     HTTP_503_SERVICE_UNAVAILABLE
 
 from app.dependencies import get_async_http_client, get_services
+from app.domain.commands.scheduler_service import ToggleVoting
 from app.domain.events.scheduler_service import MeetingScheduled
 from app.domain.models import Service
 from app.domain.schemas import ResponseModel
@@ -253,3 +254,63 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
             response = test_client.post("/api/v1/scheduler-service/schedules", json=json)
             # then
             assert response.status_code == HTTP_409_CONFLICT
+
+    def test_toggle_voting(self, test_client, fake_web, aio_http_client):
+        """
+        GIVEN a request to toggle voting
+        WHEN the request is made
+        THEN it should return the schedule.
+        """
+        command = ToggleVoting(username="johndoe")
+        fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/1/voting",
+                       payload=fake_schedule_response(meeting_id="1"),
+                       status=HTTP_200_OK)
+
+        self.overrides[get_async_http_client] = lambda: aio_http_client
+
+        with DependencyOverrider(self.overrides):
+            # when
+            response = test_client.patch("/api/v1/scheduler-service/schedules/1/voting",
+                                         json=to_jsonable_dict(command))
+            # then
+            assert response.status_code == HTTP_200_OK
+
+    def test_toggle_voting_not_found(self, test_client, fake_web, aio_http_client):
+        """
+        GIVEN a request to toggle voting for an invalid schedule
+        WHEN the request is made
+        THEN it should return NOT FOUND.
+        """
+        command = ToggleVoting(username="johndoe")
+        fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/non-found/voting",
+                       payload={"detail": "Not found"},
+                       status=HTTP_404_NOT_FOUND)
+
+        self.overrides[get_async_http_client] = lambda: aio_http_client
+
+        with DependencyOverrider(self.overrides):
+            # when
+            response = test_client.patch("/api/v1/scheduler-service/schedules/non-found/voting",
+                                         json=to_jsonable_dict(command))
+            # then
+            assert response.status_code == HTTP_404_NOT_FOUND
+
+    def test_toggle_voting_non_organizer(self, test_client, fake_web, aio_http_client):
+        """
+        Given a request to toggle voting for a schedule that the user is not the organizer
+        WHEN the request is made
+        THEN it should return FORBIDDEN.
+        """
+        command = ToggleVoting(username="johndoe")
+        fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/1/voting",
+                       payload={"detail": "Forbidden"},
+                       status=HTTP_403_FORBIDDEN)
+
+        self.overrides[get_async_http_client] = lambda: aio_http_client
+
+        with DependencyOverrider(self.overrides):
+            # when
+            response = test_client.patch("/api/v1/scheduler-service/schedules/1/voting",
+                                         json=to_jsonable_dict(command))
+            # then
+            assert response.status_code == HTTP_403_FORBIDDEN

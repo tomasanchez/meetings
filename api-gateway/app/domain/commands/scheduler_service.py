@@ -31,3 +31,11 @@ class ScheduleMeeting(CamelCaseModel):
     options: list[ProposeOption] = Field(description="A list of options to schedule the meeting.", min_items=1)
     guests: set[str] = Field(description="A list of guests to invite to the meeting.",
                              example=["frank", "jane"], default_factory=set)
+
+
+class ToggleVoting(CamelCaseModel):
+    """
+    Command to toggle voting on a meeting.
+    """
+    username: str = Field(description="Responsible for the meeting's username.", example="johndoe")
+    voting: bool = Field(description="Whether voting is enabled", example=True, default=True)
