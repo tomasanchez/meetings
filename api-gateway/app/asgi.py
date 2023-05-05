@@ -74,6 +74,29 @@ def get_application() -> FastAPI:
         "url": "https://mit-license.org/",
     }
 
+    tags_metadata = [
+        {
+            "name": "Actuator",
+            "description": "Verifies application's liveliness and readiness.",
+        },
+        {
+            "name": "Queries",
+            "description": "A request for data from the system.",
+        },
+        {
+            "name": "Commands",
+            "description": "A request to change the state of the system.",
+        },
+        {
+            "name": "Scheduler",
+            "description": "Manages meeting's schedule workflows.",
+        },
+        {
+            "name": "Auth",
+            "description": "Manages user's validation workflows.",
+        }
+    ]
+
     app = FastAPI(
         title=settings.PROJECT_NAME,
         description=settings.PROJECT_DESCRIPTION,
@@ -83,6 +106,7 @@ def get_application() -> FastAPI:
         lifespan=lifespan,
         license_info=license_info,
         contact=contact,
+        openapi_tags=tags_metadata,
     )
 
     log.debug("Add application routes.")
