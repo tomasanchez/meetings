@@ -3,6 +3,7 @@ package com.schedutn.scheduler.api.v1
 
 import com.schedutn.scheduler.api.DataWrapper
 import com.schedutn.scheduler.api.v1.SchedulesEntryPoint.Companion.SCHEDULES_ENTRY_POINT_URL
+import com.schedutn.scheduler.domain.commands.JoinMeeting
 import com.schedutn.scheduler.domain.commands.ScheduleMeeting
 import com.schedutn.scheduler.domain.commands.ToggleVoting
 import com.schedutn.scheduler.domain.commands.VoteForOption
@@ -14,7 +15,6 @@ import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
@@ -93,7 +93,7 @@ class SchedulesEntryPoint {
     tags = ["Commands"]
   )
   fun toggleVoting(@PathVariable id: String,
-    @Valid @RequestBody command: ToggleVoting
+                   @Valid @RequestBody command: ToggleVoting
   ): DataWrapper<MeetingScheduled> {
     log.info("Toggling voting for schedule with id: $id")
 
@@ -110,7 +110,7 @@ class SchedulesEntryPoint {
     tags = ["Commands"]
   )
   fun voteForOption(@PathVariable id: String,
-    @Valid @RequestBody command: VoteForOption
+                    @Valid @RequestBody command: VoteForOption
   ): DataWrapper<MeetingScheduled> {
     log.info("Voting for option for schedule with id: $id")
 
@@ -118,21 +118,20 @@ class SchedulesEntryPoint {
     return DataWrapper(data = schedule)
   }
 
-  @PostMapping("/{id}/relationships/guests")
+  @PatchMapping("/{id}/relationships/guests")
   @ResponseStatus(org.springframework.http.HttpStatus.OK)
   @Operation(
     summary = "Commands to Join a Meeting",
     description = "Adds a guest to a meeting",
     tags = ["Commands"]
   )
-  fun joinMeeting(@PathVariable id: String): DataWrapper<MeetingScheduled> {
+  fun joinMeeting(@PathVariable id: String, @Valid @RequestBody command: JoinMeeting): DataWrapper<MeetingScheduled> {
     log.info("Joining meeting for schedule with id: $id")
 
-    val auth = SecurityContextHolder.getContext().authentication.principal.toString()
 
-    val joined = service.joinAMeeting(id = id, username = auth)
+    val joined = service.joinAMeeting(id = id, username = command.username)
 
-    log.info("$auth joined meeting for schedule with id: $id")
+    log.info("${command.username} joined meeting for schedule with id: $id")
 
     return DataWrapper(data = joined)
   }
