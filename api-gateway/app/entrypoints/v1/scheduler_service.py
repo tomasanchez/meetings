@@ -8,10 +8,11 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from app.adapters.network import gateway
 from app.dependencies import AsyncHttpClientDependency, ServiceProvider
-from app.domain.commands.scheduler_service import ScheduleMeeting, ToggleVoting
+from app.domain.commands.scheduler_service import JoinMeeting, ScheduleMeeting, ToggleVoting
 from app.domain.events.scheduler_service import MeetingScheduled
 from app.domain.schemas import ResponseModel, ResponseModels
-from app.service_layer.gateway import api_v1_url, get_service, verify_scheduling_meeting, verify_status
+from app.service_layer.gateway import api_v1_url, get_service, verify_scheduling_meeting, verify_status, \
+    verify_user_existence
 
 router = APIRouter(prefix="/scheduler-service", tags=["Scheduler"])
 
@@ -119,6 +120,38 @@ async def toggle_voting(
         service_url=(await get_service(service_name="scheduler", services=services)).base_url,
         path=f"{api_v1_url}/schedules/{schedule_id}/voting",
         client=client,
+        method="PATCH",
+        request_body=command.json()
+    )
+
+    verify_status(response=service_response, status_code=status_code, status_codes=[HTTP_200_OK])
+
+    return ResponseModel[MeetingScheduled](**service_response)
+
+
+@router.patch("/schedules/{schedule_id}/relationships/guests",
+              status_code=HTTP_200_OK,
+              summary="Adds a guest to a schedule",
+              tags=["Commands"],
+              )
+async def join_meeting(
+        schedule_id: Annotated[str, Path(description="The schedule's id.", example="b455f6t63t7")],
+        command: JoinMeeting,
+        services: ServiceProvider,
+        client: AsyncHttpClientDependency,
+) -> ResponseModel[MeetingScheduled]:
+    """
+    Allows a valid user to join a meeting.
+    """
+    await verify_user_existence(username=command.username,
+                                client=client,
+                                service=await get_service(service_name="auth", services=services),
+                                )
+
+    service_response, status_code = await gateway(
+        service_url=(await get_service(service_name="scheduler", services=services)).base_url,
+        client=client,
+        path=f"{api_v1_url}/schedules/{schedule_id}/relationships/guests",
         method="PATCH",
         request_body=command.json()
     )

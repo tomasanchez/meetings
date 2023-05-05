@@ -39,3 +39,10 @@ class ToggleVoting(CamelCaseModel):
     """
     username: str = Field(description="Responsible for the meeting's username.", example="johndoe")
     voting: bool = Field(description="Whether voting is enabled", example=True, default=True)
+
+
+class JoinMeeting(CamelCaseModel):
+    """
+    Command to join a meeting.
+    """
+    username: str = Field(description="Username of who wants to join a meeting", example="johndoe")
