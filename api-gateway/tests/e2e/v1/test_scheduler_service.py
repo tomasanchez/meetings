@@ -10,7 +10,7 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN, 
     HTTP_503_SERVICE_UNAVAILABLE
 
 from app.dependencies import get_async_http_client, get_services
-from app.domain.commands.scheduler_service import ToggleVoting
+from app.domain.commands.scheduler_service import JoinMeeting, ToggleVoting
 from app.domain.events.scheduler_service import MeetingScheduled
 from app.domain.models import Service
 from app.domain.schemas import ResponseModel
@@ -314,3 +314,53 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
                                          json=to_jsonable_dict(command))
             # then
             assert response.status_code == HTTP_403_FORBIDDEN
+
+    def test_user_joins_meeting(self, test_client, fake_web, aio_http_client):
+        """
+        GIVEN a request to join a meeting
+        WHEN the request is made
+        THEN it should return the schedule.
+        """
+        joiner = "clarahill"
+        meeting_id = "1"
+        command = JoinMeeting(username=joiner)
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users/{joiner}",
+                     payload={"data": to_jsonable_dict(user_registered_factory(username=joiner))},
+                     status=HTTP_200_OK,
+                     )
+
+        fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/{meeting_id}/relationships/guests",
+                       payload=fake_schedule_response(meeting_id=meeting_id, guests=[joiner]),
+                       status=HTTP_200_OK)
+
+        self.overrides[get_async_http_client] = lambda: aio_http_client
+
+        with DependencyOverrider(self.overrides):
+            # when
+            response = test_client.patch(f"/api/v1/scheduler-service/schedules/{meeting_id}/relationships/guests",
+                                         json=to_jsonable_dict(command))
+            # then
+            assert response.status_code == HTTP_200_OK
+
+    def test_invalid_user_cant_join_meeting(self, test_client, fake_web, aio_http_client):
+        """
+        Given a request to join a meeting with an invalid user
+        WHEN the request is made
+        THEN it should return NOT FOUND.
+        """
+        joiner = "clarahill"
+        meeting_id = "1"
+        command = JoinMeeting(username=joiner)
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users/{joiner}",
+                     payload={"detail": "Not found"},
+                     status=HTTP_404_NOT_FOUND,
+                     )
+
+        self.overrides[get_async_http_client] = lambda: aio_http_client
+
+        with DependencyOverrider(self.overrides):
+            # when
+            response = test_client.patch(f"/api/v1/scheduler-service/schedules/{meeting_id}/relationships/guests",
+                                         json=to_jsonable_dict(command))
+            # then
+            assert response.status_code == HTTP_404_NOT_FOUND
