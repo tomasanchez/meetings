@@ -1,9 +1,11 @@
 import React from 'react'
+import { LoginRequest, RegisterRequest } from '../api/models/dataApi'
 
 export interface AuthContextType  {
     user: string | null,
-    login: ( _: string ) => void,
-    logout: () => void
+    login: ( user : LoginRequest ) => Promise<any>,
+    logout: () => void,
+    register: (user : RegisterRequest) => any,
 }
 
 const AuthContext = React.createContext<AuthContextType | null>(null)

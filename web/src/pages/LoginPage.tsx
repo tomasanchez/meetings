@@ -3,26 +3,36 @@ import classes from "./LoginPage.module.css";
 import { Button, BrandIcon } from "../components/UI";
 import { useNavigate } from "react-router-dom";
 import AuthContext, { AuthContextType } from "../store/auth-context";
+import { LoginRequest, RegisterRequest } from '../api/models/dataApi';
 
 export const LoginPage = () => {
-  const authCtx = useContext(AuthContext) as AuthContextType;
+  const {login, register} = useContext(AuthContext) as AuthContextType;
   const navigate = useNavigate();
-  const loginInput = useRef<HTMLInputElement>(null);
+  const userNameInput = useRef<HTMLInputElement>(null);
   const passwordInput = useRef<HTMLInputElement>(null);
   const repeatPassword = useRef<HTMLInputElement>(null);
-  const [isLogin, setisLogin] = useState(true);
-  const [errorLogin, seterrorLogin] = useState(false);
-  const [errorRegister, seterrorRegister] = useState(false);
+  const [isLogin, setisLogin] = useState<boolean>(true);
+  const [errorLogin, seterrorLogin] = useState<boolean>(false);
+  const [errorRegister, seterrorRegister] = useState<boolean>(false);
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (passwordInput.current?.value == "" || loginInput.current?.value == "") {
+    if (passwordInput.current?.value == "" || userNameInput.current?.value == "") {
       seterrorLogin(true);
       return;
     }
 
-    authCtx.login(loginInput.current!.value);
-    navigate("/");
+    const user :LoginRequest = {
+      password: passwordInput.current!.value,
+      username: userNameInput.current!.value
+    } 
+
+    try {
+      await login(user)
+      navigate("/");
+    } catch (error) {
+      seterrorLogin(true)
+    }
   };
 
   const resetErrors = () => {
@@ -38,12 +48,13 @@ export const LoginPage = () => {
         </label>
         <input
           type="text"
+          minLength={8}
           className={`${classes["form-control-login"]} form-control`}
           id="username"
           name="username"
           required
           onBlur={resetErrors}
-          ref={loginInput}
+          ref={userNameInput}
         />
       </div>
       <div className="mb-4">
@@ -82,15 +93,28 @@ export const LoginPage = () => {
     </form>
   );
 
-  const handleRegister = (event: FormEvent<HTMLFormElement>) => {
+  const handleRegister =  async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (passwordInput.current?.value !== repeatPassword.current?.value) {
       seterrorRegister(true);
       return;
     }
 
-    authCtx.login(loginInput.current!.value);
-    navigate("/");
+    const userToRegister : RegisterRequest = {
+      email: userNameInput.current!.value,
+      username: "12345678abc",
+      password: passwordInput.current!.value,
+      role: 'user'
+    }
+
+
+
+    try {
+      await register(userToRegister)
+      navigate("/");
+    } catch (error) {
+      seterrorRegister(true)
+    }
   };
 
   const registerForm = (
@@ -102,11 +126,12 @@ export const LoginPage = () => {
         <input
           type="email"
           required
+          minLength={8}
           placeholder="Ej: tacs@utn.edu.ar"
           className={`${classes["form-control-login"]} form-control`}
           id="username"
           name="username"
-          ref={loginInput}
+          ref={userNameInput}
         />
       </div>
       <div className="mb-4">
@@ -116,6 +141,7 @@ export const LoginPage = () => {
         <input
           type="password"
           required
+          minLength={8}
           className={`${classes["form-control-login"]} form-control`}
           id="password"
           name="password"
@@ -130,6 +156,7 @@ export const LoginPage = () => {
           type="password"
           className={`${classes["form-control-login"]} form-control`}
           id="repeatpassword"
+          minLength={8}
           required
           name="repeatpassword"
           ref={repeatPassword}
