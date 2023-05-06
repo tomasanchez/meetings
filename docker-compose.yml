@@ -10,6 +10,7 @@ services:
     image: tosanchez/atsc-meetings:scheduler-dev
     environment:
       - SPRING_APPLICATION_NAME=Scheduler
+      - SERVER_PORT=8080
       - SPRINGDOC_SWAGGER_UI_PATH=/scheduler-docs
     ports:
       - "8080:8080"
@@ -22,7 +23,8 @@ services:
     ports:
       - "80:80"
     environment:
-      - 'GATEWAY_SERVICES=[{"name": "Auth", "base_url": "http://auth:8000"}]'
+      - 'GATEWAY_SERVICES=[{"name": "Auth", "base_url": "http://auth:8000"},
+      {"name": "Scheduler", "base_url": "http://scheduler:8080", "readiness_url": "/actuator/health"}]'
   web:
     build:
       context: web

@@ -3,20 +3,11 @@ import { CalendarEvent } from "./CalendarEvent";
 import { Link, Outlet } from "../../../../node_modules/react-router-dom/dist/index";
 
 interface EventItemProps {
-  name: string;
-  description: string;
-  month: string;
-  day: string;
-  id: string;
-  organizer: string;
-  eventLocation: string;
-  options: {
-    day: string;
-    month: string;
-    hora: string;
-    votes: string[];
-  }[];
-  guests: string[];
+  name: string,
+  description: string,
+  mes?: string,
+  dia?: string,
+  id: string
 }
 
 export const EventItem = (props: EventItemProps) => {  return (
@@ -26,9 +17,8 @@ export const EventItem = (props: EventItemProps) => {  return (
           <h3> {props.name} </h3>
           <div className={classes.description}> {props.organizer} </div>
         </div>
-
         <div>
-          <CalendarEvent mes={props.month} dia={props.day} />
+          <CalendarEvent mes={props.mes || ''} dia={props.dia || 'A DEFINIR'} />
           <Link to={{pathname: `/${props.id}`}} state={{event: props}}>VER JUNTADA</Link>
         </div>
       </li>

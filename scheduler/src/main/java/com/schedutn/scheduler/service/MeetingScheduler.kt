@@ -49,8 +49,7 @@ class MeetingScheduler : ScheduleService {
   }
 
   override fun toggleVoting(id: String, command: ToggleVoting): MeetingScheduled {
-    val schedule = schedules.findById(id) ?: throw IllegalArgumentException(
-      "Schedule not found")
+    val schedule = schedules.findById(id) ?: throw ScheduleNotFoundException(id)
 
     try {
       val toggled = schedule.toggleVoting(username = command.username,
@@ -72,7 +71,7 @@ class MeetingScheduler : ScheduleService {
       hour = command.option.hour,
       minute = command.option.minute,
     )
-    
+
     try {
 
       val voted: Schedule = schedule.vote(option = option, username = command.username)

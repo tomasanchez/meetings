@@ -1,34 +1,32 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;1,400&display=swap");
 
-
 .containerLogin {
   min-height: 100vh;
 }
 
-.nav-login{
+.nav-login {
   height: 5rem;
   width: 100%;
   padding: 0 10%;
   background-color: var(--main-color);
-
 }
 
 .brand {
-    height: 100%;
-    color: white;
-    display: flex;
-    font-family: "Raleway", sans-serif;
-    font-size: 14px;
-    align-items: center;
+  height: 100%;
+  color: white;
+  display: flex;
+  font-family: "Raleway", sans-serif;
+  font-size: 14px;
+  align-items: center;
 }
 
 .icon {
-    max-height: 40px;
-    margin-left: 10px;
-  }
+  max-height: 40px;
+  margin-left: 10px;
+}
 
-.iconLogin{
-    height: 50px;
+.iconLogin {
+  height: 50px;
 }
 .login-card {
   padding-bottom: 0px;
@@ -40,17 +38,6 @@
   height: 20rem;
 }
 
-.form-control-login {
-  min-height: 42px;
-  font-size: 16px;
-}
-
-.form-control-login:focus {
-  border: solid 3px;
-  border-color: var(--main-color);
-  box-shadow: none;
-}
-
 @media (max-width: 767px) {
   .login-card {
     padding: 30px;
@@ -59,7 +46,7 @@
     height: 100%;
   }
 
-  .nav-login{
+  .nav-login {
     position: relative !important;
   }
 }

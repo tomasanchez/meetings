@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from app.adapters.http_client import aio_http_client
 from app.router import api_router_v1, root_router
@@ -74,6 +75,29 @@ def get_application() -> FastAPI:
         "url": "https://mit-license.org/",
     }
 
+    tags_metadata = [
+        {
+            "name": "Actuator",
+            "description": "Verifies application's liveliness and readiness.",
+        },
+        {
+            "name": "Queries",
+            "description": "A request for data from the system.",
+        },
+        {
+            "name": "Commands",
+            "description": "A request to change the state of the system.",
+        },
+        {
+            "name": "Scheduler",
+            "description": "Manages meeting's schedule workflows.",
+        },
+        {
+            "name": "Auth",
+            "description": "Manages user's validation workflows.",
+        }
+    ]
+
     app = FastAPI(
         title=settings.PROJECT_NAME,
         description=settings.PROJECT_DESCRIPTION,
@@ -83,8 +107,17 @@ def get_application() -> FastAPI:
         lifespan=lifespan,
         license_info=license_info,
         contact=contact,
+        openapi_tags=tags_metadata,
     )
 
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    
     log.debug("Add application routes.")
 
     app.include_router(root_router)
