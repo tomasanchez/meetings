@@ -2,28 +2,37 @@ import classes from "./AvailableEvent.module.css";
 import Card from "../UI/Card";
 import { EventItem } from "./EventItem/EventItem";
 
-const DUMMY_EVENTS = [
+export const DUMMY_EVENTS = [
   {
     id: "m1",
     name: "Birras en el bar",
-    description: "Sanchez, Tomas",
-    mes: "MARZO",
-    dia: "3",
-  },
-  {
-    id: "m2",
-    name: "Bowling en Boedo",
-    description: "Yogui, Matias",
-    mes: "FEBRERO",
-    dia: "14",
-  },
-  {
-    id: "m3",
-    name: "Asado en lo de tito",
-    description: "De Matteo, Renzo",
-    mes: "ABRIL",
-    dia: "20",
-  },
+    description: "Birras en el bar de siempre, yo invito.",
+    eventLocation: "Medrano 951",
+    month: "MARZO",
+    day: "3",
+    organizer: "tomas_sanchez",
+    options: [
+      {
+        day: "3",
+        month: "MARZO",
+        hora: "20:00",
+        votes: ["tomas_sanchez", "matias_yogui", "renzo_de_matteo"],
+      },
+      {
+        day: "4",
+        month: "MARZO",
+        hora: "20:00",
+        votes: [],
+      },
+      {
+        day: "4",
+        month: "MARZO",
+        hora: "21:00",
+        votes: ["renzo_de_matteo"],
+      }
+    ],
+    guests: ["tomas_sanchez", "matias_yogui", "renzo_de_matteo"],
+  }
 ];
 
 export const AvailableEvent = () => {
@@ -33,8 +42,12 @@ export const AvailableEvent = () => {
       id={event.id}
       name={event.name}
       description={event.description}
-      mes={event.mes}
-      dia={event.dia}
+      month={event.month}
+      day={event.day}
+      organizer={event.organizer}
+      options={event.options}
+      guests={event.guests}
+      eventLocation={event.eventLocation}
     ></EventItem>
   ));
   return (

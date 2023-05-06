@@ -1,0 +1,19 @@
+.organizer{
+  font-size: small;
+  color: #999;
+}
+
+.list{
+  padding-left: 0;
+  display: flex;
+  list-style-type: none;
+}
+
+.option {
+  padding-right: 1rem;
+}
+
+.button {
+  width: 90%;
+  text-align: end;
+}
