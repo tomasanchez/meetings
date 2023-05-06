@@ -32,7 +32,11 @@ The FRONTEND project its not finished yet
 
 ## State Management
 
-For state management in our React application, we'll be using context instead of Redux. Since our application isn't large-scale, we believe that context will simplify our code and reduce the amount of boilerplate we need to write. By using context, we can avoid the setup and maintenance overhead of Redux and focus on building our application features.
+For state management in our React application, we were originally planning on using context instead of Redux. However, we have decided to use SWR, a React hook library for remote data fetching, caching, and revalidation. By using SWR, we can simplify our code and reduce the amount of boilerplate we need to write, while still easily managing our application's state.
+
+SWR is particularly well-suited for applications that rely heavily on server-side data, as it provides a simple and efficient way to fetch and cache that data. Additionally, SWR includes built-in support for features like pagination, infinite scrolling, and polling, making it a great choice for complex applications.
+
+So, we will be using SWR instead of context or Redux to manage our application's state.
 
 
 ## Running Local

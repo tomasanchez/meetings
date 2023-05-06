@@ -5,54 +5,65 @@ export interface RegisterRequest {
     role: string
 }
 
+export interface RegisterResponse {
+  data: UserRegistered
+}
+
+export interface UserRegistered {
+  id: string
+  username: string
+  email: string
+  role: string
+  isActive: boolean
+}
+
+
 export interface LoginRequest{
     username: string
     password: string
 }
 
 
-export type Events = Event[]
+
+
+
+// INTERFACE TO FETCH EVENTS
+
+export interface Events {
+  data: Event[]
+}
 
 export interface Event {
   id: string
+  organizer: string
+  voting: boolean
   title: string
   description: string
   location: string
-  administrator: Administrator
-  listOfGuests: string[]
-  votedOption: VotedOption
-  listOfOptions: ListOfOption[]
-  isClosed: boolean
-}
-
-export interface Administrator {
-  id: string
-  email: string
-  password: string
-}
-
-export interface VotedOption {
-  time: Time
-  votes: number
   date: string
+  guests: string[]
+  options: Option[]
 }
 
-export interface Time {
+export interface Option {
+  date: string
+  votes: string[]
+}
+
+
+// INTERFACE TO CREATE EVENTS
+
+export interface EventRequest {
+  organizer: string
+  title: string
+  description: string
+  location: string
+  options: HourRequest[]
+  guests: any[]
+}
+
+export interface HourRequest {
+  date: string
   hour: number
   minute: number
-  second: number
-  nano: number
-}
-
-export interface ListOfOption {
-  time: Time2
-  votes: number
-  date: string
-}
-
-export interface Time2 {
-  hour: number
-  minute: number
-  second: number
-  nano: number
 }

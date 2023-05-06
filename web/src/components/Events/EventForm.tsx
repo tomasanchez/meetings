@@ -2,10 +2,13 @@ import { useRef } from "react";
 import { Button, Modal } from "../UI";
 
 import classes from "./EventForm.module.css";
-import {FormEvent} from 'react';
+import { FormEvent } from "react";
+import { EventRequest } from "../../api/models/dataApi";
+import useSWRMutation from "swr/mutation";
+import { addEvent } from "../../api/services/eventService";
 
 interface eventFormProps {
-  onClose: () => any
+  onClose: () => any;
 }
 
 const today = new Date().toISOString().split("T")[0];
@@ -17,8 +20,30 @@ export const EventForm = (props: eventFormProps) => {
   const dateInput = useRef<HTMLInputElement>(null);
   const hourInput = useRef<HTMLInputElement>(null);
 
-  const confirmHandler = (event: FormEvent<HTMLFormElement>) => {
+  const { trigger } = useSWRMutation("scheduler-service/schedules", addEvent);
+
+  const confirmHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const [hours, minutes] = hourInput.current!.value.split(":");
+
+    const newEvent: EventRequest = {
+      description: descInput.current!.value,
+      location: placeInput.current!.value,
+      organizer: "",
+      title: nameInput.current!.value,
+      options: [
+        { date: dateInput.current!.value, hour: +hours, minute: +minutes },
+      ],
+      guests: [],
+    };
+
+    try {
+      await trigger(newEvent);
+      props.onClose()
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -65,31 +90,26 @@ export const EventForm = (props: eventFormProps) => {
         </div>
 
         <div className="d-flex gap-4">
-            <div className={classes.control}>
-              <label htmlFor="dateEvent">
-                Fecha<span>(*)</span>
-              </label>
-              <input
-                ref={dateInput}
-                type="date"
-                id="dateEvent"
-                min={today}
-                defaultValue={today}
-                required
-              />
-            </div>
-            <div className={classes.control}>
-              <label htmlFor="hourEvent">
-                Hora<span>(*)</span>
-              </label>
-              <input
-                type="time"
-                id="hourEvent"
-                ref={hourInput}
-                required
-              />
-            </div>
+          <div className={classes.control}>
+            <label htmlFor="dateEvent">
+              Fecha<span>(*)</span>
+            </label>
+            <input
+              ref={dateInput}
+              type="date"
+              id="dateEvent"
+              min={today}
+              defaultValue={today}
+              required
+            />
           </div>
+          <div className={classes.control}>
+            <label htmlFor="hourEvent">
+              Hora<span>(*)</span>
+            </label>
+            <input type="time" id="hourEvent" ref={hourInput} required />
+          </div>
+        </div>
 
         <Button type="submit"> Crear Evento </Button>
       </form>
