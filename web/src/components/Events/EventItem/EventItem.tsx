@@ -4,8 +4,8 @@ import { CalendarEvent } from './CalendarEvent'
 interface EventItemProps {
   name: string,
   description: string,
-  mes: string,
-  dia: string,
+  mes?: string,
+  dia?: string,
   id: string
 }
 
@@ -18,7 +18,7 @@ export const EventItem = (props: EventItemProps) => {
       </div>
 
       <div>
-        <CalendarEvent mes={props.mes} dia={props.dia} />
+        <CalendarEvent mes={props.mes || ''} dia={props.dia || 'A DEFINIR'} />
         <a href="">VER JUNTADA</a>
       </div>
     </li>

@@ -1,14 +1,18 @@
-import { useContext } from "react";
 import { Link } from "react-router-dom";
-import AuthContext, { AuthContextType } from "../../store/auth-context";
+import useUser from "../../api/swrHooks/useUser";
+import { logout } from "../../api/services/authService";
 
 export const HeaderProfile = () => {
-  const authCtx = useContext(AuthContext) as AuthContextType;
 
+  const { user, mutate } = useUser();
+  const handleLogOut = () => {
+    logout();
+    mutate(null)
+  }
   return (
     <>
-      {!authCtx.user && <Link to={`/login`}>Iniciar sesión</Link>}
-      {authCtx.user && <Link to={'/'} onClick={authCtx.logout}>Cerrar sesión</Link>}
+      {!user && <Link to={`/login`}>Iniciar sesión</Link>}
+      {user && <Link to={'/'} onClick={handleLogOut}>Cerrar sesión</Link>}
     </>
   );
 };

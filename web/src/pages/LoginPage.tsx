@@ -1,28 +1,49 @@
-import { useRef, useState, useContext, FormEvent } from "react";
+import { useRef, useState, FormEvent, useEffect } from "react";
 import classes from "./LoginPage.module.css";
 import { Button, BrandIcon } from "../components/UI";
 import { useNavigate } from "react-router-dom";
-import AuthContext, { AuthContextType } from "../store/auth-context";
+import { LoginRequest, RegisterRequest } from "../api/models/dataApi";
+import { login, register } from "../api/services/authService";
+import useUser from "../api/swrHooks/useUser";
 
 export const LoginPage = () => {
-  const authCtx = useContext(AuthContext) as AuthContextType;
   const navigate = useNavigate();
-  const loginInput = useRef<HTMLInputElement>(null);
+  const userNameInput = useRef<HTMLInputElement>(null);
   const passwordInput = useRef<HTMLInputElement>(null);
   const repeatPassword = useRef<HTMLInputElement>(null);
-  const [isLogin, setisLogin] = useState(true);
-  const [errorLogin, seterrorLogin] = useState(false);
-  const [errorRegister, seterrorRegister] = useState(false);
+  const [isLogin, setisLogin] = useState<boolean>(true);
+  const [errorLogin, seterrorLogin] = useState<boolean>(false);
+  const [errorRegister, seterrorRegister] = useState<boolean>(false);
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (passwordInput.current?.value == "" || loginInput.current?.value == "") {
+  const { user, mutate } = useUser();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user]);
+
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (
+      passwordInput.current?.value == "" ||
+      userNameInput.current?.value == ""
+    ) {
       seterrorLogin(true);
       return;
     }
 
-    authCtx.login(loginInput.current!.value);
-    navigate("/");
+    const user: LoginRequest = {
+      password: passwordInput.current!.value,
+      username: userNameInput.current!.value,
+    };
+
+    try {
+      await login(user);
+      mutate();
+    } catch (error) {
+      seterrorLogin(true);
+    }
   };
 
   const resetErrors = () => {
@@ -31,7 +52,7 @@ export const LoginPage = () => {
   };
 
   const loginForm = (
-    <form className="my-3" onSubmit={handleLogin} >
+    <form className="my-3" onSubmit={handleLogin}>
       <div className="mb-4">
         <label htmlFor="username" className="form-label opacity-75 mb-0">
           Usuario
@@ -41,9 +62,10 @@ export const LoginPage = () => {
           className={`${classes["form-control-login"]} form-control`}
           id="username"
           name="username"
+          autoComplete="off"
           required
           onBlur={resetErrors}
-          ref={loginInput}
+          ref={userNameInput}
         />
       </div>
       <div className="mb-4">
@@ -55,6 +77,7 @@ export const LoginPage = () => {
           className={`${classes["form-control-login"]} form-control`}
           id="password"
           name="password"
+          minLength={8}
           required
           onBlur={resetErrors}
           ref={passwordInput}
@@ -77,36 +100,47 @@ export const LoginPage = () => {
         </p>
       )}
       <div className="d-flex justify-content-center ">
-        <Button type='submit'>Ingresar</Button>
+        <Button type="submit">Ingresar</Button>
       </div>
     </form>
   );
 
-  const handleRegister = (event: FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (passwordInput.current?.value !== repeatPassword.current?.value) {
       seterrorRegister(true);
       return;
     }
 
-    authCtx.login(loginInput.current!.value);
-    navigate("/");
+    const newUser: RegisterRequest = {
+      email: userNameInput.current!.value+'@meetings.com.ar',
+      username: userNameInput.current!.value,
+      password: passwordInput.current!.value,
+      role: "user",
+    };
+
+    try {
+      await register(newUser);
+      mutate();
+    } catch (error) {
+      seterrorRegister(true);
+    }
   };
 
   const registerForm = (
-    <form className="my-3" onSubmit={handleRegister} >
+    <form className="my-3" onSubmit={handleRegister}>
       <div className="mb-4">
         <label htmlFor="username" className="form-label opacity-75 mb-0">
           Usuario
         </label>
         <input
-          type="email"
           required
-          placeholder="Ej: tacs@utn.edu.ar"
+          minLength={8}
+          placeholder="Ej: MiUsuario1234"
           className={`${classes["form-control-login"]} form-control`}
           id="username"
           name="username"
-          ref={loginInput}
+          ref={userNameInput}
         />
       </div>
       <div className="mb-4">
@@ -116,6 +150,7 @@ export const LoginPage = () => {
         <input
           type="password"
           required
+          minLength={8}
           className={`${classes["form-control-login"]} form-control`}
           id="password"
           name="password"
@@ -130,6 +165,7 @@ export const LoginPage = () => {
           type="password"
           className={`${classes["form-control-login"]} form-control`}
           id="repeatpassword"
+          minLength={8}
           required
           name="repeatpassword"
           ref={repeatPassword}
@@ -138,8 +174,9 @@ export const LoginPage = () => {
           <span className="text-danger"> Las contraseñas no coinciden </span>
         )}
       </div>
-      <div className="d-flex justify-content-center ">
-        <Button type='submit'>Registrarse</Button>
+      <div className="d-flex justify-content-center flex-column">
+        <Button type="submit">Registrarse</Button>
+        <Button onClick={() => {setisLogin(true)}}>Log In</Button>
       </div>
     </form>
   );

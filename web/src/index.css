@@ -38,3 +38,27 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+input {
+  min-height: 42px;
+  font-size: 16px;
+  padding: 4px;
+}
+
+input:focus {
+  border: solid 3px;
+  border-color: var(--main-color);
+  box-shadow: none;
+}
+
+textarea {
+  min-height: 42px;
+  font-size: 16px;
+  padding: 4px;
+}
+
+textarea:focus {
+  border: solid 3px;
+  border-color: var(--main-color);
+  box-shadow: none;
+}
