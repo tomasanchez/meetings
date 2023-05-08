@@ -16,17 +16,17 @@ export async function addEvent(urlInput: string, { arg }: { arg: EventRequest })
     return fetch(url + urlInput, requestOptions).then(res => res.json())
 }
 
-export async function joinEvent(id: string,  { arg }: { arg: string }) {
+export async function joinEvent(urlEvent: string,  { arg }: { arg: string }) {
 
     const requestOptions = {
         method: 'PATCH',
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ arg })
+        body: JSON.stringify({username: arg})
     };
 
-    return fetch(url + `scheduler-service/schedules/${id}/relationships/guests`, requestOptions).then(res => res.json())
+    return fetch(url + `${urlEvent}/relationships/guests`, requestOptions).then(res => res.json())
 }
 
 export async function voteOption(id: string, { arg }: { arg: VoteRequest }) {
@@ -43,7 +43,7 @@ export async function voteOption(id: string, { arg }: { arg: VoteRequest }) {
 }
 
 
-export async function toggleVoting(id: string, { arg }: {arg: ToggleVotingRequest}) {
+export async function toggleVoting(urlEvento: string, { arg }: {arg: ToggleVotingRequest}) {
 
     const requestOptions = {
         method: 'PATCH',
@@ -53,5 +53,5 @@ export async function toggleVoting(id: string, { arg }: {arg: ToggleVotingReques
         body: JSON.stringify(arg)
     };
 
-    return fetch(url + `scheduler-service/schedules/${id}/voting`, requestOptions).then(res => res.json())
+    return fetch(url + `${urlEvento}/voting`, requestOptions).then(res => res.json())
 }

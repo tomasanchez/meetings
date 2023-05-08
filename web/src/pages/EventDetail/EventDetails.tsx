@@ -1,23 +1,29 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Modal } from "../../components/UI";
 import classes from "./EventDetails.module.css";
-import useEventWithId from "../../api/swrHooks/useEventWithId";
 import { EventOptions } from "./EventOptions";
-import useSWRMutation from "swr/mutation";
 import { joinEvent, toggleVoting } from "../../api/services/eventService";
 import useUser from "../../api/swrHooks/useUser";
-import { ToggleVotingRequest } from "../../api/models/dataApi";
-import { useState } from "react";
+import { EventWrapper, ToggleVotingRequest } from "../../api/models/dataApi";
+import useSWR from "swr";
+import { fetcher } from "../../api/fetcher";
+import { useEffect } from "react";
 
 export const EventDetails = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const idUrl = location.pathname.split("/")[1];
-  const navigate = useNavigate();
   const { user } = useUser();
-  const { event, error, isLoading } = useEventWithId(idUrl);
-  const [eventState, setEventState] = useState<Event | null>(event!.data);
-  const { trigger: triggerJoinEvent } = useSWRMutation(idUrl, joinEvent);
-  const { trigger: triggerToggleVoting } = useSWRMutation(idUrl, toggleVoting);
+  const {
+    data: event,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR<EventWrapper>(`scheduler-service/schedules/${idUrl}`, fetcher);
+
+  useEffect( () => {
+    if (!user) navigate('/login')
+  } )
 
   const goBack = () => {
     navigate("/");
@@ -25,17 +31,27 @@ export const EventDetails = () => {
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
+  if (!user) return navigate("/login");
+
 
   const toggleVotingHandler = async () => {
     const toggleVotingRequest: ToggleVotingRequest = {
       username: user!.username,
-      voting: !event!.data.voting
-    }
-    await console.log(triggerToggleVoting(toggleVotingRequest));
+      voting: !event!.data.voting,
+    };
+
+    const response = await toggleVoting(
+      `scheduler-service/schedules/${idUrl}`,
+      { arg: toggleVotingRequest }
+    );
+    mutate(response);
   };
 
   const joinEventHandler = async () => {
-    await triggerJoinEvent(user!.username);
+    const response = await joinEvent(`scheduler-service/schedules/${idUrl}`, {
+      arg: user!.username,
+    });
+    mutate(response);
   };
 
   return (
@@ -63,7 +79,11 @@ export const EventDetails = () => {
                   </>
                 )}
               </div>
-              <EventOptions event={event!.data} idUrl={idUrl} user={user!.username} />
+              <EventOptions
+                event={event!.data}
+                idUrl={idUrl}
+                user={user!.username}
+              />
             </div>
           </div>
 
@@ -71,9 +91,7 @@ export const EventDetails = () => {
             {user!.username !== null && (
               <>
                 {!(event!.data.guests.indexOf(user!.username) !== -1) && (
-                  <Button onClick={joinEventHandler}>
-                    JoinEvent
-                  </Button>
+                  <Button onClick={joinEventHandler}>JoinEvent</Button>
                 )}
 
                 {user!.username === event!.data.organizer && (

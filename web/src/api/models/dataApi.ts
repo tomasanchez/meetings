@@ -69,7 +69,7 @@ export interface HourRequest {
 }
 
 //INTERFACE TO FETCH AN EVENT WITH AN ID
-export interface EventWithId {
+export interface EventWrapper {
   data: Event
 }
 
