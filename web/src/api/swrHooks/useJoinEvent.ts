@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { JoinRequest, VoteRequest } from "../models/dataApi";
+import { JoinRequest } from "../models/dataApi";
 import { fetcher } from "../fetcher";
 
 

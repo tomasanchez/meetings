@@ -8,7 +8,7 @@ import useSWRMutation from "swr/mutation";
 import { addEvent } from "../../api/services/eventService";
 
 interface eventFormProps {
-  onClose: () => any;
+  onClose: () => void;
 }
 
 const today = new Date().toISOString().split("T")[0];
@@ -30,7 +30,7 @@ export const EventForm = (props: eventFormProps) => {
     const newEvent: EventRequest = {
       description: descInput.current!.value,
       location: placeInput.current!.value,
-      organizer: "",
+      organizer: "johndoe",
       title: nameInput.current!.value,
       options: [
         { date: dateInput.current!.value, hour: +hours, minute: +minutes },

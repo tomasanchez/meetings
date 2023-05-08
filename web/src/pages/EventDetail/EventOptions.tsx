@@ -1,30 +1,13 @@
 import { OverlayTrigger, ToggleButton, Tooltip } from "react-bootstrap";
 import useEventVote from "../../api/swrHooks/useEventVote";
-import { VoteRequest } from "../../api/models/dataApi";
-import { voteOption } from "../../api/services/voteService";
+import { Event, VoteRequest } from "../../api/models/dataApi";
 import classes from "./EventDetails.module.css";
+import { voteOption } from "../../api/services/eventService";
 
 interface EventOptionsProps {
   event: Event,
   idUrl: string,
   user: string
-}
-
-interface Event {
-  id: string
-  organizer: string
-  voting: boolean
-  title: string
-  description: string
-  location: string
-  date: string
-  guests: string[]
-  options: Option[]
-}
-
-interface Option {
-  date: string
-  votes: string[]
 }
 
 export const EventOptions = (props: EventOptionsProps) => {
