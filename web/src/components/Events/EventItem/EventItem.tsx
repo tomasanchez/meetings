@@ -7,7 +7,8 @@ interface EventItemProps {
   description: string,
   mes?: string,
   dia?: string,
-  id: string
+  id: string,
+  organizer: string
 }
 
 export const EventItem = (props: EventItemProps) => {  return (
@@ -19,7 +20,7 @@ export const EventItem = (props: EventItemProps) => {  return (
         </div>
         <div>
           <CalendarEvent mes={props.mes || ''} dia={props.dia || 'A DEFINIR'} />
-          <Link to={{pathname: `/${props.id}`}} state={{event: props}}>VER JUNTADA</Link>
+          <Link to={{pathname: `/${props.id}`}}>VER JUNTADA</Link>
         </div>
       </li>
 

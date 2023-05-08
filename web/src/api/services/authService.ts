@@ -21,10 +21,12 @@ export const login = async (userData: LoginRequest) => {
         throw new Error(response.status.toString())
     }
     localStorage.setItem(LOCALSTORAGE_NAME, data.data.token)
+    localStorage.setItem('username', userData.username)
 };
 
 export const logout = () => {
     localStorage.removeItem(LOCALSTORAGE_NAME)
+    localStorage.removeItem('username')
 }
 
 export const register = async (userData: RegisterRequest) => {

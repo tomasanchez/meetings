@@ -8,8 +8,8 @@ export const AvailableEvent = () => {
   const { events, error, isLoading } = useEvent();
 
 
-  if (error) return "error";
-  if (isLoading) return "cargando"
+  if (error) return <div>error</div>;
+  if (isLoading) return <div>loading</div>;
 
   return (
     <section className={classes.event}>
@@ -21,6 +21,7 @@ export const AvailableEvent = () => {
                 id={event.id}
                 name={event.description}
                 description={event.description}
+                organizer={event.organizer}
               ></EventItem>
             ))}
         </ul>
