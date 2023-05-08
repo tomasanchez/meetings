@@ -1,6 +1,6 @@
 import { OverlayTrigger, ToggleButton, Tooltip } from "react-bootstrap";
-import useEventVote from "../../api/swrHooks/useEventVote";
 import { Event, VoteRequest } from "../../api/models/dataApi";
+import useSWRMutation from "swr/mutation";
 import classes from "./EventDetails.module.css";
 import { voteOption } from "../../api/services/eventService";
 
@@ -11,7 +11,8 @@ interface EventOptionsProps {
 }
 
 export const EventOptions = (props: EventOptionsProps) => {
-  const { mutate } = useEventVote(props.idUrl);
+  const { trigger: triggerVoteOption } = useSWRMutation("scheduler-service/schedules", voteOption);
+
 
   const getDatesFromOptions = () => {
     return props.event!.options.reduce<string[]>((acc: any, option: any) => {
@@ -22,8 +23,7 @@ export const EventOptions = (props: EventOptionsProps) => {
     }, []);
   }
 
-  const toggleVote = async (date: string, e: React.MouseEvent<HTMLButtonElement>) => {
-  e.preventDefault();
+  const toggleVote = async (date: string) => {
   const request: VoteRequest = {
     username: props.user!,
     option: {
@@ -33,10 +33,7 @@ export const EventOptions = (props: EventOptionsProps) => {
     }
   }
 
-    await voteOption(props.idUrl, request);
-    mutate();
-
-    window.location.reload();
+    await triggerVoteOption(request);
   };
 
   return (
@@ -46,7 +43,7 @@ export const EventOptions = (props: EventOptionsProps) => {
       <h3>Options</h3>
       {getDatesFromOptions().map((date: string) => {
         return (
-          <div>
+          <div key={date}>
             <div> {date} </div>
             <ul className={classes.list}>
               {props.event!.options.map((option: any, index: number) => {
@@ -57,7 +54,7 @@ export const EventOptions = (props: EventOptionsProps) => {
                         variant="primary"
                         disabled={props.event.guests.indexOf(props.user) !== -1 || !props.event.voting}
                         value={option.date}
-                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {toggleVote(option.date, e)}} >
+                        onClick={() => {toggleVote(option.date)}} >
                           {option.date.split('T')[1]}
                           {option.votes.length > 0 &&
                           <OverlayTrigger

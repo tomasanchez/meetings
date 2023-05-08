@@ -3,19 +3,21 @@ import { Button, Modal } from "../../components/UI";
 import classes from "./EventDetails.module.css";
 import useEventWithId from "../../api/swrHooks/useEventWithId";
 import { EventOptions } from "./EventOptions";
-import useToggleVoting from "../../api/swrHooks/userToggleVoting";
-import useJoinEvent from "../../api/swrHooks/useJoinEvent";
+import useSWRMutation from "swr/mutation";
+import { joinEvent, toggleVoting } from "../../api/services/eventService";
+import useUser from "../../api/swrHooks/useUser";
+import { ToggleVotingRequest } from "../../api/models/dataApi";
+import { useState } from "react";
 
 export const EventDetails = () => {
   const location = useLocation();
   const idUrl = location.pathname.split("/")[1];
   const navigate = useNavigate();
-  const user = localStorage.getItem("username");
-  
-  const { mutate } = useToggleVoting(idUrl);
-  const { mutate: mutateJoin } = useJoinEvent(idUrl);
+  const { user } = useUser();
   const { event, error, isLoading } = useEventWithId(idUrl);
-
+  const [eventState, setEventState] = useState<Event | null>(event!.data);
+  const { trigger: triggerJoinEvent } = useSWRMutation(idUrl, joinEvent);
+  const { trigger: triggerToggleVoting } = useSWRMutation(idUrl, toggleVoting);
 
   const goBack = () => {
     navigate("/");
@@ -24,14 +26,16 @@ export const EventDetails = () => {
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
 
-  const toggleVoting = async () => {
-    await toggleVotingService(idUrl, user!, !event?.data.voting);
-    mutate();
+  const toggleVotingHandler = async () => {
+    const toggleVotingRequest: ToggleVotingRequest = {
+      username: user!.username,
+      voting: !event!.data.voting
+    }
+    await console.log(triggerToggleVoting(toggleVotingRequest));
   };
 
-  const joinEvent = async () => {
-    await joinEventService(idUrl, user!);
-    mutateJoin();
+  const joinEventHandler = async () => {
+    await triggerJoinEvent(user!.username);
   };
 
   return (
@@ -42,7 +46,6 @@ export const EventDetails = () => {
             <div className="row">
               <div className="col">
                 <div className={classes.organizer}>
-                  {" "}
                   Organizer: {event!.data.organizer}{" "}
                 </div>
                 <h3> {event!.data.title} </h3>
@@ -60,20 +63,21 @@ export const EventDetails = () => {
                   </>
                 )}
               </div>
-              <EventOptions event={event!.data} idUrl={idUrl} user={user!} />
+              <EventOptions event={event!.data} idUrl={idUrl} user={user!.username} />
             </div>
           </div>
 
           <div className={classes.button}>
-            {user !== null && (
+            {user!.username !== null && (
               <>
-                {!(event!.data.guests.indexOf(user) !== -1) && (
-                  <Button onClick={joinEvent}>JoinEvent
+                {!(event!.data.guests.indexOf(user!.username) !== -1) && (
+                  <Button onClick={joinEventHandler}>
+                    JoinEvent
                   </Button>
                 )}
 
-                {user === event!.data.organizer && (
-                  <Button onClick={toggleVoting}>
+                {user!.username === event!.data.organizer && (
+                  <Button onClick={toggleVotingHandler}>
                     {!event!.data.voting ? "Enable voting" : "Close event"}
                   </Button>
                 )}
@@ -85,11 +89,3 @@ export const EventDetails = () => {
     </>
   );
 };
-function toggleVotingService(idUrl: string, arg1: string, arg2: boolean) {
-  throw new Error("Function not implemented.");
-}
-
-function joinEventService(idUrl: string, arg1: string) {
-  throw new Error("Function not implemented.");
-}
-
