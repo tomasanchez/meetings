@@ -9,6 +9,7 @@ export async function addEvent(urlInput: string, { arg }: { arg: EventRequest })
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('login')}`
         },
         body: JSON.stringify(arg)
     };
@@ -22,6 +23,7 @@ export async function joinEvent(urlEvent: string,  { arg }: { arg: string }) {
         method: 'PATCH',
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('login')}`
         },
         body: JSON.stringify({username: arg})
     };
@@ -35,6 +37,7 @@ export async function voteOption(urlEvent: string, { arg }: { arg: VoteRequest }
         method: 'PATCH',
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('login')}`
         },
         body: JSON.stringify(arg)
     };
@@ -49,6 +52,7 @@ export async function toggleVoting(urlEvento: string, { arg }: {arg: ToggleVotin
         method: 'PATCH',
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('login')}`
         },
         body: JSON.stringify(arg)
     };
