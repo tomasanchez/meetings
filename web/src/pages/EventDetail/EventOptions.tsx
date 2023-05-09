@@ -1,18 +1,16 @@
 import { OverlayTrigger, ToggleButton, Tooltip } from "react-bootstrap";
 import { Event, VoteRequest } from "../../api/models/dataApi";
-import useSWRMutation from "swr/mutation";
 import classes from "./EventDetails.module.css";
 import { voteOption } from "../../api/services/eventService";
 
 interface EventOptionsProps {
   event: Event,
   idUrl: string,
-  user: string
+  user: string,
+  mutate: any
 }
 
 export const EventOptions = (props: EventOptionsProps) => {
-  const { trigger: triggerVoteOption } = useSWRMutation("scheduler-service/schedules", voteOption);
-
 
   const getDatesFromOptions = () => {
     return props.event!.options.reduce<string[]>((acc: any, option: any) => {
@@ -33,7 +31,11 @@ export const EventOptions = (props: EventOptionsProps) => {
     }
   }
 
-    await triggerVoteOption(request);
+    const response = await voteOption(
+      `scheduler-service/schedules/${props.idUrl}`,
+      { arg: request }
+    );
+    props.mutate(response);
   };
 
   return (
@@ -52,7 +54,7 @@ export const EventOptions = (props: EventOptionsProps) => {
                       <ToggleButton 
                         key={index}
                         variant="primary"
-                        disabled={props.event.guests.indexOf(props.user) !== -1 || !props.event.voting}
+                        disabled={!(props.event.guests.indexOf(props.user) !== -1) || !props.event.voting}
                         value={option.date}
                         onClick={() => {toggleVote(option.date)}} >
                           {option.date.split('T')[1]}

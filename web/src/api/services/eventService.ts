@@ -29,7 +29,7 @@ export async function joinEvent(urlEvent: string,  { arg }: { arg: string }) {
     return fetch(url + `${urlEvent}/relationships/guests`, requestOptions).then(res => res.json())
 }
 
-export async function voteOption(id: string, { arg }: { arg: VoteRequest }) {
+export async function voteOption(urlEvent: string, { arg }: { arg: VoteRequest }) {
 
     const requestOptions = {
         method: 'PATCH',
@@ -39,7 +39,7 @@ export async function voteOption(id: string, { arg }: { arg: VoteRequest }) {
         body: JSON.stringify(arg)
     };
 
-    return fetch(url + `scheduler-service/schedules/${id}/options`, requestOptions).then(res => res.json())
+    return fetch(url + `${urlEvent}/options`, requestOptions).then(res => res.json())
 }
 
 

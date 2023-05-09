@@ -83,6 +83,7 @@ export const EventDetails = () => {
                 event={event!.data}
                 idUrl={idUrl}
                 user={user!.username}
+                mutate={mutate}
               />
             </div>
           </div>
@@ -94,11 +95,13 @@ export const EventDetails = () => {
                   <Button onClick={joinEventHandler}>JoinEvent</Button>
                 )}
 
-                {user!.username === event!.data.organizer && (
+                {user!.username === event!.data.organizer ? (
                   <Button onClick={toggleVotingHandler}>
                     {!event!.data.voting ? "Enable voting" : "Close event"}
                   </Button>
-                )}
+                ):
+                  (!event!.data.voting ? "Votation is closed" : "Votation is open")
+                }
               </>
             )}
           </div>
