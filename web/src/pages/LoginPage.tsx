@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { LoginRequest, RegisterRequest } from "../api/models/dataApi";
 import { login, register } from "../api/services/authService";
 import useUser from "../api/swrHooks/useUser";
+import Swal from 'sweetalert2';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -12,8 +13,6 @@ export const LoginPage = () => {
   const passwordInput = useRef<HTMLInputElement>(null);
   const repeatPassword = useRef<HTMLInputElement>(null);
   const [isLogin, setisLogin] = useState<boolean>(true);
-  const [errorLogin, seterrorLogin] = useState<boolean>(false);
-  const [errorRegister, seterrorRegister] = useState<boolean>(false);
 
   const { user, mutate } = useUser();
 
@@ -29,8 +28,7 @@ export const LoginPage = () => {
       passwordInput.current?.value == "" ||
       userNameInput.current?.value == ""
     ) {
-      seterrorLogin(true);
-      return;
+      Swal.fire('Ingrese un usuario y/o contraseña');
     }
 
     const user: LoginRequest = {
@@ -38,17 +36,8 @@ export const LoginPage = () => {
       username: userNameInput.current!.value,
     };
 
-    try {
-      await login(user);
-      mutate();
-    } catch (error) {
-      seterrorLogin(true);
-    }
-  };
-
-  const resetErrors = () => {
-    if (errorLogin) seterrorLogin(false);
-    if (errorRegister) seterrorLogin(false);
+    await login(user);
+    mutate();
   };
 
   const loginForm = (
@@ -64,7 +53,6 @@ export const LoginPage = () => {
           name="username"
           autoComplete="off"
           required
-          onBlur={resetErrors}
           ref={userNameInput}
         />
       </div>
@@ -79,7 +67,6 @@ export const LoginPage = () => {
           name="password"
           minLength={8}
           required
-          onBlur={resetErrors}
           ref={passwordInput}
         />
         <span>
@@ -94,11 +81,6 @@ export const LoginPage = () => {
           </span>
         </span>
       </div>
-      {errorLogin && (
-        <p className=" text-danger ">
-          *El usuario y/o contraseña son incorrectos
-        </p>
-      )}
       <div className="d-flex justify-content-center ">
         <Button type="submit">Ingresar</Button>
       </div>
@@ -108,7 +90,7 @@ export const LoginPage = () => {
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (passwordInput.current?.value !== repeatPassword.current?.value) {
-      seterrorRegister(true);
+      Swal.fire('Las contraseñas no coinciden');
       return;
     }
 
@@ -119,12 +101,8 @@ export const LoginPage = () => {
       role: "user",
     };
 
-    try {
-      await register(newUser);
-      mutate();
-    } catch (error) {
-      seterrorRegister(true);
-    }
+    await register(newUser);
+    mutate();
   };
 
   const registerForm = (
@@ -170,9 +148,6 @@ export const LoginPage = () => {
           name="repeatpassword"
           ref={repeatPassword}
         />
-        {errorRegister && (
-          <span className="text-danger"> Las contraseñas no coinciden </span>
-        )}
       </div>
       <div className="d-flex justify-content-center flex-column">
         <Button type="submit">Registrarse</Button>

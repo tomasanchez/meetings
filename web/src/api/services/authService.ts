@@ -1,4 +1,5 @@
-import { LoginRequest, RegisterRequest, RegisterResponse } from "../models/dataApi";
+import { LoginRequest, RegisterRequest } from "../models/dataApi";
+import Swal from 'sweetalert2';
 
 const LOCALSTORAGE_NAME = 'login'
 const url = import.meta.env.VITE_URL
@@ -18,7 +19,13 @@ export const login = async (userData: LoginRequest) => {
     const data = await response.json()
 
     if (!response.ok) {
-        throw new Error(response.status.toString())
+        Swal.fire({
+            title: 'Error',
+            text: data.detail,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        throw new Error(data.detail);
     }
     localStorage.setItem(LOCALSTORAGE_NAME, data.data.token)
 };
@@ -38,16 +45,15 @@ export const register = async (userData: RegisterRequest) => {
     };
 
     const response = await fetch(url+'auth-service/users', requestOptions)
+    const data = await response.json()
     if (!response.ok) {
-        throw new Error(response.status.toString())
+        Swal.fire({
+            title: 'Error',
+            text: data.detail,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        throw new Error(data.detail);
     }
-    const data = await response.json() as Promise<RegisterResponse>
-
-    try {
-        await login({username: userData.username, password: userData.password})
-    } catch (error) {
-        throw new Error('Login ERROR')
-
-    }
-
+    await login({username: userData.username, password: userData.password})
 };
