@@ -10,22 +10,21 @@ export const AvailableEvent = () => {
 
   if (error) return <div>error</div>;
   if (isLoading) return <div>loading</div>;
-
-  return (
-    <section className={classes.event}>
+  if (!events?.data) {
+    <div>Aún no hay eventos!</div>
+  }
+  
+  return (  <section className={classes.event}>
       <Card>
         <ul>
           {events!.data.map((event: any) => (
               <EventItem
                 key={event.id}
-                id={event.id}
-                name={event.description}
-                description={event.description}
-                organizer={event.organizer}
+                event={event}
               ></EventItem>
             ))}
         </ul>
       </Card>
     </section>
-  );
+  )
 };

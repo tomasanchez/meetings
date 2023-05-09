@@ -4,24 +4,13 @@ import { useState } from 'react';
 
 import classes from "./EventForm.module.css";
 import { FormEvent } from "react";
-import { EventRequest } from "../../api/models/dataApi";
+import { EventRequest, optionVote } from "../../api/models/dataApi";
 import useSWRMutation from "swr/mutation";
 import { addEvent } from "../../api/services/eventService";
 import useUser from "../../api/swrHooks/useUser";
 
 interface eventFormProps {
   onClose: () => void;
-}
-
-interface option {
-  date: string;
-  hour: string;
-}
-
-interface optionToSend {
-  date: string;
-  hour: number;
-  minute: number;
 }
 
 const today = new Date().toISOString().split("T")[0];
@@ -43,13 +32,12 @@ export const EventForm = (props: eventFormProps) => {
 
     const formData = new FormData(event.currentTarget);
     const formFields: {}[] = [];
-    const optionsToSend: optionToSend[] = [];
+    const optionsToSend: optionVote[] = [];
 
     Object.entries(Object.fromEntries(formData)).forEach((e) => {
       formFields.push(e);
     });
 
-    console.log(formFields)
 
     for(let i = 0; i < (formFields.length)/2; i++) {
       const date: string = formFields[i*2][1];
@@ -70,7 +58,6 @@ export const EventForm = (props: eventFormProps) => {
       await trigger(newEvent);
       props.onClose()
     } catch (e) {
-      console.log(e);
     }
   };
 

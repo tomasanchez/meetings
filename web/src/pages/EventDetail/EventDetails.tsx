@@ -91,17 +91,15 @@ export const EventDetails = () => {
           <div className={classes.button}>
             {user!.username !== null && (
               <>
-                {!(event!.data.guests.indexOf(user!.username) !== -1) && (
-                  <Button onClick={joinEventHandler}>JoinEvent</Button>
+                {!(event!.data.guests.indexOf(user!.username) !== -1) && user!.username !== event!.data.organizer && (
+                  <Button onClick={joinEventHandler}>Join Event & Vote</Button>
                 )}
 
-                {user!.username === event!.data.organizer ? (
+                {user!.username === event!.data.organizer && (
                   <Button onClick={toggleVotingHandler}>
                     {!event!.data.voting ? "Enable voting" : "Close event"}
                   </Button>
-                ):
-                  (!event!.data.voting ? "Votation is closed" : "Votation is open")
-                }
+                )}
               </>
             )}
           </div>

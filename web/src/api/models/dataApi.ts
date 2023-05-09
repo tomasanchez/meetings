@@ -75,7 +75,7 @@ export interface EventWrapper {
 
 
 //INTERFACE TO VOTE
-interface optionVote {
+export interface optionVote {
   date: string
   hour: number
   minute: number
