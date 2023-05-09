@@ -38,6 +38,15 @@
   height: 20rem;
 }
 
+.link_register {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.link_register:hover {
+  opacity: 0.6;
+}
+
 @media (max-width: 767px) {
   .login-card {
     padding: 30px;

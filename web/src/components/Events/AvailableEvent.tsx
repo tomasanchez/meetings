@@ -8,23 +8,23 @@ export const AvailableEvent = () => {
   const { events, error, isLoading } = useEvent();
 
 
-  if (error) return "error";
-  if (isLoading) return "cargando"
-
-  return (
-    <section className={classes.event}>
+  if (error) return <div>error</div>;
+  if (isLoading) return <div>loading</div>;
+  if (!events?.data) {
+    <div>Aún no hay eventos!</div>
+  }
+  
+  return (  <section className={classes.event}>
       <Card>
         <ul>
           {events!.data.map((event: any) => (
               <EventItem
                 key={event.id}
-                id={event.id}
-                name={event.description}
-                description={event.description}
+                event={event}
               ></EventItem>
             ))}
         </ul>
       </Card>
     </section>
-  );
+  )
 };
