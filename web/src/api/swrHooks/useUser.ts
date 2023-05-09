@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import useSWR from "swr";
 
 interface Token {
@@ -19,8 +20,7 @@ const userFetcher = async () => {
   }
 
   // not authorized
-  const error = new Error("Not authorized!");
-  throw error;
+  throw new Error("Not authorized!")
 };
 
 

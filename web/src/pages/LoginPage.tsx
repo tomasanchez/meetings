@@ -13,8 +13,6 @@ export const LoginPage = () => {
   const passwordInput = useRef<HTMLInputElement>(null);
   const repeatPassword = useRef<HTMLInputElement>(null);
   const [isLogin, setisLogin] = useState<boolean>(true);
-  const [errorLogin, seterrorLogin] = useState<boolean>(false);
-  const [errorRegister, seterrorRegister] = useState<boolean>(false);
 
   const { user, mutate } = useUser();
 
@@ -42,11 +40,6 @@ export const LoginPage = () => {
     mutate();
   };
 
-  const resetErrors = () => {
-    if (errorLogin) seterrorLogin(false);
-    if (errorRegister) seterrorLogin(false);
-  };
-
   const loginForm = (
     <form className="my-3" onSubmit={handleLogin}>
       <div className="mb-4">
@@ -60,7 +53,6 @@ export const LoginPage = () => {
           name="username"
           autoComplete="off"
           required
-          onBlur={resetErrors}
           ref={userNameInput}
         />
       </div>
@@ -75,7 +67,6 @@ export const LoginPage = () => {
           name="password"
           minLength={8}
           required
-          onBlur={resetErrors}
           ref={passwordInput}
         />
         <span>

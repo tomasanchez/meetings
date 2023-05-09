@@ -8,6 +8,7 @@ import { EventWrapper, ToggleVotingRequest } from "../../api/models/dataApi";
 import useSWR from "swr";
 import { fetcher } from "../../api/fetcher";
 import { useEffect } from "react";
+import Swal from "sweetalert2";
 
 export const EventDetails = () => {
   const navigate = useNavigate();
@@ -29,7 +30,15 @@ export const EventDetails = () => {
     navigate("/");
   };
 
-  if (error) return <div>failed to load</div>;
+  if (error) {
+    Swal.fire({
+      title: 'Error',
+      text: error.detail,
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    throw new Error(error);
+  }
   if (isLoading) return <div>loading...</div>;
   if (!user) return navigate("/login");
 

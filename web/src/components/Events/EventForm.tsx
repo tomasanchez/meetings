@@ -8,6 +8,7 @@ import { EventRequest, optionVote } from "../../api/models/dataApi";
 import useSWRMutation from "swr/mutation";
 import { addEvent } from "../../api/services/eventService";
 import useUser from "../../api/swrHooks/useUser";
+import Swal from "sweetalert2";
 
 interface eventFormProps {
   onClose: () => void;
@@ -29,6 +30,16 @@ export const EventForm = (props: eventFormProps) => {
 
   const confirmHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if(user == null) {
+      Swal.fire({
+        title: 'Error',
+        text: "Por favor inicie sesion",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return
+    }
 
     const formData = new FormData(event.currentTarget);
     const formFields: {}[] = [];
@@ -53,12 +64,10 @@ export const EventForm = (props: eventFormProps) => {
       options: optionsToSend,
       guests: [],
     };
-
-    try {
-      await trigger(newEvent);
-      props.onClose()
-    } catch (e) {
-    }
+    
+    await trigger(newEvent);
+    props.onClose()
+  
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
