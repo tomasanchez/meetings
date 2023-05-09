@@ -20,20 +20,18 @@ export const AvailableEvent = () => {
   }
 
   if (isLoading) return <div>loading</div>;
-  if (!events?.data) {
-    <div>Aún no hay eventos!</div>
-  }
   
-  return (  <section className={classes.event}>
+  return ( <section className={classes.event}>
       <Card>
-        <ul>
+        { events?.data.length == 0 && <div className="text-center" >No hay eventos próximos</div> }
+        { events?.data.length != 0 && <ul>
           {events!.data.map((event: any) => (
               <EventItem
                 key={event.id}
                 event={event}
               ></EventItem>
             ))}
-        </ul>
+        </ul>}
       </Card>
     </section>
   )
