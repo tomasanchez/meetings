@@ -3,12 +3,12 @@ import classes from "./Modal.module.css";
 import reactDom from "react-dom";
 
 interface modalOverlayProps {
-  onClose: () => any;
+  onClose: () => void;
   children: ReactNode;
 }
 
 interface modalProps {
-  onClose: () => any;
+  onClose: () => void;
   children: ReactNode;
 }
 

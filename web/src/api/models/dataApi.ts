@@ -67,3 +67,33 @@ export interface HourRequest {
   hour: number
   minute: number
 }
+
+//INTERFACE TO FETCH AN EVENT WITH AN ID
+export interface EventWrapper {
+  data: Event
+}
+
+
+//INTERFACE TO VOTE
+export interface optionVote {
+  date: string
+  hour: number
+  minute: number
+}
+
+export interface VoteRequest {
+  username: string
+  option: optionVote
+}
+
+
+//INTERFACE TO JOIN AN EVENT
+export interface JoinRequest {
+  username: string
+}
+
+//INTERFACE TO TOGGLE VOTING
+export interface ToggleVotingRequest {
+  username: string
+  voting: boolean
+}

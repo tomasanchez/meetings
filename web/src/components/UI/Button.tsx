@@ -3,7 +3,7 @@ import classes from "./Button.module.css";
 
 interface buttonProps {
   type?: "button" | "submit" | "reset";
-  onClick?: () => any;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children: ReactNode;
 }
 
