@@ -8,9 +8,10 @@ from starlette.status import HTTP_200_OK, HTTP_301_MOVED_PERMANENTLY, HTTP_404_N
     HTTP_501_NOT_IMPLEMENTED, HTTP_502_BAD_GATEWAY, HTTP_503_SERVICE_UNAVAILABLE, HTTP_504_GATEWAY_TIMEOUT
 
 from app.adapters.http_client import AsyncHttpClient
-from app.dependencies import get_async_http_client, get_services
+from app.dependencies import get_async_http_client, get_redis, get_services
 from app.domain.models import Service
 from tests.conftest import DependencyOverrider
+from tests.mocks import FakeRedis
 
 
 class TestActuator:
@@ -51,14 +52,14 @@ class TestActuator:
         # then
         assert response.status_code == HTTP_200_OK
 
-    def test_readiness_check_no_services(self, test_client):
+    def test_readiness_check_no_services(self, test_client, monkeypatch):
         """
         GIVEN a FastAPI application, and no services
         WHEN the readiness check path is requested (GET)
         THEN it returns a 200 status code
         """
         # given
-
+        monkeypatch.setenv("REDIS_ACTIVE", "false")
         overrides = {
             get_services: lambda: []  # no services
         }
@@ -72,7 +73,8 @@ class TestActuator:
 
     def test_readiness_check_all_services_online(self, test_client,
                                                  fake_web,
-                                                 aio_http_client: AsyncHttpClient):
+                                                 aio_http_client: AsyncHttpClient,
+                                                 ):
         """
         GIVEN a FastAPI application, and all services are online
         WHEN the readiness check path is requested (GET)
@@ -87,7 +89,8 @@ class TestActuator:
                 Service(name="service1", base_url="http://service1", readiness_url=self.READINESS_PATH),
                 Service(name="service2", base_url="http://service2", readiness_url=self.READINESS_PATH),
             ],
-            get_async_http_client: lambda: aio_http_client
+            get_async_http_client: lambda: aio_http_client,
+            get_redis: lambda: FakeRedis(ping=True)
         }
 
         with DependencyOverrider(overrides):
