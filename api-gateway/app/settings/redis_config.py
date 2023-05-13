@@ -27,6 +27,7 @@ class RedisSettings(BaseSettings):
 
     HOST: str = "localhost"
     PORT: int = 6379
+    ACTIVE: bool = True
     CLUSTER: bool = False
     USERNAME: str | None = None
     PASSWORD: str | None = None

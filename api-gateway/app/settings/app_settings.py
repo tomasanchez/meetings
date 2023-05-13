@@ -31,7 +31,7 @@ class ApplicationSettings(BaseSettings):
         DOCS_URL (str): Path where swagger ui will be served at.
     """
 
-    DEBUG: bool = True
+    DEBUG: bool = False
     PROJECT_NAME: str = "API Gateway"
     PROJECT_DESCRIPTION: str = "Serves as a hub for communicating microservices 🚀."
     VERSION: str = __version__

@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.adapters.http_client import aio_http_client
+from app.dependencies import get_redis
 from app.router import api_router_v1, root_router
 from app.settings.app_settings import ApplicationSettings
 
@@ -22,6 +23,7 @@ async def on_startup():
     """
     log.debug("Execute FastAPI startup event handler.")
     aio_http_client.get_aiohttp_client()
+    get_redis()
 
 
 async def on_shutdown():
@@ -33,6 +35,7 @@ async def on_shutdown():
     """
     log.debug("Execute FastAPI shutdown event handler.")
     await aio_http_client.close_aiohttp_client()
+    await get_redis().close()
 
 
 @asynccontextmanager
