@@ -1,5 +1,11 @@
 version: '3'
 services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
   auth:
     build:
       context: auth
@@ -25,6 +31,7 @@ services:
     environment:
       - 'GATEWAY_SERVICES=[{"name": "Auth", "base_url": "http://auth:8000"},
       {"name": "Scheduler", "base_url": "http://scheduler:8080", "readiness_url": "/actuator/health"}]'
+      - REDIS_HOST=redis://redis:6379
   web:
     build:
       context: web
@@ -34,3 +41,7 @@ services:
     depends_on:
       - auth
       - scheduler
+
+volumes:
+  cache:
+    driver: local
