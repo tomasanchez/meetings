@@ -7,6 +7,8 @@ import logging
 from typing import TypeVar
 
 import aioredis
+import redis
+from redis.cluster import RedisCluster
 
 R = TypeVar("R")
 
@@ -277,3 +279,96 @@ class RedisClient(RedisConnector):
                 exc_info=(type(ex), ex, ex.__traceback__),
             )
             raise RedisConnectionError from ex
+
+
+class RedisClusterConnection(RedisConnector):
+    """Redis Cluster connection
+
+    Utility class for handling Redis Cluster connection and operations.
+    """
+    log = logging.getLogger(__name__)
+
+    def __init__(self, url: str, port: int) -> None:
+        self.redis = RedisCluster(host=url, port=port, decode_responses=True)
+
+    async def ping(self) -> bool:
+        self.log.debug("Execute Redis PING command")
+        try:
+            return self.redis.ping()
+        except redis.exceptions.ClusterError as ex:
+            self.log.exception(
+                "Redis PING command finished with exception",
+                exc_info=(type(ex), ex, ex.__traceback__),
+            )
+            return False
+
+    async def set(self, key: str, value: str) -> R:
+        self.log.debug(f"Execute Redis SET command, key: {key}, value: {value}")
+        try:
+            return self.redis.set(key, value)
+        except redis.exceptions.ClusterError as ex:
+            self.log.exception(
+                "Redis SET command finished with exception",
+                exc_info=(type(ex), ex, ex.__traceback__),
+            )
+            raise RedisConnectionError from ex
+
+    async def get(self, key: str) -> str | None:
+        self.log.debug(f"Execute Redis GET command, key: {key}")
+        try:
+            return self.redis.get(key)
+        except redis.exceptions.ClusterError as ex:
+            self.log.exception(
+                "Redis GET command finished with exception",
+                exc_info=(type(ex), ex, ex.__traceback__),
+            )
+            raise RedisConnectionError from ex
+
+    async def exists(self, key: str) -> bool:
+        self.log.debug(f"Execute Redis EXISTS command, key: {key}")
+        try:
+            return self.redis.exists(key)
+        except redis.exceptions.ClusterError as ex:
+            self.log.exception(
+                "Redis EXISTS command finished with exception",
+                exc_info=(type(ex), ex, ex.__traceback__),
+            )
+            raise RedisConnectionError from ex
+
+    async def expire(self, key: str, time: int) -> bool:
+        self.log.debug(f"Execute Redis EXPIRE command, key: {key}, time: {time}")
+
+        try:
+            return self.redis.expire(key, time)
+        except redis.exceptions.ClusterError as ex:
+            self.log.exception(
+                "Redis EXPIRE command finished with exception",
+                exc_info=(type(ex), ex, ex.__traceback__),
+            )
+            raise RedisConnectionError from ex
+
+    async def delete(self, key: str):
+        self.log.debug(f"Execute Redis DELETE command, key: {key}")
+        try:
+            self.redis.delete(key)
+        except redis.exceptions.ClusterError as ex:
+            self.log.exception(
+                "Redis DELETE command finished with exception",
+                exc_info=(type(ex), ex, ex.__traceback__),
+            )
+            raise RedisConnectionError from ex
+
+    async def incr(self, key: str) -> int:
+        self.log.debug(f"Execute Redis INCR command, key: {key}")
+        try:
+            return self.redis.incr(key)
+        except redis.exceptions.ClusterError as ex:
+            self.log.exception(
+                "Redis INCR command finished with exception",
+                exc_info=(type(ex), ex, ex.__traceback__),
+            )
+            raise RedisConnectionError from ex
+
+    async def close(self):
+        self.log.debug("Closing Redis client")
+        self.redis.close()
