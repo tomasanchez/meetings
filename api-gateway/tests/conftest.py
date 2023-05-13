@@ -8,6 +8,7 @@ import pytest_asyncio
 from starlette.testclient import TestClient
 
 from app.adapters.http_client import AiohttpClient, AsyncHttpClient
+from app.adapters.redis_connector import RedisClient
 from app.main import app
 
 
@@ -64,3 +65,13 @@ async def fixture_aio_http_client() -> AsyncHttpClient:
     client.get_aiohttp_client()
     yield client
     await client.close_aiohttp_client()
+
+
+@pytest_asyncio.fixture(name="redis_client_connector")
+async def fixture_redis_client() -> RedisClient:
+    """
+    Create a Redis client.
+    """
+    client = RedisClient(url="fake-host", port=6379)
+    yield client
+    await client.close()
