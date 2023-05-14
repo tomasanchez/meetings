@@ -68,3 +68,23 @@ This project uses the `Docker` image `uvicorn-gunicorn-fastapi:python3.10-slim` 
 - [Pydantic](https://pydantic-docs.helpmanual.io/)
 - [Cosmic Python](https://cosmicpython.com/)
 - [Gunicorn + Uvicorn](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker)
+
+## Design
+
+### Rate Limiting
+
+This API Gateway uses a `Redis` instance to store the rate limit counters.
+The rate limit is set to `X` requests per `T` seconds.
+
+#### Class Diagram
+
+Our `FastAPI` application calls a middleware function which checks the rate limit before request is served.
+
+It uses the `RateLimiter` to increment the counter for the request host and checks if it has exceeded the limit, if so,
+it returns it interrupts the execution sending a response with a `429` status code: too many requests.
+
+![Rate Limiting Class Diagram](../docs/assets/rate-limiter-class_diagram.svg)
+
+The `RateLimiter` implementation uses the `Redis` instance to store the counters with the `INCR` command, which
+guarantees that is run atomically. `RedisConnector` is a wrapper around the `Redis` client which provides common methods
+an errors for using both a single redis connection or a cluster. `RedisClient` uses `aioredis` for as ync operations.
