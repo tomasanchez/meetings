@@ -127,7 +127,8 @@ class TestActuator:
                 Service(name="service1", base_url="http://service1", readiness_url=self.READINESS_PATH),
                 Service(name="service2", base_url="http://service2", readiness_url=self.READINESS_PATH),
             ],
-            get_async_http_client: lambda: aio_http_client
+            get_async_http_client: lambda: aio_http_client,
+            get_redis: lambda: FakeRedis(ping=False)
         }
 
         with DependencyOverrider(overrides):
