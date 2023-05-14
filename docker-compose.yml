@@ -26,12 +26,17 @@ services:
     build:
       context: api-gateway
       dockerfile: Dockerfile
+    depends_on:
+      - redis
     ports:
       - "80:80"
     environment:
       - 'GATEWAY_SERVICES=[{"name": "Auth", "base_url": "http://auth:8000"},
       {"name": "Scheduler", "base_url": "http://scheduler:8080", "readiness_url": "/actuator/health"}]'
       - REDIS_HOST=redis://redis:6379
+      - FASTAPI_USE_LIMITER=1
+      - FASTAPI_LIMITER_THRESHOLD=10
+      - FASTAPI_LIMITER_INTERVAL=60
   web:
     build:
       context: web
