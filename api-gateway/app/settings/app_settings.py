@@ -27,13 +27,19 @@ class ApplicationSettings(BaseSettings):
             production.
         PROJECT_NAME (str): FastAPI project name.
         PROJECT_DESCRIPTION (str): FastAPI project description.
+        USE_LIMITER (bool): Enable rate limiter.
+        LIMITER_THRESHOLD (int): Number of requests allowed in the interval.
+        LIMITER_INTERVAL (int): Interval in seconds.
         VERSION (str): Application version.
         DOCS_URL (str): Path where swagger ui will be served at.
     """
 
-    DEBUG: bool = True
+    DEBUG: bool = False
     PROJECT_NAME: str = "API Gateway"
     PROJECT_DESCRIPTION: str = "Serves as a hub for communicating microservices 🚀."
+    USE_LIMITER: bool = False
+    LIMITER_THRESHOLD: int = 10
+    LIMITER_INTERVAL: int = 60
     VERSION: str = __version__
     DOCS_URL: str = "/docs"
 

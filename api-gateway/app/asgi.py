@@ -3,10 +3,12 @@
 from contextlib import asynccontextmanager
 import logging
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.adapters.http_client import aio_http_client
+from app.dependencies import get_redis
+from app.middleware import rate_limiter_middleware
 from app.router import api_router_v1, root_router
 from app.settings.app_settings import ApplicationSettings
 
@@ -22,6 +24,7 @@ async def on_startup():
     """
     log.debug("Execute FastAPI startup event handler.")
     aio_http_client.get_aiohttp_client()
+    get_redis()
 
 
 async def on_shutdown():
@@ -33,6 +36,7 @@ async def on_shutdown():
     """
     log.debug("Execute FastAPI shutdown event handler.")
     await aio_http_client.close_aiohttp_client()
+    await get_redis().close()
 
 
 @asynccontextmanager
@@ -98,6 +102,8 @@ def get_application() -> FastAPI:
         }
     ]
 
+    dependencies: list[Depends] = [Depends(rate_limiter_middleware)] if settings.USE_LIMITER else []
+
     app = FastAPI(
         title=settings.PROJECT_NAME,
         description=settings.PROJECT_DESCRIPTION,
@@ -108,6 +114,7 @@ def get_application() -> FastAPI:
         license_info=license_info,
         contact=contact,
         openapi_tags=tags_metadata,
+        dependencies=dependencies
     )
 
     app.add_middleware(
@@ -117,7 +124,7 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     log.debug("Add application routes.")
 
     app.include_router(root_router)
