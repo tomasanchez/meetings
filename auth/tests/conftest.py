@@ -5,12 +5,13 @@ from pydantic import typing
 import pytest
 from starlette.testclient import TestClient
 
-from auth.adapters.repository import InMemoryUserRepository, UserRepository
+from auth.adapters.repository import UserRepository
 from auth.main import app
 from auth.service_layer.auth import AuthService
 from auth.service_layer.jwt import JwtService
 from auth.service_layer.password_encoder import BcryptPasswordEncoder, PasswordEncoder
 from auth.service_layer.register import RegisterService
+from tests.mocks import InMemoryUserRepository
 
 
 class DependencyOverrider:
