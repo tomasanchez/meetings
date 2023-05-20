@@ -4,21 +4,45 @@ FastAPI dependencies are reusable components that can be used across multiple ro
 from typing import Annotated
 
 from fastapi import Depends
+from pymongo.database import Database
 
-from auth.adapters.repository import InMemoryUserRepository, UserRepository
+from auth.adapters.db import ClientFactory
+from auth.adapters.repositories.pymongo_repository import PymongoUserRepository
+from auth.adapters.repository import UserRepository
+from auth.app.settings.mongo_db_settings import MongoDbSettings
 from auth.service_layer.auth import AuthService
 from auth.service_layer.jwt import JwtService
 from auth.service_layer.password_encoder import BcryptPasswordEncoder, PasswordEncoder
 from auth.service_layer.register import RegisterService
 
-in_memory_user_repository = InMemoryUserRepository()
+mongo_settings = MongoDbSettings()
 
 
-def get_user_repository() -> UserRepository:
+def get_client_factory() -> ClientFactory:
+    """
+    Dependency that returns a ClientFactory instance.
+    """
+    return ClientFactory(mongo_settings.CLIENT)
+
+
+ClientFactoryDependency = Annotated[ClientFactory, Depends(get_client_factory)]
+
+
+def get_database(client: ClientFactoryDependency) -> Database:
+    """
+    Dependency that returns a database.
+    """
+    return client().get_database(mongo_settings.DATABASE)
+
+
+DatabaseDependency = Annotated[Database, Depends(get_database)]
+
+
+def get_user_repository(db: DatabaseDependency) -> UserRepository:
     """
     Dependency that returns a UserRepository instance.
     """
-    return in_memory_user_repository
+    return PymongoUserRepository(database=db)
 
 
 UserRepositoryDependency = Annotated[UserRepository, Depends(get_user_repository)]

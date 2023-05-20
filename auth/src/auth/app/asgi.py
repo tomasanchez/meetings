@@ -6,6 +6,7 @@ import logging
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from auth.app.dependencies import get_client_factory
 from auth.app.router import api_router_v1, root_router
 from auth.app.settings.application_settings import ApplicationSettings
 
@@ -20,6 +21,7 @@ async def on_startup():
         1. https://fastapi.tiangolo.com/advanced/events/#startup-event
     """
     log.debug("Execute FastAPI startup event handler.")
+    get_client_factory()
 
 
 async def on_shutdown():
@@ -30,6 +32,8 @@ async def on_shutdown():
         1. https://fastapi.tiangolo.com/advanced/events/#shutdown-event
     """
     log.debug("Execute FastAPI shutdown event handler.")
+    client = get_client_factory()()
+    client.close()
 
 
 @asynccontextmanager
