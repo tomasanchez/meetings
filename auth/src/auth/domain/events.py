@@ -2,11 +2,44 @@
 Events that may occur in the application.
 """
 import datetime
+from enum import Enum
 
 from pydantic import EmailStr, Field
 
 from auth.domain.models import Role
 from auth.domain.schemas import CamelCaseModel
+
+
+class ServiceStatus(str, Enum):
+    """Service status enumeration.
+
+    Attributes:
+        ONLINE (str): Service is online.
+        OFFLINE (str): Service is offline.
+    """
+
+    ONLINE = "online"
+    OFFLINE = "offline"
+
+
+class StatusChecked(CamelCaseModel):
+    """
+    The event is raised when the status of the actuator is checked.
+    """
+
+    name: str = Field(description="The name of the service.", example="redis")
+    status: ServiceStatus = Field(description="The status of the service.", example=ServiceStatus.ONLINE)
+    detail: str | None = Field(description="The detail of the service.", example="No errors found.", default=None)
+
+
+class ReadinessChecked(CamelCaseModel):
+    """
+    The event is raised when the readiness of the actuator is checked.
+    """
+    status: ServiceStatus = Field(description="The status of the service.", example=ServiceStatus.ONLINE)
+    services: list[StatusChecked] = Field(description="The list of services.",
+                                          example=[StatusChecked(name="database", status=ServiceStatus.ONLINE)],
+                                          default_factory=list)
 
 
 class HealthChecked(CamelCaseModel):
