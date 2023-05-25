@@ -35,6 +35,8 @@ export const EventDetails = () => {
     throw new Error(error);
   }
   if (isLoading) return <div>loading...</div>;
+  if (!user) {navigate("/login")};
+
 
   const toggleVotingHandler = async () => {
     const toggleVotingRequest: ToggleVotingRequest = {
