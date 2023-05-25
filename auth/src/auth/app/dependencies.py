@@ -4,6 +4,7 @@ FastAPI dependencies are reusable components that can be used across multiple ro
 from typing import Annotated
 
 from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pymongo.database import Database
 
 from auth.adapters.db import ClientFactory
@@ -18,6 +19,9 @@ from auth.service_layer.register import RegisterService
 mongo_settings = MongoDbSettings()
 user_repository: UserRepository | None = None
 password_encoder: PasswordEncoder | None = None
+bearer_auth = HTTPBearer(scheme_name='JSON Web Token', description='Bearer JWT')
+
+BearerTokenAuth = Annotated[HTTPAuthorizationCredentials, Depends(bearer_auth)]
 
 
 def get_client_factory() -> ClientFactory:
