@@ -92,14 +92,6 @@ def get_application() -> FastAPI:
             "name": "Commands",
             "description": "A request to change the state of the system.",
         },
-        {
-            "name": "Scheduler",
-            "description": "Manages meeting's schedule workflows.",
-        },
-        {
-            "name": "Auth",
-            "description": "Manages user's validation workflows.",
-        }
     ]
 
     dependencies: list[Depends] = [Depends(rate_limiter_middleware)] if settings.USE_LIMITER else []
