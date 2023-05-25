@@ -14,7 +14,7 @@ from app.domain.schemas import ResponseModel, ResponseModels
 from app.middleware import AuthMiddleware
 from app.service_layer.gateway import api_v1_url, get_service, get_users, verify_status
 
-router = APIRouter(prefix="/auth-service", tags=["Auth"])
+router = APIRouter()
 
 UsersQuery = Annotated[
     str | None, Query(description="A list of comma-separated usernames.", example="johndoe, other", alias="users")]

@@ -19,7 +19,7 @@ from app.domain.schemas import ResponseModel, ResponseModels
 from app.middleware import AuthMiddleware
 from app.service_layer.gateway import api_v1_url, get_service, verify_status
 
-router = APIRouter(prefix="/scheduler-service", tags=["Scheduler"])
+router = APIRouter()
 
 
 ########################################################################################################################

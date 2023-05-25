@@ -2,11 +2,11 @@
 Tests for the scheduler service gateway.
 """
 import datetime
-import uuid
 from typing import Any, Callable
+import uuid
 
-import pytest
 from aioresponses import aioresponses
+import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN, \
     HTTP_404_NOT_FOUND, HTTP_503_SERVICE_UNAVAILABLE
 
@@ -77,7 +77,7 @@ class TestSchedulerQueries(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get("/api/v1/scheduler-service/schedules")
+            response = test_client.get("/api/v1/schedules")
             # then
             assert response.status_code == HTTP_200_OK
 
@@ -92,7 +92,7 @@ class TestSchedulerQueries(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get("/api/v1/scheduler-service/schedules")
+            response = test_client.get("/api/v1/schedules")
             # then
             assert response.status_code == HTTP_503_SERVICE_UNAVAILABLE
 
@@ -109,7 +109,7 @@ class TestSchedulerQueries(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get("/api/v1/scheduler-service/schedules/1")
+            response = test_client.get("/api/v1/schedules/1")
             # then
             assert response.status_code == HTTP_200_OK
 
@@ -126,7 +126,7 @@ class TestSchedulerQueries(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get("/api/v1/scheduler-service/schedules/1")
+            response = test_client.get("/api/v1/schedules/1")
             # then
             assert response.status_code == HTTP_404_NOT_FOUND
 
@@ -157,7 +157,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post("/api/v1/scheduler-service/schedules",
+            response = test_client.post("/api/v1/schedules",
                                         headers=auth_headers,
                                         json=json)
             # then
@@ -183,7 +183,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post("/api/v1/scheduler-service/schedules",
+            response = test_client.post("/api/v1/schedules",
                                         json=json,
                                         headers=auth_headers)
             # then
@@ -211,7 +211,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.patch("/api/v1/scheduler-service/schedules/1/voting",
+            response = test_client.patch("/api/v1/schedules/1/voting",
                                          json=to_jsonable_dict(command),
                                          headers=auth_headers)
             # then
@@ -238,7 +238,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.patch("/api/v1/scheduler-service/schedules/non-found/voting",
+            response = test_client.patch("/api/v1/schedules/non-found/voting",
                                          json=to_jsonable_dict(command),
                                          headers=auth_headers)
             # then
@@ -265,7 +265,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.patch("/api/v1/scheduler-service/schedules/1/voting",
+            response = test_client.patch("/api/v1/schedules/1/voting",
                                          json=to_jsonable_dict(command),
                                          headers=auth_headers)
             # then
@@ -294,7 +294,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.patch(f"/api/v1/scheduler-service/schedules/{meeting_id}/relationships/guests",
+            response = test_client.patch(f"/api/v1/schedules/{meeting_id}/relationships/guests",
                                          headers=auth_headers)
             # then
             assert response.status_code == HTTP_200_OK
@@ -317,7 +317,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.patch(f"/api/v1/scheduler-service/schedules/{meeting_id}/relationships/guests",
+            response = test_client.patch(f"/api/v1/schedules/{meeting_id}/relationships/guests",
                                          headers=auth_headers)
             # then
             assert response.status_code == HTTP_401_UNAUTHORIZED
@@ -360,7 +360,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.patch(f"/api/v1/scheduler-service/schedules/1/options",
+            response = test_client.patch(f"/api/v1/schedules/1/options",
                                          json=to_jsonable_dict(command),
                                          headers=auth_headers)
             # then
