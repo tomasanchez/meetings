@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @OpenAPIDefinition(
         info = @io.swagger.v3.oas.annotations.info.Info(
                 title = "Scheduler Service",
-                version = "0.1.1",
+                version = "0.1.2",
                 description = "Scheduler manages the workflow of meetings scheduling",
                 license = @io.swagger.v3.oas.annotations.info.License(
                         name = "MIT",
