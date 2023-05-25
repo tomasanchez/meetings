@@ -67,7 +67,7 @@ class TestAuthQueries(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get(f"/api/v1/auth-service/users/{username}")
+            response = test_client.get(f"/api/v1/users/{username}")
 
             # then
             assert response.status_code == HTTP_200_OK
@@ -86,7 +86,7 @@ class TestAuthQueries(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get(f"/api/v1/auth-service/users/{username}")
+            response = test_client.get(f"/api/v1/users/{username}")
 
             # then
             assert response.status_code == HTTP_404_NOT_FOUND
@@ -113,7 +113,7 @@ class TestAuthQueries(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get(f"/api/v1/auth-service/users/{username}")
+            response = test_client.get(f"/api/v1/users/{username}")
 
             # then
             assert response.status_code == error_status
@@ -131,7 +131,7 @@ class TestAuthQueries(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get("/api/v1/auth-service/users")
+            response = test_client.get("/api/v1/users")
 
             # then
             assert response.status_code == HTTP_200_OK
@@ -157,7 +157,7 @@ class TestAuthQueries(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.get(f"/api/v1/auth-service/users")
+            response = test_client.get(f"/api/v1/users")
 
             # then
             assert response.status_code == error_status
@@ -183,7 +183,7 @@ class TestAuthCommands(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post(f"/api/v1/auth-service/users", json=command.dict(by_alias=True))
+            response = test_client.post(f"/api/v1/users", json=command.dict(by_alias=True))
 
             # then
             assert response.status_code == HTTP_201_CREATED
@@ -205,7 +205,7 @@ class TestAuthCommands(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post(f"/api/v1/auth-service/users",
+            response = test_client.post(f"/api/v1/users",
                                         json=command.dict(by_alias=True))
 
             # then
@@ -231,7 +231,7 @@ class TestAuthCommands(TestAuthServiceGateway):
 
         with DependencyOverrider(overrides=self.overrides):
             # when
-            response = test_client.post(f"/api/v1/auth-service/users",
+            response = test_client.post(f"/api/v1/users",
                                         json=dict(username=username, email=email, password=password))
 
             # then
@@ -255,7 +255,7 @@ class TestAuthCommands(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post(f"/api/v1/auth-service/auth/token", json=command.dict(by_alias=True))
+            response = test_client.post(f"/api/v1/auth/token", json=command.dict(by_alias=True))
 
             # then
             assert response.status_code == HTTP_200_OK
@@ -272,7 +272,7 @@ class TestAuthCommands(TestAuthServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post(f"/api/v1/auth-service/auth/token", json=command.dict(by_alias=True))
+            response = test_client.post(f"/api/v1/auth/token", json=command.dict(by_alias=True))
 
             # then
             assert response.status_code == HTTP_401_UNAUTHORIZED
