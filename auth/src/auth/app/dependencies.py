@@ -16,6 +16,8 @@ from auth.service_layer.password_encoder import BcryptPasswordEncoder, PasswordE
 from auth.service_layer.register import RegisterService
 
 mongo_settings = MongoDbSettings()
+user_repository: UserRepository | None = None
+password_encoder: PasswordEncoder | None = None
 
 
 def get_client_factory() -> ClientFactory:
@@ -42,7 +44,12 @@ def get_user_repository(db: DatabaseDependency) -> UserRepository:
     """
     Dependency that returns a UserRepository instance.
     """
-    return PymongoUserRepository(database=db)
+    global user_repository
+
+    if user_repository is None:
+        user_repository = PymongoUserRepository(database=db)
+
+    return user_repository
 
 
 UserRepositoryDependency = Annotated[UserRepository, Depends(get_user_repository)]
@@ -52,19 +59,24 @@ def get_password_encoder() -> PasswordEncoder:
     """
     Dependency that returns a PasswordEncoder instance.
     """
-    return BcryptPasswordEncoder()
+    global password_encoder
+
+    if password_encoder is None:
+        password_encoder = BcryptPasswordEncoder()
+
+    return password_encoder
 
 
 PasswordEncoderDependency = Annotated[PasswordEncoder, Depends(get_password_encoder)]
 
 
-def get_register_service(user_repository: UserRepositoryDependency,
+def get_register_service(user_repo: UserRepositoryDependency,
                          encoder: PasswordEncoderDependency) -> RegisterService:
     """
     Dependency that returns a RegisterService instance.
     """
     return RegisterService(
-        user_repository=user_repository,
+        user_repository=user_repo,
         password_encoder=encoder,
     )
 
@@ -82,14 +94,14 @@ def get_jwt_service() -> JwtService:
 JwtServiceDependency = Annotated[JwtService, Depends(get_jwt_service)]
 
 
-def get_auth_service(user_repository: UserRepositoryDependency,
+def get_auth_service(user_repo: UserRepositoryDependency,
                      jwt_service: JwtServiceDependency,
                      encoder: PasswordEncoderDependency) -> AuthService:
     """
     Dependency that returns a RegisterService instance.
     """
     return AuthService(
-        user_repository=user_repository,
+        user_repository=user_repo,
         encoder=encoder,
         jwt_service=jwt_service,
     )
