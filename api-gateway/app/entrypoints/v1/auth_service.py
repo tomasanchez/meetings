@@ -9,8 +9,9 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from app.adapters.network import gateway
 from app.dependencies import AsyncHttpClientDependency, ServiceProvider
 from app.domain.commands.auth_service import AuthenticateUser, RegisterUser
-from app.domain.events.auth_service import TokenGenerated, UserRegistered
+from app.domain.events.auth_service import TokenGenerated, UserAuthenticated, UserRegistered
 from app.domain.schemas import ResponseModel, ResponseModels
+from app.middleware import AuthMiddleware
 from app.service_layer.gateway import api_v1_url, get_service, get_users, verify_status
 
 router = APIRouter(prefix="/auth-service", tags=["Auth"])
@@ -118,3 +119,18 @@ async def authenticate(command: AuthenticateUser,
     verify_status(response=auth_response, status_code=status_code)
 
     return ResponseModel[TokenGenerated](**auth_response)
+
+
+@router.get("/auth/me",
+            status_code=HTTP_200_OK,
+            summary="Authenticates current user",
+            tags=["Queries"],
+            )
+async def authenticate_me(
+        user: AuthMiddleware
+) -> ResponseModel[UserAuthenticated]:
+    """
+    Validates a user token. If valid, retrieves the user information.
+    """
+
+    return ResponseModel[UserAuthenticated](data=user)

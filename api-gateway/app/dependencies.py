@@ -4,6 +4,7 @@ FastAPI dependencies injection.
 from typing import Annotated
 
 from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.adapters.http_client import AsyncHttpClient, aio_http_client
 from app.adapters.redis_connector import RedisClient, RedisClusterConnection, RedisConnector
@@ -14,6 +15,9 @@ from app.settings.gateway_settings import GatewaySettings
 from app.settings.redis_config import RedisSettings
 
 redis_connector: RedisConnector | None = None
+bearer_auth = HTTPBearer(scheme_name='JSON Web Token', description='Bearer JWT')
+
+BearerTokenAuth = Annotated[HTTPAuthorizationCredentials, Depends(bearer_auth)]
 
 
 def get_async_http_client() -> AsyncHttpClient:

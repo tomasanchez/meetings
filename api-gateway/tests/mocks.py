@@ -44,21 +44,18 @@ def user_registered_response_factory(username: str, user_id: str | None = None) 
     }
 
 
-def schedule_command_factory(organizer: str,
-                             title: str = "Test Meeting", guests: set[str] | None = None) -> ScheduleMeeting:
+def schedule_command_factory(title: str = "Test Meeting") -> ScheduleMeeting:
     """
     Creates a schedule command.
 
     Args:
-        organizer (str): The organizer.
         title (str, optional): The title. Defaults to "Test Meeting".
-        guests (set[str], optional): The guests. Defaults to None.
 
     Returns:
         dict[str, Any]: The schedule command.
     """
     fake_options = [ProposeOption(date=datetime.date.today(), hour=12, minute=30)]
-    return ScheduleMeeting(organizer=organizer, title=title, guests=guests or set(), options=fake_options)
+    return ScheduleMeeting(title=title, options=fake_options)
 
 
 class FakeRedis(RedisConnector):

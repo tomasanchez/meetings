@@ -98,6 +98,7 @@ async def gateway(
         path: str,
         query_params: dict | None = None,
         request_body: dict | str | None = None,
+        headers: dict | None = None,
 ) -> tuple[dict[str, Any], int]:
     """
     Make request to in-network services.
@@ -109,6 +110,7 @@ async def gateway(
         path: is the path to bind (like app.post('/api/users/'))
         query_params: is the query params to add to url
         request_body: is the payload
+        headers: request headers
 
     Returns:
         service result coming / non-blocking http request (coroutine)
@@ -125,7 +127,8 @@ async def gateway(
 
     url = f'{service_url}{path}' if not query_params else f'{service_url}{path}?{urlencode(query_params)}'
 
-    headers = dict()
+    if not headers:
+        headers = dict()
 
     response: aiohttp.ClientResponse
 

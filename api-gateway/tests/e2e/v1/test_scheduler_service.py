@@ -2,20 +2,17 @@
 Tests for the scheduler service gateway.
 """
 import datetime
-from typing import Any, Callable
 import uuid
+from typing import Any, Callable
 
-from aioresponses import aioresponses
 import pytest
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN, \
-    HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, \
-    HTTP_503_SERVICE_UNAVAILABLE
+from aioresponses import aioresponses
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN, \
+    HTTP_404_NOT_FOUND, HTTP_503_SERVICE_UNAVAILABLE
 
 from app.dependencies import get_async_http_client, get_services
-from app.domain.commands.scheduler_service import JoinMeeting, ProposeOption, ToggleVoting, VoteOption
-from app.domain.events.scheduler_service import MeetingScheduled
+from app.domain.commands.scheduler_service import ProposeOption, ToggleVoting, VoteOption
 from app.domain.models import Service
-from app.domain.schemas import ResponseModel
 from app.utils.formatter import to_jsonable_dict
 from tests.conftest import DependencyOverrider
 from tests.mocks import schedule_command_factory, user_registered_factory
@@ -136,21 +133,22 @@ class TestSchedulerQueries(TestSchedulerServiceGateway):
 
 class TestSchedulerCommands(TestSchedulerServiceGateway):
 
-    def test_schedule_meeting(self, test_client, fake_web, aio_http_client):
+    def test_schedule_meeting(self, test_client, fake_web, aio_http_client, auth_headers):
         """
         GIVEN a request to schedule a meeting, with valid organizer
         WHEN the request is made
         THEN it should return the schedule.
         """
-        command = schedule_command_factory(organizer="johndoe")
+        command = schedule_command_factory(title="Meeting with the team")
 
         fake_web.post(f"{FAKE_SCHEDULER_URL}/api/v1/schedules",
                       payload=fake_schedule_response(meeting_id="1"),
                       status=HTTP_201_CREATED)
 
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames=johndoe",
-                     payload={"data": [to_jsonable_dict(user_registered_factory(username="johndoe"))]},
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
+                     payload={"data": to_jsonable_dict(user_registered_factory(username="johndoe"))},
                      status=HTTP_200_OK,
+                     headers=auth_headers,
                      )
 
         self.overrides[get_async_http_client] = lambda: aio_http_client
@@ -159,92 +157,24 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post("/api/v1/scheduler-service/schedules", json=json)
+            response = test_client.post("/api/v1/scheduler-service/schedules",
+                                        headers=auth_headers,
+                                        json=json)
             # then
             assert response.status_code == HTTP_201_CREATED
 
-    def test_scheduling_meeting_with_guests(self, test_client, fake_web, aio_http_client):
-        """
-        GIVEN a request to schedule a meeting, with valid organizer and guests
-        WHEN the request is made
-        THEN it should return the schedule.
-        """
-        guest_1, guest_2, organizer = "carl", "jane", "johndoe"
-        command = schedule_command_factory(organizer=organizer, guests={guest_1, guest_2})
-
-        guests = {guest_1, guest_2, organizer}
-        query = ", ".join(guests)
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames={query}",
-                     payload={"data": [to_jsonable_dict(user_registered_factory(username="johndoe")),
-                                       to_jsonable_dict(user_registered_factory(username="carl")),
-                                       to_jsonable_dict(user_registered_factory(username="jane"))
-                                       ]
-                              },
-                     status=HTTP_200_OK,
-                     )
-
-        fake_web.post(f"{FAKE_SCHEDULER_URL}/api/v1/schedules",
-                      payload=fake_schedule_response(guests=[guest_1, guest_2]),
-                      status=HTTP_201_CREATED)
-
-        json = to_jsonable_dict(command)
-
-        self.overrides[get_async_http_client] = lambda: aio_http_client
-
-        with DependencyOverrider(self.overrides):
-            # when
-            response = test_client.post("/api/v1/scheduler-service/schedules", json=json)
-
-            response_body = ResponseModel[MeetingScheduled](**response.json())
-            # then
-            assert response.status_code == HTTP_201_CREATED
-            assert guest_1, guest_2 in response_body.data.guests
-
-    def test_scheduling_meeting_with_guests_not_found(self, test_client, fake_web, aio_http_client):
-        """
-        GIVEN a request to schedule a meeting, with valid organizer and not valid guests
-        WHEN the request is made
-        THEN it schedules without guests
-        """
-        guest_1, guest_2, organizer = "carl", "jane", "johndoe"
-        command = schedule_command_factory(organizer=organizer, guests={guest_1, guest_2})
-        guests = {guest_1, guest_2, organizer}
-
-        query = ", ".join(guests)
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames={query}",
-                     payload={"data": [to_jsonable_dict(user_registered_factory(username="johndoe")),
-                                       ]
-                              },
-                     status=HTTP_200_OK,
-                     )
-        fake_web.post(f"{FAKE_SCHEDULER_URL}/api/v1/schedules",
-                      payload=fake_schedule_response(),
-                      status=HTTP_201_CREATED)
-
-        json = to_jsonable_dict(command)
-
-        self.overrides[get_async_http_client] = lambda: aio_http_client
-
-        with DependencyOverrider(self.overrides):
-            # when
-            response = test_client.post("/api/v1/scheduler-service/schedules", json=json)
-
-            response_body = ResponseModel[MeetingScheduled](**response.json())
-            # then
-            assert response.status_code == HTTP_201_CREATED
-            assert guest_1, guest_2 not in response_body.data.guests
-
-    def test_scheduling_meeting_with_organizer_not_found(self, test_client, fake_web, aio_http_client):
+    def test_scheduling_meeting_with_organizer_not_found(self, test_client, fake_web, aio_http_client, auth_headers):
         """
         GIVEN a request to schedule a meeting, with invalid organizer
         WHEN the request is made
         THEN it is a conflict
         """
-        command = schedule_command_factory(organizer="johndoe")
+        command = schedule_command_factory()
 
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users?usernames=johndoe",
-                     payload={"data": []},
-                     status=HTTP_200_OK,
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
+                     payload={"details": "Invalid credentials."},
+                     status=HTTP_401_UNAUTHORIZED,
+                     headers=auth_headers,
                      )
 
         json = to_jsonable_dict(command)
@@ -253,17 +183,26 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
 
         with DependencyOverrider(self.overrides):
             # when
-            response = test_client.post("/api/v1/scheduler-service/schedules", json=json)
+            response = test_client.post("/api/v1/scheduler-service/schedules",
+                                        json=json,
+                                        headers=auth_headers)
             # then
-            assert response.status_code == HTTP_409_CONFLICT
+            assert response.status_code == HTTP_401_UNAUTHORIZED
 
-    def test_toggle_voting(self, test_client, fake_web, aio_http_client):
+    def test_toggle_voting(self, test_client, fake_web, aio_http_client, auth_headers):
         """
         GIVEN a request to toggle voting
         WHEN the request is made
         THEN it should return the schedule.
         """
-        command = ToggleVoting(username="johndoe")
+        command = ToggleVoting()
+
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
+                     payload={"data": to_jsonable_dict(user_registered_factory(username="johndoe"))},
+                     status=HTTP_200_OK,
+                     headers=auth_headers,
+                     )
+
         fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/1/voting",
                        payload=fake_schedule_response(meeting_id="1"),
                        status=HTTP_200_OK)
@@ -273,17 +212,24 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         with DependencyOverrider(self.overrides):
             # when
             response = test_client.patch("/api/v1/scheduler-service/schedules/1/voting",
-                                         json=to_jsonable_dict(command))
+                                         json=to_jsonable_dict(command),
+                                         headers=auth_headers)
             # then
             assert response.status_code == HTTP_200_OK
 
-    def test_toggle_voting_not_found(self, test_client, fake_web, aio_http_client):
+    def test_toggle_voting_not_found(self, test_client, fake_web, aio_http_client, auth_headers):
         """
         GIVEN a request to toggle voting for an invalid schedule
         WHEN the request is made
         THEN it should return NOT FOUND.
         """
-        command = ToggleVoting(username="johndoe")
+        command = ToggleVoting()
+
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
+                     payload={"data": to_jsonable_dict(user_registered_factory(username="johndoe"))},
+                     status=HTTP_200_OK,
+                     headers=auth_headers,
+                     )
         fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/non-found/voting",
                        payload={"detail": "Not found"},
                        status=HTTP_404_NOT_FOUND)
@@ -293,17 +239,24 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         with DependencyOverrider(self.overrides):
             # when
             response = test_client.patch("/api/v1/scheduler-service/schedules/non-found/voting",
-                                         json=to_jsonable_dict(command))
+                                         json=to_jsonable_dict(command),
+                                         headers=auth_headers)
             # then
             assert response.status_code == HTTP_404_NOT_FOUND
 
-    def test_toggle_voting_non_organizer(self, test_client, fake_web, aio_http_client):
+    def test_toggle_voting_non_organizer(self, test_client, fake_web, aio_http_client, auth_headers):
         """
         Given a request to toggle voting for a schedule that the user is not the organizer
         WHEN the request is made
         THEN it should return FORBIDDEN.
         """
-        command = ToggleVoting(username="johndoe")
+        command = ToggleVoting()
+
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
+                     payload={"data": to_jsonable_dict(user_registered_factory(username="johndoe"))},
+                     status=HTTP_200_OK,
+                     headers=auth_headers,
+                     )
         fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/1/voting",
                        payload={"detail": "Forbidden"},
                        status=HTTP_403_FORBIDDEN)
@@ -313,11 +266,12 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         with DependencyOverrider(self.overrides):
             # when
             response = test_client.patch("/api/v1/scheduler-service/schedules/1/voting",
-                                         json=to_jsonable_dict(command))
+                                         json=to_jsonable_dict(command),
+                                         headers=auth_headers)
             # then
             assert response.status_code == HTTP_403_FORBIDDEN
 
-    def test_user_joins_meeting(self, test_client, fake_web, aio_http_client):
+    def test_user_joins_meeting(self, test_client, fake_web, aio_http_client, auth_headers):
         """
         GIVEN a request to join a meeting
         WHEN the request is made
@@ -325,10 +279,11 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         """
         joiner = "clarahill"
         meeting_id = "1"
-        command = JoinMeeting(username=joiner)
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users/{joiner}",
+
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
                      payload={"data": to_jsonable_dict(user_registered_factory(username=joiner))},
                      status=HTTP_200_OK,
+                     headers=auth_headers,
                      )
 
         fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/{meeting_id}/relationships/guests",
@@ -340,11 +295,11 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         with DependencyOverrider(self.overrides):
             # when
             response = test_client.patch(f"/api/v1/scheduler-service/schedules/{meeting_id}/relationships/guests",
-                                         json=to_jsonable_dict(command))
+                                         headers=auth_headers)
             # then
             assert response.status_code == HTTP_200_OK
 
-    def test_invalid_user_cant_join_meeting(self, test_client, fake_web, aio_http_client):
+    def test_invalid_user_cant_join_meeting(self, test_client, fake_web, aio_http_client, auth_headers):
         """
         Given a request to join a meeting with an invalid user
         WHEN the request is made
@@ -352,10 +307,10 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         """
         joiner = "clarahill"
         meeting_id = "1"
-        command = JoinMeeting(username=joiner)
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users/{joiner}",
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
                      payload={"detail": "Not found"},
-                     status=HTTP_404_NOT_FOUND,
+                     status=HTTP_401_UNAUTHORIZED,
+                     headers=auth_headers,
                      )
 
         self.overrides[get_async_http_client] = lambda: aio_http_client
@@ -363,21 +318,20 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         with DependencyOverrider(self.overrides):
             # when
             response = test_client.patch(f"/api/v1/scheduler-service/schedules/{meeting_id}/relationships/guests",
-                                         json=to_jsonable_dict(command))
+                                         headers=auth_headers)
             # then
-            assert response.status_code == HTTP_404_NOT_FOUND
+            assert response.status_code == HTTP_401_UNAUTHORIZED
 
     @pytest.mark.parametrize(
         "auth_status, scheduler_status, expected_status",
         [
-            (HTTP_404_NOT_FOUND, HTTP_404_NOT_FOUND, HTTP_404_NOT_FOUND),
             (HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_404_NOT_FOUND),
             (HTTP_200_OK, HTTP_200_OK, HTTP_200_OK),
             (HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_403_FORBIDDEN),
         ],
     )
     def test_user_votes_option(self, test_client, fake_web, aio_http_client,
-                               auth_status, scheduler_status, expected_status):
+                               auth_status, scheduler_status, expected_status, auth_headers):
         """
         GIVEN a request to vote for an option
         WHEN the request is made
@@ -390,11 +344,12 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
             minute=30
         )
 
-        command = VoteOption(username=username, option=option)
+        command = VoteOption(option=option)
 
-        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/users/{username}",
+        fake_web.get(f"{FAKE_AUTH_URL}/api/v1/auth/me",
                      payload={"data": to_jsonable_dict(user_registered_factory(username=username))},
                      status=auth_status,
+                     headers=auth_headers
                      )
 
         fake_web.patch(f"{FAKE_SCHEDULER_URL}/api/v1/schedules/1/options",
@@ -406,6 +361,7 @@ class TestSchedulerCommands(TestSchedulerServiceGateway):
         with DependencyOverrider(self.overrides):
             # when
             response = test_client.patch(f"/api/v1/scheduler-service/schedules/1/options",
-                                         json=to_jsonable_dict(command))
+                                         json=to_jsonable_dict(command),
+                                         headers=auth_headers)
             # then
             assert response.status_code == expected_status

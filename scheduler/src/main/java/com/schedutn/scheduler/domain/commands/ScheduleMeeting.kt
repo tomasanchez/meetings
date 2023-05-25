@@ -43,7 +43,7 @@ data class ScheduleMeeting(
   @field:Valid
   val options: Set<ProposeOption>,
 
-  @Schema(description = "Meeting Guests invited", example = "[]")
+  @Schema(description = "Meeting Guests invited", example = "[]", deprecated = true)
   @JsonProperty("guests")
   val guests: Set<String>? = emptySet(),
 ) : Command
