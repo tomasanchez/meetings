@@ -7,7 +7,6 @@ import useUser from "../../api/swrHooks/useUser";
 import { EventWrapper, ToggleVotingRequest } from "../../api/models/dataApi";
 import useSWR from "swr";
 import { fetcher } from "../../api/fetcher";
-import { useEffect } from "react";
 import Swal from "sweetalert2";
 
 export const EventDetails = () => {
@@ -21,10 +20,6 @@ export const EventDetails = () => {
     isLoading,
     mutate,
   } = useSWR<EventWrapper>(`scheduler-service/schedules/${idUrl}`, fetcher);
-
-  useEffect( () => {
-    if (!user) navigate('/login')
-  } )
 
   const goBack = () => {
     navigate("/");
@@ -40,8 +35,6 @@ export const EventDetails = () => {
     throw new Error(error);
   }
   if (isLoading) return <div>loading...</div>;
-  if (!user) return navigate("/login");
-
 
   const toggleVotingHandler = async () => {
     const toggleVotingRequest: ToggleVotingRequest = {

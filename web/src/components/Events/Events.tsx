@@ -2,6 +2,7 @@ import { useState } from "react";
 import { EventGenerator } from "./EventGenerator";
 import { EventForm } from "./EventForm";
 import { AvailableEvent } from "./AvailableEvent";
+import { ProtectedRoute } from '../Guards/ProtectedRoute';
 
 export const Events = () => {
   const [createEventIsShown, setcreateEventIsShown] = useState(false);
@@ -16,7 +17,7 @@ export const Events = () => {
 
   return (
     <>
-      {createEventIsShown && <EventForm onClose={closeEventForm} />}
+      {createEventIsShown &&  <ProtectedRoute><EventForm onClose={closeEventForm} /></ProtectedRoute> }
       <EventGenerator onCreate={openEventForm} />
       <AvailableEvent />
     </>

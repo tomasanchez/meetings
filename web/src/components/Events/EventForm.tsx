@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Button, Modal } from "../UI";
 import { useState } from 'react';
 
@@ -8,8 +8,6 @@ import { EventRequest, optionVote } from "../../api/models/dataApi";
 import useSWRMutation from "swr/mutation";
 import { addEvent } from "../../api/services/eventService";
 import useUser from "../../api/swrHooks/useUser";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 
 interface eventFormProps {
   onClose: () => void;
@@ -19,7 +17,6 @@ const today = new Date().toISOString().split("T")[0];
 
 export const EventForm = (props: eventFormProps) => {
 
-  const navigate = useNavigate()
   const nameInput = useRef<HTMLInputElement>(null);
   const descInput = useRef<HTMLTextAreaElement>(null);
   const placeInput = useRef<HTMLInputElement>(null);
@@ -30,19 +27,6 @@ export const EventForm = (props: eventFormProps) => {
   const [date, setDate] = useState<string>(today);
   const [hour, setHour] = useState<string>("");
   const [counterOptions, setCounterOptions] = useState<number>(1);
-
-
-  useEffect( () => {
-    if(user == null) {
-      Swal.fire({
-        title: 'Error',
-        text: "Por favor inicie sesion",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      return navigate('/login')
-    }
-  }, [] )
 
   const confirmHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

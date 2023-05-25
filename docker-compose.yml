@@ -49,6 +49,8 @@ services:
       - FASTAPI_LIMITER_THRESHOLD=10
       - FASTAPI_LIMITER_INTERVAL=60
   web:
+    environment:
+      - VITE_URL=http://localhost:80/api/v1/
     build:
       context: web
       dockerfile: Dockerfile
