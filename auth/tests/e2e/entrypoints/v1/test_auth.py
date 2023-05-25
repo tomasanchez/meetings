@@ -75,7 +75,9 @@ class TestAuthEntryPoint:
 
         with DependencyOverrider(overrides=overrides):
             # when
-            response = test_client.post('/api/v1/auth/user', json=authorize_command.dict())
+            response = test_client.get('/api/v1/auth/me',
+                                       headers={'Authorization': f'Bearer {authorize_command.token}'}
+                                       )
 
             username = response.json()['data']['username']
 
@@ -93,7 +95,9 @@ class TestAuthEntryPoint:
 
         with DependencyOverrider(overrides=overrides):
             # when
-            response = test_client.post('/api/v1/auth/user', json=authorize_command.dict())
+            response = test_client.get('/api/v1/auth/me',
+                                       headers={'Authorization': f'Bearer {authorize_command.token}'}
+                                       )
 
             # then
             assert response.status_code == HTTP_401_UNAUTHORIZED
@@ -109,7 +113,9 @@ class TestAuthEntryPoint:
 
         with DependencyOverrider(overrides=overrides):
             # when
-            response = test_client.post('/api/v1/auth/user', json=authorize_command.dict())
+            response = test_client.get('/api/v1/auth/me',
+                                       headers={'Authorization': f'Bearer {authorize_command.token}'}
+                                       )
 
             # then
             assert response.status_code == HTTP_401_UNAUTHORIZED
