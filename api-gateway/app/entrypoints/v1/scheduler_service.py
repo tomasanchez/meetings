@@ -9,15 +9,22 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from app.adapters.http_client import AsyncHttpClient
 from app.adapters.network import gateway
 from app.dependencies import AsyncHttpClientDependency, ServiceProvider
-from app.domain.commands.scheduler_service import JoinMeeting, ScheduleMeeting, ToggleVoting, VoteOption
+from app.domain.commands.scheduler_service import ForwardScheduleMeeting, ForwardToggleVoting, ForwardVoteOption, \
+    JoinMeeting, \
+    ScheduleMeeting, ToggleVoting, \
+    VoteOption
 from app.domain.events.scheduler_service import MeetingScheduled
 from app.domain.models import Service
 from app.domain.schemas import ResponseModel, ResponseModels
-from app.service_layer.gateway import api_v1_url, get_service, verify_scheduling_meeting, verify_status, \
-    verify_user_existence
+from app.middleware import AuthMiddleware
+from app.service_layer.gateway import api_v1_url, get_service, verify_status
 
 router = APIRouter(prefix="/scheduler-service", tags=["Scheduler"])
 
+
+########################################################################################################################
+# Queries
+########################################################################################################################
 
 @router.get("/schedules",
             status_code=HTTP_200_OK,
@@ -66,6 +73,10 @@ async def query_schedule_by_id(
     return ResponseModel[MeetingScheduled](**response)
 
 
+########################################################################################################################
+# Commands
+########################################################################################################################
+
 @router.post("/schedules",
              status_code=HTTP_201_CREATED,
              summary="Creates a schedule",
@@ -73,6 +84,7 @@ async def query_schedule_by_id(
              )
 async def schedule(
         command: ScheduleMeeting,
+        user: AuthMiddleware,
         services: ServiceProvider,
         client: AsyncHttpClientDependency,
         request: Request,
@@ -82,17 +94,14 @@ async def schedule(
     Schedules a meeting.
     """
 
-    updated_command = await verify_scheduling_meeting(command=command,
-                                                      service=await get_service(service_name="auth",
-                                                                                services=services),
-                                                      client=client)
+    forwarded_command = ForwardScheduleMeeting(organizer=user.username, guests=set(), **command.dict())
 
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="scheduler", services=services)).base_url,
         path=f"{api_v1_url}/schedules",
         client=client,
         method="POST",
-        request_body=updated_command.json()
+        request_body=forwarded_command.json()
     )
 
     verify_status(response=service_response, status_code=status_code, status_codes=[HTTP_201_CREATED])
@@ -112,18 +121,21 @@ async def schedule(
 async def toggle_voting(
         schedule_id: Annotated[str, Path(description="The schedule's id.", example="b455f6t63t7")],
         command: ToggleVoting,
+        user: AuthMiddleware,
         services: ServiceProvider,
         client: AsyncHttpClientDependency,
 ) -> ResponseModel[MeetingScheduled]:
     """
     Toggles voting on a schedule.
     """
+    forwarded_command = ForwardToggleVoting(username=user.username, **command.dict())
+
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="scheduler", services=services)).base_url,
         path=f"{api_v1_url}/schedules/{schedule_id}/voting",
         client=client,
         method="PATCH",
-        request_body=command.json()
+        request_body=forwarded_command.json()
     )
 
     verify_status(response=service_response, status_code=status_code, status_codes=[HTTP_200_OK])
@@ -138,13 +150,14 @@ async def toggle_voting(
               )
 async def join_meeting(
         schedule_id: Annotated[str, Path(description="The schedule's id.", example="b455f6t63t7")],
-        command: JoinMeeting,
+        user: AuthMiddleware,
         services: ServiceProvider,
         client: AsyncHttpClientDependency,
 ) -> ResponseModel[MeetingScheduled]:
     """
     Allows a valid user to join a meeting.
     """
+    command = JoinMeeting(username=user.username)
     return await command_with_user_validation(
         path=f"{schedule_id}/relationships/guests",
         command=command,
@@ -160,13 +173,16 @@ async def join_meeting(
               )
 async def vote_for_option(
         schedule_id: Annotated[str, Path(description="The schedule's id.", example="b455f6t63t7")],
+        user: AuthMiddleware,
         command: VoteOption,
         services: ServiceProvider,
         client: AsyncHttpClientDependency,
 ) -> ResponseModel[MeetingScheduled]:
+    forwarded_command = ForwardVoteOption(username=user.username, **command.dict())
+
     return await command_with_user_validation(
         path=f"{schedule_id}/options",
-        command=command,
+        command=forwarded_command,
         services=services,
         client=client,
     )
@@ -178,19 +194,14 @@ async def vote_for_option(
 
 async def command_with_user_validation(
         path: str,
-        command: JoinMeeting | VoteOption,
+        command: JoinMeeting | ForwardVoteOption,
         services: list[Service],
         client: AsyncHttpClient,
         method: str = "PATCH",
 ) -> ResponseModel[MeetingScheduled]:
     """
-    Validates the user and then sends the command to the scheduler service.
+    Sends the command to the scheduler service.
     """
-    await verify_user_existence(username=command.username,
-                                client=client,
-                                service=await get_service(service_name="auth", services=services),
-                                )
-
     service_response, status_code = await gateway(
         service_url=(await get_service(service_name="scheduler", services=services)).base_url,
         client=client,
