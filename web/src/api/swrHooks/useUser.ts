@@ -1,4 +1,3 @@
-import Swal from "sweetalert2";
 import useSWR from "swr";
 
 interface Token {
