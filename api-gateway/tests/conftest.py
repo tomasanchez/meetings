@@ -75,3 +75,11 @@ async def fixture_redis_client() -> RedisClient:
     client = RedisClient(url="fake-host", port=6379)
     yield client
     await client.close()
+
+
+@pytest.fixture(name="auth_headers")
+def fixture_headers() -> dict[str, str]:
+    """
+    Create a dict with headers.
+    """
+    return {"Authorization": "Bearer eyThisIsAFakeToken"}

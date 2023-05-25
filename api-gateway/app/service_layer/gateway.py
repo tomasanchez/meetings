@@ -81,46 +81,6 @@ async def get_users(users: str, service: Service, client: AsyncHttpClient) -> tu
                          client=client, method="GET")
 
 
-async def verify_scheduling_meeting(command: ScheduleMeeting,
-                                    service: Service,
-                                    client: AsyncHttpClient) -> ScheduleMeeting:
-    """
-    Verify scheduling meeting command by checking if the users exists.
-
-    Updates the command with the verified guests: all non-existing guests are removed.
-
-    Args:
-        command (ScheduleMeeting): The schedule command.
-        service (Service): The service.
-        client (AsyncHttpClient): The Async HTTP Client.
-
-    Returns:
-        ScheduleMeeting: The schedule command with guests verified.
-
-    Raises:
-        HTTPException: If the organizer does not exist.
-    """
-    user_set = command.guests.copy()
-    user_set.add(command.organizer)
-
-    comma_separated_usernames = ", ".join(user_set)
-
-    response, code = await get_users(users=comma_separated_usernames, service=service, client=client)
-
-    verify_status(response=response, status_code=code)
-
-    response_event = ResponseModels[UserRegistered](**response)
-
-    usernames = [user.username for user in response_event.data if user.username in user_set]
-
-    if command.organizer not in usernames:
-        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Organizer does not exists.")
-
-    usernames.remove(command.organizer)
-
-    return command.copy(update={"guests": set(usernames)})
-
-
 async def verify_user_existence(username: str,
                                 service: Service,
                                 client: AsyncHttpClient) -> UserRegistered:
