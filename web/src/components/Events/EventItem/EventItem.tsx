@@ -23,7 +23,7 @@ export const EventItem = (props: EventItem) => {
               <p className="mb-2 fs-6 "> Participa en la votación  y elegí una fecha! </p>
             </div>
           )}
-          <Link to={{ pathname: `/${props.event.id}` }}>VER JUNTADA</Link>
+          <Link to={{ pathname: `events/${props.event.id}` }}>VER JUNTADA</Link>
         </div>
       </li>
 

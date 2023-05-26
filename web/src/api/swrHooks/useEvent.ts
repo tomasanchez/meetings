@@ -4,7 +4,7 @@ import { fetcher } from "../fetcher";
 
 
 export default function useEvent() {
-  const { data, mutate, error, isLoading } = useSWR<Events>("scheduler-service/schedules", fetcher);
+  const { data, mutate, error, isLoading } = useSWR<Events>("schedules", fetcher);
 
   return {
     events: data,

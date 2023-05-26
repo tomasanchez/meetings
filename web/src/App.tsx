@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     element: <HomePage />,
     children: [
       {
-        path: "/:id",
+        path: "/events/:idEvent",
         element: (
           <ProtectedRoute>
             <EventDetails />

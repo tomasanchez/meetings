@@ -20,8 +20,9 @@ export const ProtectedRoute = ({ children }: Props) => {
         icon: "error",
         confirmButtonText: "OK",
       });
+      navigate("/login");
+
     }
-    navigate("/login");
   }, [user]);
 
   return <> {children} </>;
