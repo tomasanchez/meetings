@@ -7,7 +7,6 @@ import useUser from "../../api/swrHooks/useUser";
 import { EventWrapper, ToggleVotingRequest } from "../../api/models/dataApi";
 import useSWR from "swr";
 import { fetcher } from "../../api/fetcher";
-import Swal from "sweetalert2";
 
 
 export const EventDetails = () => {
@@ -25,15 +24,7 @@ export const EventDetails = () => {
     navigate("/");
   };
 
-  if (error) {
-    Swal.fire({
-      title: 'Error',
-      text: error.detail,
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    throw new Error(error);
-  }
+  if (error) { throw new Error(error); }
   if (isLoading) return <div>loading...</div>;
   if (!user) {navigate("/login")};
 

@@ -1,4 +1,3 @@
-import Swal from "sweetalert2";
 import { EventRequest, ToggleVotingRequest, VoteRequest } from "../models/dataApi";
 
 const url = import.meta.env.VITE_URL
@@ -18,12 +17,6 @@ export async function addEvent(urlInput: string, { arg }: { arg: EventRequest })
     const data = await response.json()
     
     if (!response.ok) {
-        Swal.fire({
-            title: 'Error',
-            text: data.detail,
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
         throw new Error(data.detail);
     }
     return data;
@@ -44,12 +37,6 @@ export async function joinEvent(urlEvent: string,  { arg }: { arg: string }) {
     const data = await response.json()
     
     if (!response.ok) {
-        Swal.fire({
-            title: 'Error',
-            text: data.detail,
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
         throw new Error(data.detail);
     }
     return data;
@@ -70,12 +57,6 @@ export async function voteOption(urlEvent: string, { arg }: { arg: VoteRequest }
     const data = await response.json()
     
     if (!response.ok) {
-        Swal.fire({
-            title: 'Error',
-            text: data.detail,
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
         throw new Error(data.detail);
     }
     return data;
@@ -97,12 +78,6 @@ export async function toggleVoting(urlEvento: string, { arg }: {arg: ToggleVotin
     const data = await response.json()
     
     if (!response.ok) {
-        Swal.fire({
-            title: 'Error',
-            text: data.detail,
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
         throw new Error(data.detail);
     }
     return data;

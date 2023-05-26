@@ -2,9 +2,27 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
+import { SWRConfig } from 'swr/_internal'
+import Swal from "sweetalert2";
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <SWRConfig value={{
+      onError: (error) => {
+        console.log(error)
+        if(error.status !== 403 && error.status !== 404) {
+          console.log(error)
+          Swal.fire({
+            title: 'Error',
+            text: error.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+          throw new Error(error.message);        
+        }
+      }
+    }}>
+      <App />
+    </SWRConfig>
   </React.StrictMode>,
 )
