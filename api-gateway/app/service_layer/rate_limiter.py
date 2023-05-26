@@ -2,7 +2,6 @@
 Rate limiter service layer
 """
 import abc
-from datetime import timedelta
 
 from app.adapters.redis_connector import RedisConnector
 
@@ -33,13 +32,12 @@ class RateLimiter(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def timer(self, identifier: str, time: int | timedelta) -> bool:
+    async def timer(self, identifier: str) -> bool:
         """
         Times to reset the number of requests for the given key.
 
         Args:
             identifier (str): the key to reset the number of requests for
-            time (int | timedelta): the time in seconds
 
         Returns:
             bool: True if the key was given the timer to reset, False otherwise
@@ -70,5 +68,5 @@ class RedisRateLimiter(RateLimiter):
     async def is_allowed(self, request_number: int) -> bool:
         return request_number <= self.threshold
 
-    async def timer(self, identifier: str, time: int | timedelta) -> bool:
-        return await self.redis.expire(identifier, time)
+    async def timer(self, identifier: str) -> bool:
+        return await self.redis.expire(identifier, self.time_to_live)

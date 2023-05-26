@@ -28,10 +28,11 @@ async def rate_limiter_middleware(request: Request, rate_limiter: RateLimiterDep
 
     requests = await rate_limiter.increment(key)
 
+    if requests == 1:
+        await rate_limiter.timer(key)
+
     if not await rate_limiter.is_allowed(requests):
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=f"Surpassed rate limit.")
-
-    await rate_limiter.timer(key, time=rate_limiter.time_to_live)
 
 
 async def auth_middleware(token: BearerTokenAuth,
