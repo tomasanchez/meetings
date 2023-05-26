@@ -9,7 +9,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <SWRConfig value={{
       onError: (error) => {
-        console.log(error)
         if(error.status !== 403 && error.status !== 404) {
           console.log(error)
           Swal.fire({
