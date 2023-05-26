@@ -21,7 +21,7 @@ export const EventForm = (props: eventFormProps) => {
   const descInput = useRef<HTMLTextAreaElement>(null);
   const placeInput = useRef<HTMLInputElement>(null);
 
-  const { trigger } = useSWRMutation("scheduler-service/schedules", addEvent);
+  const { trigger } = useSWRMutation("schedules", addEvent);
   const { user } = useUser();
 
   const [date, setDate] = useState<string>(today);

@@ -5,7 +5,7 @@ import { voteOption } from "../../api/services/eventService";
 
 interface EventOptionsProps {
   event: Event,
-  idUrl: string,
+  idEvent: string,
   user: string,
   mutate: any
 }
@@ -32,7 +32,7 @@ export const EventOptions = (props: EventOptionsProps) => {
   }
 
     const response = await voteOption(
-      `scheduler-service/schedules/${props.idUrl}`,
+      `schedules/${props.idEvent}`,
       { arg: request }
     );
     props.mutate(response);

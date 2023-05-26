@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Modal } from "../../components/UI";
 import classes from "./EventDetails.module.css";
 import { EventOptions } from "./EventOptions";
@@ -9,17 +9,17 @@ import useSWR from "swr";
 import { fetcher } from "../../api/fetcher";
 import Swal from "sweetalert2";
 
+
 export const EventDetails = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const idUrl = location.pathname.split("/")[1];
+  const {idEvent} = useParams<{idEvent: string}>()
   const { user } = useUser();
   const {
     data: event,
     error,
     isLoading,
     mutate,
-  } = useSWR<EventWrapper>(`scheduler-service/schedules/${idUrl}`, fetcher);
+  } = useSWR<EventWrapper>(`schedules/${idEvent}`, fetcher);
 
   const goBack = () => {
     navigate("/");
@@ -40,20 +40,20 @@ export const EventDetails = () => {
 
   const toggleVotingHandler = async () => {
     const toggleVotingRequest: ToggleVotingRequest = {
-      username: user!.username,
-      voting: !event!.data.voting,
+      username: user?.username,
+      voting: !event?.data.voting,
     };
 
     const response = await toggleVoting(
-      `scheduler-service/schedules/${idUrl}`,
+      `schedules/${idEvent}`,
       { arg: toggleVotingRequest }
     );
     mutate(response);
   };
 
   const joinEventHandler = async () => {
-    const response = await joinEvent(`scheduler-service/schedules/${idUrl}`, {
-      arg: user!.username,
+    const response = await joinEvent(`schedules/${idEvent}`, {
+      arg: user?.username,
     });
     mutate(response);
   };
@@ -66,17 +66,17 @@ export const EventDetails = () => {
             <div className="row">
               <div className="col">
                 <div className={classes.organizer}>
-                  Organizer: {event!.data.organizer}{" "}
+                  Organizer: {event?.data.organizer}{" "}
                 </div>
-                <h3> {event!.data.title} </h3>
-                <div> {event!.data.location} </div>
-                <div> {event!.data.description} </div>
-                {event!.data.guests.length > 0 && (
+                <h3> {event?.data.title} </h3>
+                <div> {event?.data.location} </div>
+                <div> {event?.data.description} </div>
+                {event?.data.guests.length > 0 && (
                   <>
                     <hr />
                     <div>Guest List: </div>
                     <ul>
-                      {event!.data.guests.map((guest: string) => (
+                      {event?.data.guests.map((guest: string) => (
                         <li>{guest}</li>
                       ))}
                     </ul>
@@ -84,24 +84,24 @@ export const EventDetails = () => {
                 )}
               </div>
               <EventOptions
-                event={event!.data}
-                idUrl={idUrl}
-                user={user!.username}
+                event={event?.data}
+                idEvent={idEvent}
+                user={user?.username}
                 mutate={mutate}
               />
             </div>
           </div>
 
           <div className={classes.button}>
-            {user!.username !== null && (
+            {user?.username !== null && (
               <>
-                {!(event!.data.guests.indexOf(user!.username) !== -1) && user!.username !== event!.data.organizer && (
+                {!(event?.data.guests.indexOf(user?.username) !== -1) && user?.username !== event?.data.organizer && (
                   <Button onClick={joinEventHandler}>Join Event & Vote</Button>
                 )}
 
-                {user!.username === event!.data.organizer && (
+                {user?.username === event?.data.organizer && (
                   <Button onClick={toggleVotingHandler}>
-                    {!event!.data.voting ? "Enable voting" : "Close event"}
+                    {!event?.data.voting ? "Enable voting" : "Close event"}
                   </Button>
                 )}
               </>

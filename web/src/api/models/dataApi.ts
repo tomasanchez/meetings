@@ -9,6 +9,15 @@ export interface RegisterResponse {
   data: UserRegistered
 }
 
+export default class ResponseError extends Error {
+  status: number;
+  info: string;
+  response: {
+      headers: { [key: string]: string; };
+      body: string;
+  };
+}
+
 export interface UserRegistered {
   id: string
   username: string

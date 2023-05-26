@@ -15,7 +15,7 @@ export const login = async (userData: LoginRequest) => {
         body: JSON.stringify(userData)
     };
 
-    const response = await fetch(url+'auth-service/auth/token', requestOptions)
+    const response = await fetch(url+'auth/token', requestOptions)
     const data = await response.json()
 
     if (!response.ok) {
@@ -44,7 +44,7 @@ export const register = async (userData: RegisterRequest) => {
         body: JSON.stringify(userData)
     };
 
-    const response = await fetch(url+'auth-service/users', requestOptions)
+    const response = await fetch(url+'users', requestOptions)
     const data = await response.json()
     if (!response.ok) {
         Swal.fire({
