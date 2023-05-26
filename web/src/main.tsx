@@ -18,7 +18,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             icon: 'error',
             confirmButtonText: 'OK'
           });
-          throw new Error(error.message);        
         }
       }
     }}>
