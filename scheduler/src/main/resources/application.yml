@@ -4,8 +4,8 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://lean:Lean123456@cluster0.8jk604t.mongodb.net/meetings
-      database: meetings
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_NAME}
   application:
     name: Scheduler
 
