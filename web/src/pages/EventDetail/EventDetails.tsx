@@ -7,11 +7,12 @@ import useUser from "../../api/swrHooks/useUser";
 import { EventWrapper, ToggleVotingRequest } from "../../api/models/dataApi";
 import useSWR from "swr";
 import { fetcher } from "../../api/fetcher";
+import Swal from "sweetalert2";
 
 
 export const EventDetails = () => {
   const navigate = useNavigate();
-  const {idEvent} = useParams<{idEvent: string}>()
+  const { idEvent } = useParams<{ idEvent: string }>()
   const { user } = useUser();
   const {
     data: event,
@@ -24,22 +25,31 @@ export const EventDetails = () => {
     navigate("/");
   };
 
-  if (error) { throw new Error(error); }
+  if (error) return undefined; 
   if (isLoading) return <div>loading...</div>;
-  if (!user) {navigate("/login")};
-
+  //evito que continue el flujo si el event es undefined
+  if (!user) { navigate("/login") };
 
   const toggleVotingHandler = async () => {
     const toggleVotingRequest: ToggleVotingRequest = {
       username: user?.username,
-      voting: !event?.data.voting,
+      voting: !event.data.voting,
     };
-
-    const response = await toggleVoting(
-      `schedules/${idEvent}`,
-      { arg: toggleVotingRequest }
-    );
-    mutate(response);
+    try {
+      const response = await toggleVoting(
+        `schedules/${idEvent}`,
+        { arg: toggleVotingRequest }
+      );
+      mutate(response);
+      
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.info?.detail ?? error.message ?? '[API] An unexpected error occurred',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
   };
 
   const joinEventHandler = async () => {
@@ -57,17 +67,17 @@ export const EventDetails = () => {
             <div className="row">
               <div className="col">
                 <div className={classes.organizer}>
-                  Organizer: {event?.data.organizer}{" "}
+                  Organizer: {event.data.organizer}{" "}
                 </div>
-                <h3> {event?.data.title} </h3>
-                <div> {event?.data.location} </div>
-                <div> {event?.data.description} </div>
-                {event?.data.guests.length > 0 && (
+                <h3> {event.data.title} </h3>
+                <div> {event.data.location} </div>
+                <div> {event.data.description} </div>
+                {event.data.guests.length > 0 && (
                   <>
                     <hr />
                     <div>Guest List: </div>
                     <ul>
-                      {event?.data.guests.map((guest: string) => (
+                      {event.data.guests.map((guest: string) => (
                         <li>{guest}</li>
                       ))}
                     </ul>
@@ -75,7 +85,7 @@ export const EventDetails = () => {
                 )}
               </div>
               <EventOptions
-                event={event?.data}
+                event={event.data}
                 idEvent={idEvent}
                 user={user?.username}
                 mutate={mutate}
@@ -86,13 +96,13 @@ export const EventDetails = () => {
           <div className={classes.button}>
             {user?.username !== null && (
               <>
-                {!(event?.data.guests.indexOf(user?.username) !== -1) && user?.username !== event?.data.organizer && (
+                {!(event.data.guests.indexOf(user?.username) !== -1) && user?.username !== event.data.organizer && (
                   <Button onClick={joinEventHandler}>Join Event & Vote</Button>
                 )}
 
                 {user?.username === event?.data.organizer && (
                   <Button onClick={toggleVotingHandler}>
-                    {!event?.data.voting ? "Enable voting" : "Close event"}
+                    {!event.data.voting ? "Enable voting" : "Close event"}
                   </Button>
                 )}
               </>
