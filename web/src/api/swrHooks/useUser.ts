@@ -19,7 +19,7 @@ const userFetcher = async () => {
   }
 
   // not authorized
-  throw new Error("Not authorized!")
+  // throw new Error("Not authorized!")
 };
 
 
