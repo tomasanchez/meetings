@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
@@ -28,6 +29,7 @@ data class Schedule(
   @Id
   val id: String? = null,
 
+  @Version
   @field:Min(value = 0, message = "Version must be greater or equal to 0")
   val version: Int = 0,
 
