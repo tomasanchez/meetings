@@ -4,10 +4,16 @@ import com.schedutn.scheduler.domain.commands.ProposeOption
 import com.schedutn.scheduler.domain.commands.ScheduleMeeting
 import com.schedutn.scheduler.domain.commands.ToggleVoting
 import com.schedutn.scheduler.domain.commands.VoteForOption
+import com.schedutn.scheduler.domain.models.Meeting
+import com.schedutn.scheduler.domain.models.Schedule
+import com.schedutn.scheduler.repository.ScheduleRepositoryMongo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
+import org.mockito.Mockito.verify
 import java.time.LocalDate
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -18,11 +24,12 @@ internal class MeetingSchedulerTest {
   private lateinit var scheduleCommand: ScheduleMeeting
   private lateinit var option1: ProposeOption
   private lateinit var option2: ProposeOption
+  private lateinit var repository: ScheduleRepositoryMongo
 
   @BeforeEach
   fun setUp() {
-    meetingScheduler = MeetingScheduler()
-
+    repository = Mockito.mock(ScheduleRepositoryMongo::class.java)
+    meetingScheduler = MeetingScheduler(schedules = repository)
     option1 = ProposeOption(
       date = LocalDate.now(),
       hour = 10,
@@ -51,27 +58,28 @@ internal class MeetingSchedulerTest {
   @Test
   fun `a meeting can be scheduled`() {
     // Given a command to schedule a meeting
+    Mockito.`when`(repository.save(Mockito.any())).thenReturn(eventFromCommand(scheduleCommand))
+
 
     // When
-    val event = meetingScheduler.scheduleMeeting(scheduleCommand)
+    meetingScheduler.scheduleMeeting(scheduleCommand)
+
 
     // Then
-    assertTrue { event.id.isNotBlank() }
-    assertTrue { event.organizer == scheduleCommand.organizer }
-    assertTrue { event.title == scheduleCommand.title }
-    assertTrue { event.description == scheduleCommand.description }
-    assertTrue { event.location == scheduleCommand.location }
-    assertTrue { event.options.size == scheduleCommand.options.size }
-    assertTrue { event.guests.size == scheduleCommand.guests!!.size }
+    verify(repository).save(Mockito.any())
   }
 
   @Test
   fun `a meeting can be found by its id`() {
     // Given
-    val event = meetingScheduler.scheduleMeeting(scheduleCommand)
+    val event = eventFromCommand(scheduleCommand)
+    val id: String = event.id as String
+
+    // Mocking
+    Mockito.`when`(repository.findById(id)).thenReturn(Optional.of(event))
 
     // When
-    val schedule = meetingScheduler.scheduleById(event.id)
+    val schedule = meetingScheduler.scheduleById(id)
 
     // Then
     assertEquals(schedule.id, event.id)
@@ -81,6 +89,9 @@ internal class MeetingSchedulerTest {
   fun `an exception is thrown when a meeting is not found`() {
     // Given
     val id = "not-found"
+
+    // Mocking
+    Mockito.`when`(repository.findById(id)).thenReturn(Optional.empty())
 
     // Throws when
     assertThrows<ScheduleNotFoundException> {
@@ -92,10 +103,16 @@ internal class MeetingSchedulerTest {
   fun `a user can join a meeting`() {
     // Given
     val newJoiner = "user4"
-    val event = meetingScheduler.scheduleMeeting(scheduleCommand)
+    val event = eventFromCommand(scheduleCommand)
+    val id = event.id!!
+
+    // Mocking
+    Mockito.`when`(repository.findById(id)).thenReturn(Optional.of(event))
+    Mockito.`when`(repository.save(Mockito.any())).thenReturn(eventFromCommand(scheduleCommand).join(newJoiner))
 
     // When
-    val joined = meetingScheduler.joinAMeeting(id = event.id, username = newJoiner)
+    val joined = meetingScheduler.joinAMeeting(id = id, username = newJoiner)
+
 
     // Then
     assertTrue { newJoiner in joined.guests }
@@ -105,13 +122,20 @@ internal class MeetingSchedulerTest {
   fun `organizer can toggle voting`() {
     // Given
     val organizer = "organizer"
-    val event = meetingScheduler.scheduleMeeting(
-      scheduleCommand.copy(organizer = organizer)
-    )
+    val event = eventFromCommand(scheduleCommand.copy(organizer = organizer))
+    val id = event.id!!
+
+    // Mocking
+    Mockito
+      .`when`(repository.findById(id))
+      .thenReturn(Optional.of(event))
+    Mockito
+      .`when`(repository.save(Mockito.any()))
+      .thenReturn(event.toggleVoting(organizer, true))
 
     // When
     val toggled = meetingScheduler.toggleVoting(
-      id = event.id,
+      id = id,
       command = ToggleVoting(
         username = organizer,
         voting = true,
@@ -127,14 +151,18 @@ internal class MeetingSchedulerTest {
   fun `others than the organizer cannot toggle voting`() {
     // Given
     val organizer = "organizer"
-    val event = meetingScheduler.scheduleMeeting(
-      scheduleCommand.copy(organizer = organizer)
-    )
+    val event = eventFromCommand(scheduleCommand.copy(organizer = organizer))
+    val id = event.id!!
+
+    // Mocking
+    Mockito
+      .`when`(repository.findById(id))
+      .thenReturn(Optional.of(event))
 
     // Throws When
     assertThrows<ScheduleAuthorizationException> {
       meetingScheduler.toggleVoting(
-        id = event.id,
+        id = id,
         command = ToggleVoting(
           username = "other",
           voting = true,
@@ -148,19 +176,22 @@ internal class MeetingSchedulerTest {
     // Given
     val owner = "owner"
     val voter = "voter"
-    val event = meetingScheduler.scheduleMeeting(
-      scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
-    meetingScheduler.toggleVoting(
-      id = event.id,
-      command = ToggleVoting(
-        username = owner,
-        voting = true,
-      )
-    )
+    val event =
+      eventFromCommand(scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
+        .toggleVoting(owner, true)
+    val id = event.id!!
+
+    // Mocking
+    Mockito
+      .`when`(repository.findById(id))
+      .thenReturn(Optional.of(event))
+    Mockito
+      .`when`(repository.save(Mockito.any()))
+      .thenReturn(event)
 
     // When
-    val voted = meetingScheduler.voteForAnOption(
-      id = event.id,
+    meetingScheduler.voteForAnOption(
+      id = id,
       VoteForOption(
         username = voter,
         option = option1,
@@ -168,7 +199,7 @@ internal class MeetingSchedulerTest {
     )
 
     // Then
-    assertTrue { voted.options.any { it.votes.contains(voter) } }
+    verify(repository).save(Mockito.any())
   }
 
   @Test
@@ -176,20 +207,19 @@ internal class MeetingSchedulerTest {
     // Given
     val owner = "owner"
     val voter = "voter"
-    val event = meetingScheduler.scheduleMeeting(
-      scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
-    meetingScheduler.toggleVoting(
-      id = event.id,
-      command = ToggleVoting(
-        username = owner,
-        voting = false,
-      )
-    )
+    val event = eventFromCommand(scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
+      .toggleVoting(owner, false)
+    val id = event.id!!
+
+    // Mocking
+    Mockito
+      .`when`(repository.findById(id))
+      .thenReturn(Optional.of(event))
 
     // Throws When
     assertThrows<ScheduleAuthorizationException> {
       meetingScheduler.voteForAnOption(
-        id = event.id,
+        id = id,
         VoteForOption(
           username = voter,
           option = option1,
@@ -203,20 +233,19 @@ internal class MeetingSchedulerTest {
     // Given
     val owner = "owner"
     val voter = "voter"
-    val event = meetingScheduler.scheduleMeeting(
-      scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
-    meetingScheduler.toggleVoting(
-      id = event.id,
-      command = ToggleVoting(
-        username = owner,
-        voting = true,
-      )
-    )
+    val event = eventFromCommand(scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
+      .toggleVoting(owner, true)
+    val id = event.id!!
+
+    // Mocking
+    Mockito
+      .`when`(repository.findById(id))
+      .thenReturn(Optional.of(event))
 
     // Throws When
     assertThrows<ScheduleAuthorizationException> {
       meetingScheduler.voteForAnOption(
-        id = event.id,
+        id = id,
         VoteForOption(
           username = "other",
           option = option1,
@@ -230,20 +259,19 @@ internal class MeetingSchedulerTest {
     // Given
     val owner = "owner"
     val voter = "voter"
-    val event = meetingScheduler.scheduleMeeting(
-      scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
-    meetingScheduler.toggleVoting(
-      id = event.id,
-      command = ToggleVoting(
-        username = owner,
-        voting = true,
-      )
-    )
+    val event = eventFromCommand(scheduleCommand.copy(organizer = owner, guests = setOf(voter)))
+      .toggleVoting(owner, true)
+    val id = event.id!!
+
+    // Mocking
+    Mockito
+      .`when`(repository.findById(id))
+      .thenReturn(Optional.of(event))
 
     // Throws When
     assertThrows<ScheduleAuthorizationException> {
       meetingScheduler.voteForAnOption(
-        id = event.id,
+        id = id,
         VoteForOption(
           username = voter,
           option = ProposeOption(
@@ -255,5 +283,30 @@ internal class MeetingSchedulerTest {
       )
     }
   }
+
+  /**
+   * Event from command
+   *
+   * @param command to create event
+   * @return a new event instance
+   */
+  private fun eventFromCommand(command: ScheduleMeeting): Schedule = Schedule(
+    id = UUID.randomUUID().toString(),
+    organizer = command.organizer,
+    event = Meeting(
+      title = command.title,
+      description = command.description,
+      location = command.location,
+    ),
+    options = command.options.map {
+      com.schedutn.scheduler.domain.models.MeetingOption(
+        date = it.date,
+        hour = it.hour,
+        minute = it.minute,
+      )
+    }.toSet(),
+    guests = command.guests ?: emptySet(),
+  )
+
 
 }
