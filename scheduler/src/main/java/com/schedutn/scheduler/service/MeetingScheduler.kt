@@ -1,6 +1,5 @@
 package com.schedutn.scheduler.service
 
-import com.schedutn.scheduler.adapters.ScheduleRepository
 import com.schedutn.scheduler.domain.IllegalScheduleException
 import com.schedutn.scheduler.domain.IllegalVoteException
 import com.schedutn.scheduler.domain.commands.ScheduleMeeting
@@ -11,12 +10,14 @@ import com.schedutn.scheduler.domain.events.OptionVoted
 import com.schedutn.scheduler.domain.models.Meeting
 import com.schedutn.scheduler.domain.models.MeetingOption
 import com.schedutn.scheduler.domain.models.Schedule
+import com.schedutn.scheduler.repository.ScheduleRepositoryMongo
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class MeetingScheduler : ScheduleService {
-
-  private val schedules = ScheduleRepository()
+  @Autowired
+  private lateinit var schedules : ScheduleRepositoryMongo
 
   override fun scheduleMeeting(command: ScheduleMeeting): MeetingScheduled {
 
@@ -41,50 +42,61 @@ class MeetingScheduler : ScheduleService {
   }
 
   override fun joinAMeeting(id: String, username: String): MeetingScheduled {
-    val schedule = schedules.findById(id) ?: throw ScheduleNotFoundException(id)
+    if(schedules.findById(id).isPresent) {
+      val schedule = schedules.findById(id).get()
 
-    val joined = schedule.join(username = username)
+      val joined = schedule.join(username = username)
 
-    return modelToEvent(schedules.save(joined))
+      return modelToEvent(schedules.save(joined))
+    }
+    throw ScheduleNotFoundException(id)
   }
 
   override fun toggleVoting(id: String, command: ToggleVoting): MeetingScheduled {
-    val schedule = schedules.findById(id) ?: throw ScheduleNotFoundException(id)
+    if(schedules.findById(id).isPresent) {
+      val schedule = schedules.findById(id).get()
 
-    try {
-      val toggled = schedule.toggleVoting(username = command.username,
-        enabledVotes = command.voting)
+      try {
+        val toggled = schedule.toggleVoting(username = command.username,
+          enabledVotes = command.voting)
 
-      return modelToEvent(schedules.save(toggled))
-    } catch (e: IllegalScheduleException) {
+        return modelToEvent(schedules.save(toggled))
+      } catch (e: IllegalScheduleException) {
 
-      throw ScheduleAuthorizationException(e)
+        throw ScheduleAuthorizationException(e)
+      }
     }
+    throw ScheduleNotFoundException(id)
   }
 
   override fun voteForAnOption(id: String, command: VoteForOption): MeetingScheduled {
+    if(schedules.findById(id).isPresent) {
+      val schedule = schedules.findById(id).get()
 
-    val schedule = schedules.findById(id) ?: throw ScheduleNotFoundException(id)
+      val option = MeetingOption(
+        date = command.option.date,
+        hour = command.option.hour,
+        minute = command.option.minute,
+      )
 
-    val option = MeetingOption(
-      date = command.option.date,
-      hour = command.option.hour,
-      minute = command.option.minute,
-    )
+      try {
 
-    try {
+        val voted: Schedule = schedule.vote(option = option, username = command.username)
+        return modelToEvent(schedules.save(voted))
 
-      val voted: Schedule = schedule.vote(option = option, username = command.username)
-      return modelToEvent(schedules.save(voted))
+      } catch (e: IllegalVoteException) {
 
-    } catch (e: IllegalVoteException) {
-
-      throw ScheduleAuthorizationException(e)
+        throw ScheduleAuthorizationException(e)
+      }
     }
+    throw ScheduleNotFoundException(id)
   }
 
   override fun scheduleById(id: String): MeetingScheduled {
-    return modelToEvent(schedules.findById(id) ?: throw ScheduleNotFoundException(id))
+    if(schedules.findById(id).isPresent) {
+      return modelToEvent(schedules.findById(id).get())
+    }
+    throw ScheduleNotFoundException(id)
   }
 
   override fun findAll(): Collection<MeetingScheduled> {

@@ -6,6 +6,8 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 /**
@@ -21,8 +23,9 @@ import java.time.LocalDateTime
  * @property options list of options
  * @property date voted date of the event
  */
+@Document(collection = "schedules")
 data class Schedule(
-
+  @Id
   val id: String? = null,
 
   @field:Min(value = 0, message = "Version must be greater or equal to 0")
