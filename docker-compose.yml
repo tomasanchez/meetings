@@ -7,22 +7,27 @@ services:
     volumes:
       - ./data:/data/db
     restart: always
+    networks:
+      - mongo-network
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
     volumes:
       - cache:/data
+    networks:
+      - redis-network
   auth:
     build:
       context: auth
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
     depends_on:
       - mongodb
     environment:
       - MONGO_CLIENT=mongodb://mongodb:27017
+    networks:
+      - api-network
+      - mongo-network
   scheduler:
     image: tosanchez/atsc-meetings:scheduler-dev
     environment:
@@ -31,9 +36,8 @@ services:
       - SPRINGDOC_SWAGGER_UI_PATH=/scheduler-docs
       - MONGODB_URI=mongodb+srv://lean:Lean123456@cluster0.8jk604t.mongodb.net/meetings
       - MONGODB_NAME=meetings
-
-    ports:
-      - "8080:8080"
+    networks:
+      - api-network
     depends_on:
       - auth
   gateway:
@@ -51,6 +55,10 @@ services:
       - FASTAPI_USE_LIMITER=1
       - FASTAPI_LIMITER_THRESHOLD=10
       - FASTAPI_LIMITER_INTERVAL=60
+    networks:
+      - api-network
+      - redis-network
+      - web-network
   web:
     environment:
       - VITE_URL=http://localhost:80/api/v1/
@@ -62,7 +70,19 @@ services:
     depends_on:
       - auth
       - scheduler
+    networks:
+      - web-network
 
 volumes:
   cache:
     driver: local
+
+networks:
+  api-network:
+    driver: bridge
+  mongo-network:
+    driver: bridge
+  redis-network:
+    driver: bridge
+  web-network:
+    driver: bridge
