@@ -5,7 +5,7 @@ export function helpCommand(ctx: Context) {
         '/help - Muestra la lista de comandos disponibles\n' +
         '/login - Inicia sesión con usuario y contraseña. Ej: "/login miNombreDeusuario miContraseña"' +
         '/logout - Cerra sesión' +
-        '/createEvent - Muestra la lista de comandos disponibles\n' +
+        '/createEvent - Wizard para crear un evento\n' +
         '/viewEvents - Muestra la lista de comandos disponibles\n' +
         '/joinEvent - Permite unirse a un evento.\n';
     ctx.reply(helpMessage);
