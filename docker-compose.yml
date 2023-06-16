@@ -62,6 +62,16 @@ services:
     depends_on:
       - auth
       - scheduler
+  bot:
+    environment:
+      - TOKEN=6103437457:AAE4zwSvDGB7um2E1euk0-x0SMoSl69EbRc
+      - API_URL=http://gateway:80/api/v1/
+    build:
+      context: telegram-bot
+      dockerfile: Dockerfile
+    depends_on:
+      - auth
+      - scheduler
 
 volumes:
   cache:
