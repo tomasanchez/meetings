@@ -29,3 +29,20 @@ export interface EventToCreate {
     hour: number
     minute: number
   }
+
+  export interface Event {
+    id: string
+    organizer: string
+    voting: boolean
+    title: string
+    description: string
+    location: string
+    date: string
+    guests: string[]
+    options: Option[]
+  }
+  
+  export interface Option {
+    date: string
+    votes: string[]
+  }
