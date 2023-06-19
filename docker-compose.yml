@@ -1,15 +1,6 @@
 version: '3'
 
 services:
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - ./data:/data/db
-    restart: always
-    networks:
-      - mongo-network
 
   redis:
     image: redis:alpine
@@ -27,7 +18,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      - MONGO_CLIENT=mongodb://mongodb:27017
+      - MONGO_CLIENT=mongodb+srv://lean:Lean123456@cluster0.8jk604t.mongodb.net/meetings
     networks:
       - api-network
       - mongo-network
