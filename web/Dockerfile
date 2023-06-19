@@ -1,7 +1,8 @@
 FROM node:alpine as build-stage
 
 WORKDIR /web
-
+ARG VITE_URL
+ENV VITE_URL=$VITE_URL
 COPY ./package.json ./
 COPY ./yarn.lock ./
 RUN yarn install

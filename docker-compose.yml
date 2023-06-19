@@ -59,6 +59,8 @@ services:
     build:
       context: web
       dockerfile: Dockerfile
+      args:
+        - VITE_URL=http://127.0.0.1:80/api/v1/
     ports:
       - "5173:5173"
     depends_on:
