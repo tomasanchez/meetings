@@ -21,7 +21,6 @@ services:
       - MONGO_CLIENT=mongodb+srv://lean:Lean123456@cluster0.8jk604t.mongodb.net/meetings
     networks:
       - api-network
-      - mongo-network
 
   scheduler:
     image: tosanchez/atsc-meetings:scheduler-dev
@@ -89,8 +88,6 @@ volumes:
 
 networks:
   api-network:
-    driver: bridge
-  mongo-network:
     driver: bridge
   redis-network:
     driver: bridge
