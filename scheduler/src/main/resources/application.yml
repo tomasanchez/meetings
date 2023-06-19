@@ -11,6 +11,6 @@ spring:
 
 springdoc:
   swagger-ui:
-    path: /scheduler-docs
+    path: /docs
   show-actuator: true
   enable-kotlin: true
