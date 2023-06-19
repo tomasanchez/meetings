@@ -5,6 +5,7 @@ import com.schedutn.scheduler.api.errors.InvalidSchedule
 import com.schedutn.scheduler.api.errors.UnAuthorizedScheduleOperation
 import com.schedutn.scheduler.service.ScheduleAuthorizationException
 import com.schedutn.scheduler.service.ScheduleNotFoundException
+import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -55,6 +56,19 @@ class GlobalControllerExceptionHandler : ResponseEntityExceptionHandler() {
       detail = error,
     ), HttpStatus.FORBIDDEN)
   }
+
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(OptimisticLockingFailureException::class)
+  fun handleOptimisticLocking(ex: OptimisticLockingFailureException): ResponseEntity<ErrorWrapper<InvalidSchedule>> {
+
+    val details = InvalidSchedule(
+      code = "${HttpStatus.CONFLICT}",
+      message = ex.message ?: "Schedule has been modified while executing this request."
+    )
+
+    return ResponseEntity(ErrorWrapper(detail = details), HttpStatus.CONFLICT)
+  }
+
 
   /**
    * Handles Unprocessable Entity Exceptions.

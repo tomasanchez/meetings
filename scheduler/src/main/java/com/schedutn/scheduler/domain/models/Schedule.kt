@@ -70,9 +70,7 @@ data class Schedule(
       throw IllegalVoteException("Option is not valid")
 
 
-    return copy(options = options.map { if (it == option) it.vote(username) else it }.toSet(),
-      version = version + 1
-    )
+    return copy(options = options.map { if (it == option) it.vote(username) else it }.toSet())
   }
 
   /**
@@ -98,7 +96,6 @@ data class Schedule(
     return copy(
       date = getMostVotedOption().dateTime(),
       voting = false,
-      version = version + 1
     )
   }
 
@@ -117,7 +114,6 @@ data class Schedule(
 
     return copy(
       voting = enabledVotes,
-      version = version + 1
     )
   }
 
@@ -137,7 +133,6 @@ data class Schedule(
 
     return copy(
       guests = guests.plus(username),
-      version = version + 1
     )
   }
 
