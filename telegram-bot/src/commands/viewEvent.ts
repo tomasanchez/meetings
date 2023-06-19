@@ -5,7 +5,7 @@ import { EventNotFoundError, Option } from '../models/models'
 export async function viewEvent(id: String, ctx: Context) {
   try {
     // Realizar la solicitud GET utilizando Axios con async/await
-    const response = await axios.get("http://localhost:8080/api/v1/" + 'schedules/' + id);
+    const response = await axios.get(process.env.API_URL! + 'schedules/' + id);
 
     // La solicitud se realizó correctamente, puedes manejar la respuesta aquí
     console.log('Evento recibido correctamente', response.data);
