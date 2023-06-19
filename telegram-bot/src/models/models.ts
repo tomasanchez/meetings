@@ -24,25 +24,32 @@ export interface EventToCreate {
     options: HourRequest[]
   }
   
-  export interface HourRequest {
-    date: string
-    hour: number
-    minute: number
-  }
+export interface HourRequest {
+  date: string
+  hour: number
+  minute: number
+}
 
-  export interface Event {
-    id: string
-    organizer: string
-    voting: boolean
-    title: string
-    description: string
-    location: string
-    date: string
-    guests: string[]
-    options: Option[]
+export interface Event {
+  id: string
+  organizer: string
+  voting: boolean
+  title: string
+  description: string
+  location: string
+  date: string
+  guests: string[]
+  options: Option[]
+}
+
+export interface Option {
+  date: string
+  votes: string[]
+}
+
+export interface EventNotFoundError {
+  detail: {
+    code: String,
+    message: String
   }
-  
-  export interface Option {
-    date: string
-    votes: string[]
-  }
+}

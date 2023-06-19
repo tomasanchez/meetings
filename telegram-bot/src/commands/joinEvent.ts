@@ -1,15 +1,18 @@
 import axios, { AxiosError } from "axios";
 import { Context } from "telegraf";
+import { EventNotFoundError } from "../models/models";
 
-export interface EventNotFoundError {
-  detail: string;
-}
-
-export async function joinEvent(id: String, username: String, ctx: Context) {
+export async function joinEvent(id: String, username: String, token: String, ctx: Context) {
   try {
-    // Realizar la solicitud GET utilizando Axios con async/await
-    const response = await axios.patch("http://localhost:8080/api/v1/" + id + '/relationships/guests', {username});
+  // Configurar los encabezados de la solicitud
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
 
+    console.log(id, username);
+    // Realizar la solicitud GET utilizando Axios con async/await
+    const response = await axios.patch(process.env.API_URL! + "schedules/" + id + '/relationships/guests', {username}, {headers});
     // La solicitud se realizó correctamente, puedes manejar la respuesta aquí
     console.log('Response recibida correctamente', response.data);
 
@@ -23,9 +26,9 @@ export async function joinEvent(id: String, username: String, ctx: Context) {
       const axiosError: AxiosError<EventNotFoundError> = error;
         if (axiosError.response) {
         const responseData = axiosError.response
-        if ('detail' in responseData && typeof responseData.detail === 'string') {
+        if ('detail' in responseData.data && typeof responseData.data.detail.message === 'string') {
           // Manejar el caso de usuario no encontrado
-          ctx.reply(responseData.detail)
+          ctx.reply(responseData.data.detail.message)
         } else {
           ctx.reply('Valida que cumpla los requisitos')
         }

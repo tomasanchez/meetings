@@ -5,13 +5,12 @@ import { Event } from '../models/models'
 export async function viewEvents(ctx: Context) {
   try {
     // Realizar la solicitud GET utilizando Axios con async/await
-    const response = await axios.get("http://localhost:8080/api/v1/" + 'schedules')
+    const response = await axios.get(process.env.API_URL! + 'schedules')
 
     // La solicitud se realizó correctamente, puedes manejar la respuesta aquí
     console.log('Eventos recibidos correctamente', response.data);
     let data = response.data.data;
     let returnMessage = "";
-    console.log(data[0].options);
     
     if(data && data.length){
       returnMessage += 'Estos son los siguientes eventos:\n';
