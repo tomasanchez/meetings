@@ -50,9 +50,9 @@ bot.command('viewEvents', isAuthenticated, viewEvents);
 
 bot.command('joinEvent', isAuthenticated, async (ctx) => {
   const id = ctx.message.text.split(' ')[1];
-  const username = ctx.message.text.split(' ')[2];
-  if(id && username) {
-    await joinEvent(id, username, ctx.session.token!, ctx);
+
+  if(id) {
+    await joinEvent(id, ctx.session.token!, ctx);
   } else {
     ctx.reply('Verificar de ingresar el id y el usuario correctamente.')
   }

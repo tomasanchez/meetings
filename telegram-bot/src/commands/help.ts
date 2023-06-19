@@ -8,6 +8,6 @@ export function helpCommand(ctx: Context) {
         '/createEvent - Wizard para crear un evento\n' +
         '/viewEvents - Muestra una lista de eventos\n' +
         '/viewEvent - Permite ver un evento en especifico con el Id.  Ej: "/viewEvent id"\n' +
-        '/joinEvent - Permite unirse a un evento especificando el id y el usuario.\n.  Ej: "/joinEvent id usuario"\n';
+        '/joinEvent - Permite unirse a un evento especificando el id del evento. Ej: "/joinEvent id"\n';
     ctx.reply(helpMessage);
 }
