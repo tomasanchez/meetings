@@ -38,14 +38,14 @@ on [docs](https://docs.google.com/document/d/e/2PACX-1vSOjnpw4O-XEjpcK3Yei_FUmBo
 
 ## Team
 
-| Name                           | File      | e-Mail                       |
-|--------------------------------|-----------|------------------------------|
-| Alvarez, Leandro               | 146.887-0 | lean.alvarez@live.com.ar     |
-| Sanchez, Tomas                 | 166.043-3 | tosacnehz@frba.utn.edu.ar    |
-| Torregrosa, Florencia          | 163.519-0 | ftorregrossa@frba.utn.edu.ar |      
-| Olmedo Paco, Jhon Daniel       | 152.222-0 | jhonpaco@frba.utn.edu.ar     |
-| Yogui Arakaki, Matias Ezequiel | 167.264-2 | myogui@frba.utn.edu.ar       |
-| Grosclaude, Julian             | 171.656-6 | jgrosclaude@frba.utn.edu.ar  |
+| Name                           | File          | e-Mail                            |
+|--------------------------------|---------------|-----------------------------------|
+| Alvarez, Leandro               | 146.887-0     | lean.alvarez@live.com.ar          |
+| Sanchez, Tomas                 | 166.043-3     | tosacnehz@frba.utn.edu.ar         |
+| ~~Torregrosa, Florencia~~      | ~~163.519-0~~ | ~~ftorregrossa@frba.utn.edu.ar~~  |      
+| ~~Olmedo Paco, Jhon Daniel~~   | ~~152.222-0~~ | ~~jhonpaco@frba.utn.edu.ar~~      |
+| Yogui Arakaki, Matias Ezequiel | 167.264-2     | myogui@frba.utn.edu.ar            |
+| ~~Grosclaude, Julian~~         | ~~171.656-6~~ | ~~jgrosclaude@frba.utn.edu.ar~~   |
 
 ## Continuous Integration
 
@@ -90,13 +90,26 @@ response bodies, along with the status codes that they produce in there.
 
 See [`README`](web/README.md) file on `web` package.
 
-## Running Local
+## Quick Start
 
-1. Run docker-compose
+1. Install [Loki Docker Driver](https://grafana.com/docs/loki/latest/clients/docker-driver/)
 
-```bash
-docker-compose up
-```
+   ```bash
+   docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+   ```
+
+2. Build application image and start all services with docker-compose
+
+   ```bash
+   docker-compose build
+   docker-compose up -d
+   ```
+
+3. Open the Meetings Web Service [http://localhost:5173](http://localhost:5173) in your browser.
+
+4. Test the api from API Gateway Swagger UI [http://localhost/docs](http://localhost/docs).
+
+5. Check predefined dashboard `FastAPI Observability` on Grafana [http://localhost:3000/](http://localhost:3000/)
 
 ## Context
 
@@ -128,23 +141,36 @@ Overall, a microservices architecture provides more flexibility, scalability,
 and resilience than a monolithic architecture. While it may require more initial setup and
 development, it can ultimately make the application easier to maintain and more efficient.
 
-![Planned Architecture](docs/assets/architecture-v2.svg)
+![Planned Architecture](docs/assets/architecture-v3.svg)
 
 Users will be able to interact with the application through the `Web` module. This module will be responsible for
 interacting with the `API Gateway` module, which will be responsible for routing the requests to the corresponding
-service.
+service. However, this is not the only interface, there is a `Bot` service which allows user interaction via Telegram.
 
 The main idea is to have an `API Gateway` that will serve as an entry point for the communication between the
 microservices. It will be responsible for routing the requests to the corresponding service, making the corresponding
 validations.
 
 One of these validations will be to limit the number of requests that a user can make in a given time. This will be
-done using a `Rate Limiter` as a middleware. For that purpose, we will use `Redis`, more specifically a `Redis Cluster`
-so that we can have a distributed cache, in case more than one instance of the `API Gateway` is running.
+done using a `Rate Limiter` as a middleware. For that purpose, we will use `Redis`, It can be interchanged
+with a `Redis Cluster` so that we can have a distributed cache, in case more than one instance of the `API Gateway` is
+running.
 
 `Auth` module will be responsible for validating users.
 
 `SchedulerApplication` module will be responsible for managing the workflows of the events.
+
+## Observability
+
+Observe the FastAPI application with three pillars of observability on [Grafana](https://github.com/grafana/grafana):
+
+1. Traces with [Tempo](https://github.com/grafana/tempo)
+   and [OpenTelemetry Python SDK](https://github.com/open-telemetry/opentelemetry-python)
+2. Metrics with [Prometheus](https://prometheus.io/)
+   and [Prometheus Python Client](https://github.com/prometheus/client_python)
+3. Logs with [Loki](https://github.com/grafana/loki)
+
+![Observability](docs/assets/observability.svg)
 
 ## License
 
