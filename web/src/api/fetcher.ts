@@ -3,7 +3,7 @@ import ResponseError from "./models/dataApi"
 
 export const fetcher = async (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<any> => {
     try {
-        const url = import.meta.env.VITE_URL
+        const url = import.meta.env["VITE_URL"];
 
         let fetchUrl = new URL(url + input)
 

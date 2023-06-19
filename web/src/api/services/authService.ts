@@ -2,7 +2,7 @@ import {LoginRequest, RegisterRequest} from "../models/dataApi";
 import Swal from 'sweetalert2';
 
 const LOCALSTORAGE_NAME = 'login'
-const url = import.meta.env.VITE_URL
+const url = import.meta.env["VITE_URL"]
 
 
 export const login = async (userData: LoginRequest) => {
