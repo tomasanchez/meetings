@@ -15,8 +15,6 @@ services:
     build:
       context: auth
       dockerfile: Dockerfile
-    depends_on:
-      - mongodb
     environment:
       - MONGO_CLIENT=mongodb+srv://lean:Lean123456@cluster0.8jk604t.mongodb.net/meetings
     networks:
