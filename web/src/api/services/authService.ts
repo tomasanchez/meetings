@@ -1,4 +1,4 @@
-import { LoginRequest, RegisterRequest } from "../models/dataApi";
+import {LoginRequest, RegisterRequest} from "../models/dataApi";
 import Swal from 'sweetalert2';
 
 const LOCALSTORAGE_NAME = 'login'
@@ -15,7 +15,8 @@ export const login = async (userData: LoginRequest) => {
         body: JSON.stringify(userData)
     };
 
-    const response = await fetch(url+'auth/token', requestOptions)
+    let fetchUrl = new URL(url + 'auth/token')
+    const response = await fetch(fetchUrl, requestOptions)
     const data = await response.json()
 
     if (!response.ok) {
@@ -24,7 +25,7 @@ export const login = async (userData: LoginRequest) => {
             text: data.detail,
             icon: 'error',
             confirmButtonText: 'OK'
-          });
+        });
         throw new Error(data.detail);
     }
     localStorage.setItem(LOCALSTORAGE_NAME, data.data.token)
@@ -44,7 +45,7 @@ export const register = async (userData: RegisterRequest) => {
         body: JSON.stringify(userData)
     };
 
-    const response = await fetch(url+'users', requestOptions)
+    const response = await fetch(url + 'users', requestOptions)
     const data = await response.json()
     if (!response.ok) {
         Swal.fire({
@@ -52,7 +53,7 @@ export const register = async (userData: RegisterRequest) => {
             text: data.detail,
             icon: 'error',
             confirmButtonText: 'OK'
-          });
+        });
         throw new Error(data.detail);
     }
     await login({username: userData.username, password: userData.password})
