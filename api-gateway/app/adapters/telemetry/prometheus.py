@@ -58,6 +58,12 @@ EVENTS_SCHEDULED = Counter(
     ["app_name"],
 )
 
+OPTIONS_VOTED = Histogram(
+    "fastapi_options_voted_total",
+    "Option voted by date and time",
+    ["vote", "app_name"],
+)
+
 
 def metrics(request: Request) -> Response:
     return Response(generate_latest(REGISTRY), headers={"Content-Type": CONTENT_TYPE_LATEST})

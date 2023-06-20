@@ -1,6 +1,7 @@
 """
 Scheduler Service Gateway
 """
+import datetime
 import logging
 from typing import Annotated
 
@@ -9,7 +10,7 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from app.adapters.http_client import AsyncHttpClient
 from app.adapters.network import gateway
-from app.adapters.telemetry.prometheus import EVENTS_SCHEDULED
+from app.adapters.telemetry.prometheus import EVENTS_SCHEDULED, OPTIONS_VOTED
 from app.dependencies import AsyncHttpClientDependency, ServiceProvider, app_settings
 from app.domain.commands.scheduler_service import ForwardScheduleMeeting, ForwardToggleVoting, ForwardVoteOption, \
     JoinMeeting, \
@@ -48,6 +49,8 @@ async def query_schedules(
 
     verify_status(response=response, status_code=code)
 
+    logging.info(f"Retrieved {len(response['data'])} events.")
+
     return ResponseModels[MeetingScheduled](**response)
 
 
@@ -71,6 +74,8 @@ async def query_schedule_by_id(
                                    client=client, method="GET")
 
     verify_status(response=response, status_code=code)
+
+    logging.info(f"Retrieved event: {response['data']['id']}")
 
     return ResponseModel[MeetingScheduled](**response)
 
@@ -146,6 +151,8 @@ async def toggle_voting(
 
     verify_status(response=service_response, status_code=status_code, status_codes=[HTTP_200_OK])
 
+    logging.info(f"Voting toggled on event: {schedule_id}")
+
     return ResponseModel[MeetingScheduled](**service_response)
 
 
@@ -164,12 +171,17 @@ async def join_meeting(
     Allows a valid user to join a meeting.
     """
     command = JoinMeeting(username=user.username)
-    return await command_with_user_validation(
+
+    response = await command_with_user_validation(
         path=f"{schedule_id}/relationships/guests",
         command=command,
         services=services,
         client=client,
     )
+
+    logging.info(f"User(username={user.username}) joined Event(id={schedule_id}).")
+
+    return response
 
 
 @router.patch("/schedules/{schedule_id}/options",
@@ -186,12 +198,25 @@ async def vote_for_option(
 ) -> ResponseModel[MeetingScheduled]:
     forwarded_command = ForwardVoteOption(username=user.username, **command.dict())
 
-    return await command_with_user_validation(
+    response = await command_with_user_validation(
         path=f"{schedule_id}/options",
         command=forwarded_command,
         services=services,
         client=client,
     )
+
+    time = datetime.time(hour=command.option.hour, minute=command.option.minute)
+
+    logging.info(
+        f"User(username={user.username}) "
+        f"voted for option(date={command.option.date}, time={time}).")
+
+    datetime.datetime.combine(command.option.date, time)
+    OPTIONS_VOTED.labels(app_name=app_settings.get_app_name(),
+                         vote=datetime.datetime.combine(command.option.date, time)
+                         ).observe(1)
+
+    return response
 
 
 ########################################################################################################################
