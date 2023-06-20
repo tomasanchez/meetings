@@ -30,14 +30,24 @@ services:
     networks:
       - redis-network
 
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+    networks:
+      - mongo-network
+
   auth:
     build:
       context: auth
       dockerfile: Dockerfile
     environment:
-      - MONGO_CLIENT=mongodb+srv://lean:Lean123456@cluster0.8jk604t.mongodb.net/meetings
+      - MONGO_CLIENT=mongodb://mongodb:27017
     networks:
       - api-network
+      - mongo-network
 
   scheduler:
     image: tosanchez/atsc-meetings:scheduler-dev
@@ -45,10 +55,11 @@ services:
       - SPRING_APPLICATION_NAME=Scheduler
       - SERVER_PORT=8080
       - SPRINGDOC_SWAGGER_UI_PATH=/scheduler-docs
-      - MONGODB_URI=mongodb+srv://lean:Lean123456@cluster0.8jk604t.mongodb.net/meetings
+      - MONGODB_URI=mongodb://mongodb:27017
       - MONGODB_NAME=meetings
     networks:
       - api-network
+      - mongo-network
     depends_on:
       - auth
 
@@ -161,4 +172,6 @@ networks:
   redis-network:
     driver: bridge
   web-network:
+    driver: bridge
+  mongo-network:
     driver: bridge
