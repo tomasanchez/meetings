@@ -1,6 +1,7 @@
 """
 Scheduler Service Gateway
 """
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Path, Request, Response
@@ -8,7 +9,8 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from app.adapters.http_client import AsyncHttpClient
 from app.adapters.network import gateway
-from app.dependencies import AsyncHttpClientDependency, ServiceProvider
+from app.adapters.telemetry.prometheus import EVENTS_SCHEDULED
+from app.dependencies import AsyncHttpClientDependency, ServiceProvider, app_settings
 from app.domain.commands.scheduler_service import ForwardScheduleMeeting, ForwardToggleVoting, ForwardVoteOption, \
     JoinMeeting, \
     ScheduleMeeting, ToggleVoting, \
@@ -106,7 +108,11 @@ async def schedule(
 
     verify_status(response=service_response, status_code=status_code, status_codes=[HTTP_201_CREATED])
 
+    EVENTS_SCHEDULED.labels(app_name=app_settings.get_app_name()).inc()
+
     response_body = ResponseModel[MeetingScheduled](**service_response)
+
+    logging.info(f"Event scheduled: {response_body.data.id}")
 
     response.headers["Location"] = f"{request.base_url}api/v1/scheduler-service/schedules/{response_body.data.id}"
 
