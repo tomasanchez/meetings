@@ -25,8 +25,8 @@ class ApplicationSettings(BaseSettings):
     Attributes:
         DEBUG (bool): FastAPI logging level. You should disable this for
             production.
-        PROJECT_NAME (str): FastAPI project name to be displayed in Swagger UI.
-        PROJECT_DESCRIPTION (str): FastAPI project description to be displayed in Swagger UI.
+        PROJECT_NAME (str): FastAPI project name.
+        PROJECT_DESCRIPTION (str): FastAPI project description.
         USE_LIMITER (bool): Enable rate limiter.
         LIMITER_THRESHOLD (int): Number of requests allowed in the interval.
         LIMITER_INTERVAL (int): Interval in seconds.
@@ -35,21 +35,16 @@ class ApplicationSettings(BaseSettings):
     """
 
     DEBUG: bool = False
-    PROJECT_NAME: str = "Gateway"
+    PROJECT_NAME: str = "API Gateway"
     PROJECT_DESCRIPTION: str = "Serves as a hub for communicating microservices 🚀."
     USE_LIMITER: bool = False
     LIMITER_THRESHOLD: int = 10
     LIMITER_INTERVAL: int = 60
     VERSION: str = __version__
     DOCS_URL: str = "/docs"
-    OTLP_GRPC_ENDPOINT: str = "localhost:4317"
-    USE_TELEMETRY: bool = False
 
     # All your additional application configuration should go either here or in
     # separate file in this submodule.
-
-    def get_app_name(self):
-        return self.PROJECT_NAME.lower().replace(" ", "-").strip()
 
     class Config:
         """Config subclass needed to customize BaseSettings settings.

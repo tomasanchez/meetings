@@ -19,8 +19,6 @@ bearer_auth = HTTPBearer(scheme_name='JSON Web Token', description='Bearer JWT')
 
 BearerTokenAuth = Annotated[HTTPAuthorizationCredentials, Depends(bearer_auth)]
 
-app_settings = ApplicationSettings()
-
 
 def get_async_http_client() -> AsyncHttpClient:
     """Get async http client."""

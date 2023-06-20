@@ -1,7 +1,6 @@
 """
 Entry points for the Auth service.
 """
-import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Path, Query, Request, Response
@@ -40,8 +39,6 @@ async def query_users(
 
     verify_status(response=response, status_code=code)
 
-    logging.info(f"Retrieved {len(response.get('data', []))} users.")
-
     return ResponseModels[UserRegistered](**response)
 
 
@@ -64,8 +61,6 @@ async def query_user_by_username(
                                    client=client, method="GET")
 
     verify_status(response=response, status_code=code)
-
-    logging.info(f"Retrieved User(username={username}).")
 
     return ResponseModel[UserRegistered](**response)
 
@@ -97,9 +92,7 @@ async def register(command: RegisterUser,
 
     response_body = ResponseModel[UserRegistered](**service_response)
 
-    logging.info(f"Registered User(id={response_body.data.id},username={response_body.data.username}).")
-
-    response.headers["Location"] = f"{request.base_url}api/v1/users/{response_body.data.username}"
+    response.headers["Location"] = f"{request.base_url}api/v1/users/{response_body.data.id}"
     return response_body
 
 
@@ -125,8 +118,6 @@ async def authenticate(command: AuthenticateUser,
 
     verify_status(response=auth_response, status_code=status_code)
 
-    logging.info(f"Authenticated User(username={command.username}).")
-
     return ResponseModel[TokenGenerated](**auth_response)
 
 
@@ -141,7 +132,5 @@ async def authenticate_me(
     """
     Validates a user token. If valid, retrieves the user information.
     """
-
-    logging.info(f"Authorized User(id={user.id},username={user.username}).")
 
     return ResponseModel[UserAuthenticated](data=user)
