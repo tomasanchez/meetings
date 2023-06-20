@@ -1,17 +1,17 @@
 """
 Gateway Service functions.
 """
+import logging
 from typing import Any
 
 from fastapi import HTTPException
-from starlette.status import HTTP_200_OK, HTTP_409_CONFLICT, HTTP_503_SERVICE_UNAVAILABLE
+from starlette.status import HTTP_200_OK, HTTP_503_SERVICE_UNAVAILABLE
 
 from app.adapters.http_client import AsyncHttpClient
 from app.adapters.network import gateway
-from app.domain.commands.scheduler_service import ScheduleMeeting
 from app.domain.events.auth_service import UserRegistered
 from app.domain.models import Service
-from app.domain.schemas import ResponseModel, ResponseModels
+from app.domain.schemas import ResponseModel
 
 api_v1_url = "/api/v1"
 
@@ -38,6 +38,7 @@ def verify_status(response: dict[str, Any],
         status_codes = [HTTP_200_OK, ]
 
     if status_code not in status_codes:
+        logging.error("%s", response.get("detail", default_err_msg))
         raise HTTPException(status_code=status_code, detail=response.get("detail", default_err_msg))
 
 
@@ -58,6 +59,7 @@ async def get_service(service_name: str, services: list[Service]) -> Service:
     [service] = [service for service in services if service.name.lower() == service_name.lower()]
 
     if not service:
+        logging.error("%s service unavailable.", service_name)
         raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail=f"{service_name} service unavailable.")
 
     return service
