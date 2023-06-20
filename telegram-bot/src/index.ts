@@ -2,7 +2,7 @@ import { Scenes, Telegraf,session } from 'telegraf';
 import * as dotenv from 'dotenv';
 import { isAuthenticated } from './middleware/isAuthenticated';
 import { AuthContext } from './models/models';
-import {  eventWizard, helpCommand, login } from './commands';
+import {  eventWizard, helpCommand, login, viewEvents, joinEvent, viewEvent } from './commands';
 
 dotenv.config();
 
@@ -36,6 +36,27 @@ bot.command('login', async (ctx) => {
 });
 
 bot.command('createEvent', isAuthenticated, ctx => ctx.scene.enter('create-event'))
+
+bot.command('viewEvent', isAuthenticated, async(ctx) => {
+  const id = ctx.message.text.split(' ')[1];
+  if(id) {
+    await viewEvent(id, ctx);
+  } else {
+    ctx.reply('Verifica de ingresar el id correctamente');
+  }
+})
+
+bot.command('viewEvents', isAuthenticated, viewEvents);
+
+bot.command('joinEvent', isAuthenticated, async (ctx) => {
+  const id = ctx.message.text.split(' ')[1];
+
+  if(id) {
+    await joinEvent(id, ctx.session.token!, ctx);
+  } else {
+    ctx.reply('Verificar de ingresar el id y el usuario correctamente.')
+  }
+})
 
 bot.command('logout', isAuthenticated ,  async (ctx) => {
 
