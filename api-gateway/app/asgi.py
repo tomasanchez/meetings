@@ -7,8 +7,9 @@ from fastapi import Depends, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.adapters.http_client import aio_http_client
+from app.adapters.telemetry.prometheus import metrics, setting_otlp
 from app.dependencies import get_redis
-from app.middleware import rate_limiter_middleware
+from app.middleware import PrometheusMiddleware, rate_limiter_middleware
 from app.router import api_router_v1, root_router
 from app.settings.app_settings import ApplicationSettings
 
@@ -116,6 +117,15 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Prometheus Metrics
+    if settings.USE_TELEMETRY:
+        app_name = settings.get_app_name()
+        app.add_middleware(PrometheusMiddleware, app_name=app_name)
+        app.add_route("/metrics", metrics)
+
+        # Open Telemetry Exporter
+        setting_otlp(app=app, app_name=app_name, endpoint=settings.OTLP_GRPC_ENDPOINT)
 
     log.debug("Add application routes.")
 
