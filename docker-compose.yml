@@ -1,6 +1,25 @@
-version: '3'
+version: '3.4'
+
+x-logging: &default-logging
+  driver: loki
+  options:
+    loki-url: 'http://localhost:3100/api/prom/push'
+    loki-pipeline-stages: |
+      - multiline:
+          firstline: '^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}'
+          max_wait_time: 3s
+      - regex:
+          expression: '^(?P<time>\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2},d{3}) (?P<message>(?s:.*))$$'
 
 services:
+
+  loki:
+    image: grafana/loki:2.8.0
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - api-network
 
   redis:
     image: redis:alpine
@@ -50,6 +69,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - redis
+      - loki
     ports:
       - "80:80"
     environment:
@@ -57,12 +77,61 @@ services:
       {"name": "Scheduler", "base_url": "http://scheduler:8080", "readiness_url": "/actuator/health"}]'
       - REDIS_HOST=redis://redis:6379
       - FASTAPI_USE_LIMITER=1
-      - FASTAPI_LIMITER_THRESHOLD=10
+      - FASTAPI_LIMITER_THRESHOLD=30
       - FASTAPI_LIMITER_INTERVAL=60
+      - FASTAPI_USE_TELEMETRY=1
+      - FASTAPI_OTLP_GRPC_ENDPOINT=http://tempo:4317/
     networks:
       - api-network
       - redis-network
       - web-network
+    logging: *default-logging
+
+  prometheus:
+    image: prom/prometheus:v2.43.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./etc/prometheus:/workspace
+    command:
+      - --config.file=/workspace/prometheus.yml
+      - --enable-feature=exemplar-storage
+    depends_on:
+      - loki
+    networks:
+      - api-network
+    logging: *default-logging
+
+  tempo:
+    image: grafana/tempo:2.0.1
+    command: [ "--target=all", "--storage.trace.backend=local", "--storage.trace.local.path=/var/tempo", "--auth.enabled=false" ]
+    ports:
+      - "14250:14250"
+    depends_on:
+      - loki
+    networks:
+      - api-network
+    logging: *default-logging
+
+  grafana:
+    image: grafana/grafana:9.4.7
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./etc/grafana/:/etc/grafana/provisioning/datasources
+      - ./etc/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./etc/dashboards:/etc/grafana/dashboards
+    depends_on:
+      - loki
+      - prometheus
+    networks:
+      - api-network
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_FEATURE_TOGGLES_ENABLE: "traceqlEditor"
+    logging: *default-logging
 
   web:
     environment:
